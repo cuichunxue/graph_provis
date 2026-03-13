@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ヒストグラム作成ツール</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f1117;
+            --bg-secondary: #1a1d27;
+            --bg-tertiary: #222635;
+            --bg-card: #1e2230;
+            --bg-input: #161923;
+            --border-subtle: rgba(255,255,255,0.06);
+            --border-active: rgba(99,140,255,0.4);
+            --text-primary: #e8eaf0;
+            --text-secondary: #8b90a0;
+            --text-muted: #5a5f72;
+            --accent-blue: #638cff;
+            --accent-blue-glow: rgba(99,140,255,0.15);
+            --accent-green: #4ade80;
+            --accent-green-dim: rgba(74,222,128,0.12);
+            --accent-red: #f87171;
+            --accent-red-dim: rgba(248,113,113,0.12);
+            --accent-amber: #fbbf24;
+            --accent-amber-dim: rgba(251,191,36,0.12);
+            --accent-purple: #a78bfa;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+            --shadow-card: 0 2px 12px rgba(0,0,0,0.25), 0 0 0 1px var(--border-subtle);
+            --shadow-glow: 0 0 20px rgba(99,140,255,0.08);
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Subtle grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(99,140,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,140,255,0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app {
+            position: relative;
+            z-index: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+        }
+
+        /* ── Header ── */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .header-icon {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 16px rgba(99,140,255,0.2);
+        }
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-badge {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--accent-blue);
+            background: var(--accent-blue-glow);
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(99,140,255,0.15);
+        }
+
+        /* ── Layout Grid ── */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .card-body { padding: 16px 20px 20px; }
+
+        /* ── Left Panel ── */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ── Data Input ── */
+        .data-input-wrap {
+            position: relative;
+        }
+        textarea {
+            width: 100%;
+            height: 140px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            padding: 14px;
+            resize: vertical;
+            transition: border-color var(--transition), box-shadow var(--transition);
+            line-height: 1.7;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-glow);
+        }
+        textarea::placeholder {
+            color: var(--text-muted);
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 12px;
+        }
+        .data-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .data-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent-blue);
+            background: var(--accent-blue-glow);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: auto;
+            font-weight: 500;
+        }
+
+        /* Quick actions */
+        .quick-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .quick-btn {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .quick-btn:hover {
+            color: var(--text-primary);
+            background: rgba(99,140,255,0.08);
+            border-color: rgba(99,140,255,0.2);
+        }
+
+        /* ── Spec Section ── */
+        .spec-type-tabs {
+            display: flex;
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            padding: 3px;
+            gap: 2px;
+            margin-bottom: 14px;
+        }
+        .spec-tab {
+            flex: 1;
+            text-align: center;
+            padding: 7px 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all var(--transition);
+            border: none;
+            background: transparent;
+            white-space: nowrap;
+        }
+        .spec-tab:hover { color: var(--text-secondary); }
+        .spec-tab.active {
+            background: var(--accent-blue);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(99,140,255,0.3);
+        }
+
+        .spec-fields { display: flex; flex-direction: column; gap: 10px; }
+
+        .field-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .field-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            min-width: 50px;
+        }
+        .field-group input[type="number"] {
+            flex: 1;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            padding: 8px 12px;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        .field-group input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-glow);
+        }
+        .field-group input:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* ── Bin Settings ── */
+        .bin-settings {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .bin-mode-toggle {
+            display: flex;
+            background: var(--bg-input);
+            border-radius: 4px;
+            padding: 2px;
+            gap: 2px;
+        }
+        .bin-mode-btn {
+            font-size: 11px;
+            padding: 4px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all var(--transition);
+            font-weight: 500;
+        }
+        .bin-mode-btn.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* ── Primary Button ── */
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent-blue), #5a7ae6);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            letter-spacing: 0.02em;
+            box-shadow: 0 4px 16px rgba(99,140,255,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(99,140,255,0.35);
+        }
+        .btn-primary:active { transform: translateY(0); }
+
+        /* ── Right Panel ── */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ── Chart Tabs ── */
+        .chart-tabs {
+            display: flex;
+            gap: 2px;
+        }
+        .chart-tab {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+            padding: 6px 14px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition);
+        }
+        .chart-tab:hover { color: var(--text-secondary); }
+        .chart-tab.active {
+            color: var(--accent-blue);
+            background: var(--accent-blue-glow);
+        }
+
+        /* ── Chart Container ── */
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+        .chart-wrapper canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .chart-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            color: var(--text-muted);
+            gap: 12px;
+        }
+        .chart-placeholder-icon {
+            font-size: 48px;
+            opacity: 0.3;
+        }
+        .chart-placeholder-text {
+            font-size: 13px;
+        }
+
+        /* ── Export buttons ── */
+        .export-bar {
+            display: flex;
+            gap: 6px;
+            padding: 0 20px 16px;
+        }
+        .btn-export {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 5px 12px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-export:hover {
+            color: var(--text-primary);
+            border-color: rgba(99,140,255,0.2);
+        }
+
+        /* ── Stats Grid ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        .stat-card {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            border: 1px solid var(--border-subtle);
+            transition: all var(--transition);
+        }
+        .stat-card:hover {
+            border-color: rgba(99,140,255,0.15);
+            box-shadow: var(--shadow-glow);
+        }
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .stat-value.accent-green { color: var(--accent-green); }
+        .stat-value.accent-red { color: var(--accent-red); }
+        .stat-value.accent-amber { color: var(--accent-amber); }
+        .stat-value.accent-blue { color: var(--accent-blue); }
+
+        /* ── Cp/Cpk Badge ── */
+        .cpk-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        .cpk-good { background: var(--accent-green-dim); color: var(--accent-green); }
+        .cpk-warn { background: var(--accent-amber-dim); color: var(--accent-amber); }
+        .cpk-bad { background: var(--accent-red-dim); color: var(--accent-red); }
+
+        /* ── Frequency Table ── */
+        .freq-table-wrap {
+            max-height: 280px;
+            overflow-y: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+        .freq-table-wrap::-webkit-scrollbar { width: 6px; }
+        .freq-table-wrap::-webkit-scrollbar-track { background: transparent; }
+        .freq-table-wrap::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 3px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        th {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        td {
+            padding: 8px 14px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+        tr:hover td { background: rgba(99,140,255,0.03); }
+        .freq-bar-cell {
+            position: relative;
+            padding: 0;
+        }
+        .freq-bar-bg {
+            height: 34px;
+            background: linear-gradient(90deg, rgba(99,140,255,0.15), rgba(99,140,255,0.04));
+            border-radius: 0 4px 4px 0;
+            display: flex;
+            align-items: center;
+            padding-left: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            transition: width 0.4s ease;
+        }
+
+        /* ── Normal Curve Overlay info ── */
+        .overlay-info {
+            display: flex;
+            gap: 16px;
+            padding: 10px 16px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            margin-top: 12px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .overlay-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        /* ── Toast / Notification ── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 12px 20px;
+            font-size: 13px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            z-index: 100;
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 32px 0 0;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ── Animations ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in {
+            animation: fadeInUp 0.35s ease forwards;
+        }
+        .animate-delay-1 { animation-delay: 0.05s; opacity: 0; }
+        .animate-delay-2 { animation-delay: 0.10s; opacity: 0; }
+        .animate-delay-3 { animation-delay: 0.15s; opacity: 0; }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .app { padding: 16px 12px 48px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-wrapper { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon">📊</div>
+            <h1>ヒストグラム作成ツール</h1>
+            <span class="header-badge">v2.0</span>
+        </div>
+
+        <div class="main-grid">
+            <!-- ── Left Panel ── -->
+            <div class="left-panel">
+                <!-- Data Input -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">データ入力</span>
+                        <span class="data-count" id="dataCount">0 件</span>
+                    </div>
+                    <div class="card-body">
+                        <textarea id="dataInput" placeholder="数値データを入力&#10;スペース・カンマ・改行・タブで区切り&#10;&#10;例: 10.5 11.2 9.8 10.3 11.0"></textarea>
+                        <div class="quick-actions">
+                            <button class="quick-btn" onclick="loadSample()">サンプル</button>
+                            <button class="quick-btn" onclick="pasteClipboard()">📋 貼付</button>
+                            <button class="quick-btn" onclick="clearData()">✕ クリア</button>
+                            <button class="quick-btn" onclick="sortData()">↕ 並替</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spec Settings -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">規格値設定</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="spec-type-tabs">
+                            <button class="spec-tab active" data-spec="twoSided">両側規格</button>
+                            <button class="spec-tab" data-spec="oneSidedLower">下限のみ</button>
+                            <button class="spec-tab" data-spec="oneSidedUpper">上限のみ</button>
+                        </div>
+                        <div class="spec-fields">
+                            <div class="field-group" id="lowerSpecGroup">
+                                <label>下限 (LSL)</label>
+                                <input type="number" id="lowerSpec" step="any" placeholder="—">
+                            </div>
+                            <div class="field-group" id="upperSpecGroup">
+                                <label>上限 (USL)</label>
+                                <input type="number" id="upperSpec" step="any" placeholder="—">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bin Settings -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">区間設定</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="bin-settings">
+                            <div class="bin-mode-toggle">
+                                <button class="bin-mode-btn active" data-mode="auto">自動</button>
+                                <button class="bin-mode-btn" data-mode="sqrt">√n</button>
+                                <button class="bin-mode-btn" data-mode="sturges">Sturges</button>
+                                <button class="bin-mode-btn" data-mode="custom">手動</button>
+                            </div>
+                        </div>
+                        <div class="field-group" id="customBinGroup" style="margin-top:10px; display:none;">
+                            <label>区間数</label>
+                            <input type="number" id="customBinCount" min="2" max="100" value="10" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analyze Button -->
+                <button class="btn-primary" id="analyzeBtn" onclick="analyzeData()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="8" width="3" height="6" rx="0.5" fill="currentColor"/><rect x="5.5" y="5" width="3" height="9" rx="0.5" fill="currentColor"/><rect x="10" y="2" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
+                    分析実行
+                </button>
+            </div>
+
+            <!-- ── Right Panel ── -->
+            <div class="right-panel">
+                <!-- Chart -->
+                <div class="card" id="chartCard">
+                    <div class="card-header">
+                        <span class="card-title">グラフ</span>
+                        <div class="chart-tabs" id="chartTabs" style="display:none;">
+                            <button class="chart-tab active" data-chart="histogram">ヒストグラム</button>
+                            <button class="chart-tab" data-chart="line">分布曲線</button>
+                            <button class="chart-tab" data-chart="normal">正規分布重畳</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper" id="chartWrapper">
+                            <div class="chart-placeholder" id="chartPlaceholder">
+                                <div class="chart-placeholder-icon">📈</div>
+                                <div class="chart-placeholder-text">データを入力して「分析実行」を押してください</div>
+                            </div>
+                            <canvas id="chartCanvas" style="display:none;"></canvas>
+                        </div>
+                    </div>
+                    <div class="export-bar" id="exportBar" style="display:none;">
+                        <button class="btn-export" onclick="exportPNG()">📷 PNG保存</button>
+                        <button class="btn-export" onclick="exportCSV()">📄 CSV出力</button>
+                        <button class="btn-export" onclick="copyStats()">📋 統計量コピー</button>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="card" id="statsCard" style="display:none;">
+                    <div class="card-header">
+                        <span class="card-title">統計量</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-grid" id="statsGrid"></div>
+                    </div>
+                </div>
+
+                <!-- Frequency Table -->
+                <div class="card" id="freqCard" style="display:none;">
+                    <div class="card-header">
+                        <span class="card-title">度数分布表</span>
+                    </div>
+                    <div class="card-body" style="padding:0;">
+                        <div class="freq-table-wrap">
+                            <table id="freqTable">
+                                <thead><tr><th>区間</th><th>度数</th><th>相対度数</th><th>累積 %</th><th style="width:30%">分布</th></tr></thead>
+                                <tbody id="freqBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">&copy; 2025 Designed by Sai. All rights reserved.</div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+    // ── State ──
+    let dataChart = null;
+    let processedData = null;
+    let currentSpecType = 'twoSided';
+    let currentBinMode = 'auto';
+    let currentChartType = 'histogram';
+
+    // ── Init ──
+    document.addEventListener('DOMContentLoaded', () => {
+        // Spec type tabs
+        document.querySelectorAll('.spec-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.spec-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentSpecType = tab.dataset.spec;
+                updateSpecFields();
+            });
+        });
+
+        // Bin mode
+        document.querySelectorAll('.bin-mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.bin-mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentBinMode = btn.dataset.mode;
+                document.getElementById('customBinGroup').style.display = currentBinMode === 'custom' ? 'flex' : 'none';
+            });
+        });
+
+        // Chart tabs
+        document.querySelectorAll('.chart-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentChartType = tab.dataset.chart;
+                if (processedData) renderChart();
+            });
+        });
+
+        // Live data count
+        document.getElementById('dataInput').addEventListener('input', updateDataCount);
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') analyzeData();
+        });
+
+        updateSpecFields();
+    });
+
+    function updateDataCount() {
+        const raw = document.getElementById('dataInput').value.trim();
+        const count = raw ? raw.split(/[\s,\t\n]+/).filter(v => v && !isNaN(Number(v))).length : 0;
+        document.getElementById('dataCount').textContent = `${count} 件`;
+    }
+
+    function updateSpecFields() {
+        const lower = document.getElementById('lowerSpecGroup');
+        const upper = document.getElementById('upperSpecGroup');
+        const lowerIn = document.getElementById('lowerSpec');
+        const upperIn = document.getElementById('upperSpec');
+
+        lower.style.display = currentSpecType === 'oneSidedUpper' ? 'none' : 'flex';
+        upper.style.display = currentSpecType === 'oneSidedLower' ? 'none' : 'flex';
+        lowerIn.disabled = currentSpecType === 'oneSidedUpper';
+        upperIn.disabled = currentSpecType === 'oneSidedLower';
+    }
+
+    // ── Quick Actions ──
+    function loadSample() {
+        const samples = [
+            "10.02 10.05 9.98 10.01 10.03 9.99 10.04 10.00 9.97 10.06 10.01 9.98 10.03 10.02 9.99 10.05 10.00 9.96 10.04 10.01 9.98 10.03 10.07 10.00 9.99 10.02 10.01 9.97 10.04 10.03 10.00 9.98 10.05 10.02 9.99 10.01 10.06 10.00 9.97 10.03 10.02 10.04 9.98 10.01 10.00 9.99 10.05 10.03 9.96 10.02",
+        ];
+        document.getElementById('dataInput').value = samples[0];
+        document.getElementById('lowerSpec').value = '9.90';
+        document.getElementById('upperSpec').value = '10.10';
+        updateDataCount();
+        showToast('サンプルデータを読み込みました');
+    }
+
+    async function pasteClipboard() {
+        try {
+            const text = await navigator.clipboard.readText();
+            document.getElementById('dataInput').value = text;
+            updateDataCount();
+            showToast('クリップボードから貼り付けました');
+        } catch {
+            showToast('クリップボードへのアクセスが拒否されました');
+        }
+    }
+
+    function clearData() {
+        document.getElementById('dataInput').value = '';
+        updateDataCount();
+        showToast('データをクリアしました');
+    }
+
+    function sortData() {
+        const ta = document.getElementById('dataInput');
+        const arr = ta.value.trim().split(/[\s,\t\n]+/).map(Number).filter(v => !isNaN(v));
+        if (arr.length === 0) return;
+        arr.sort((a, b) => a - b);
+        ta.value = arr.join(' ');
+        showToast('データを昇順に並び替えました');
+    }
+
+    // ── Toast ──
+    function showToast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    // ── Measurement Unit ──
+    function measurementUnit(data) {
+        let maxDec = 0;
+        data.forEach(v => {
+            const d = v.toString().split('.')[1] || '';
+            maxDec = Math.max(maxDec, d.length);
+        });
+        return Math.pow(10, -maxDec);
+    }
+
+    // ── Bin Count ──
+    function calcBinCount(n) {
+        if (currentBinMode === 'custom') return parseInt(document.getElementById('customBinCount').value) || 10;
+        if (currentBinMode === 'sturges') return Math.ceil(Math.log2(n) + 1);
+        if (currentBinMode === 'sqrt') return Math.round(Math.sqrt(n)) + 1;
+        // auto: use Freedman-Diaconis or sqrt as fallback
+        return Math.round(Math.sqrt(n)) + 1;
+    }
+
+    // ── Normal PDF ──
+    function normalPDF(x, mean, std) {
+        return (1 / (std * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mean) / std, 2));
+    }
+
+    // ── Core Analysis ──
+    function analyzeData() {
+        const raw = document.getElementById('dataInput').value.trim();
+        if (!raw) { showToast('データを入力してください'); return; }
+
+        const data = raw.split(/[\s,\t\n]+/).map(Number).filter(v => !isNaN(v));
+        if (data.length < 2) { showToast('有効なデータが2つ以上必要です'); return; }
+
+        const specType = currentSpecType;
+        const lsl = parseFloat(document.getElementById('lowerSpec').value);
+        const usl = parseFloat(document.getElementById('upperSpec').value);
+
+        // Validation
+        if (specType === 'oneSidedLower' && isNaN(lsl)) { showToast('下限規格値を入力してください'); return; }
+        if (specType === 'oneSidedUpper' && isNaN(usl)) { showToast('上限規格値を入力してください'); return; }
+        if (specType === 'twoSided' && (isNaN(lsl) || isNaN(usl))) { showToast('上下限の規格値を入力してください'); return; }
+        if (specType === 'twoSided' && lsl >= usl) { showToast('上限は下限より大きくしてください'); return; }
+
+        // Stats
+        const n = data.length;
+        const sorted = [...data].sort((a, b) => a - b);
+        const min = sorted[0], max = sorted[n - 1];
+        const sum = data.reduce((a, b) => a + b, 0);
+        const mean = sum / n;
+        const variance = data.reduce((a, b) => a + (b - mean) ** 2, 0) / (n - 1);
+        const stdDev = Math.sqrt(variance);
+        const median = n % 2 ? sorted[Math.floor(n / 2)] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+        const range = max - min;
+
+        // Skewness & Kurtosis
+        const m3 = data.reduce((a, b) => a + ((b - mean) / stdDev) ** 3, 0) / n;
+        const m4 = data.reduce((a, b) => a + ((b - mean) / stdDev) ** 4, 0) / n - 3;
+
+        // Cp / Cpk
+        let cp = null, cpk = null;
+        if (specType === 'twoSided') {
+            cp = (usl - lsl) / (6 * stdDev);
+            cpk = Math.min((usl - mean) / (3 * stdDev), (mean - lsl) / (3 * stdDev));
+        } else if (specType === 'oneSidedLower') {
+            cpk = (mean - lsl) / (3 * stdDev); cp = cpk;
+        } else if (specType === 'oneSidedUpper') {
+            cpk = (usl - mean) / (3 * stdDev); cp = cpk;
+        }
+
+        // Histogram bins
+        const mu = measurementUnit(data);
+        const binCount = calcBinCount(n);
+        const binWidth_raw = (max - min) / (binCount - 1);
+        const binWidth = Math.ceil((Math.floor(1 / mu * 10 * binWidth_raw)) / 10) * mu;
+        const adjustedMin = min - mu / 2;
+
+        const binBounds = Array(binCount + 1).fill(0).map((_, i) => adjustedMin + i * binWidth);
+        const histData = Array(binCount).fill(0);
+        data.forEach(v => {
+            for (let i = 0; i < binCount; i++) {
+                if (v >= binBounds[i] && (v < binBounds[i + 1] || (i === binCount - 1 && v === binBounds[i + 1]))) {
+                    histData[i]++; break;
+                }
+            }
+        });
+
+        const binMids = binBounds.slice(0, -1).map((lo, i) => (lo + binBounds[i + 1]) / 2);
+        const binLabels = binBounds.slice(0, -1).map((lo, i) => {
+            const hi = binBounds[i + 1];
+            const dec = Math.max(2, -Math.floor(Math.log10(mu)) + 1);
+            return `${lo.toFixed(dec)} ~ ${hi.toFixed(dec)}`;
+        });
+
+        // Decimal places
+        const dataPrecision = Math.max(2, -Math.floor(Math.log10(mu)));
+
+        processedData = {
+            data, sorted, n, min, max, mean, stdDev, variance, median, range,
+            skewness: m3, kurtosis: m4,
+            cp, cpk, specType, lsl, usl,
+            binBounds, histData, binMids, binLabels, binWidth,
+            mu, dataPrecision
+        };
+
+        // Show UI
+        document.getElementById('chartTabs').style.display = 'flex';
+        document.getElementById('exportBar').style.display = 'flex';
+        document.getElementById('chartPlaceholder').style.display = 'none';
+        document.getElementById('chartCanvas').style.display = 'block';
+        document.getElementById('statsCard').style.display = 'block';
+        document.getElementById('freqCard').style.display = 'block';
+
+        // Add animations
+        document.getElementById('statsCard').classList.add('animate-in', 'animate-delay-1');
+        document.getElementById('freqCard').classList.add('animate-in', 'animate-delay-2');
+
+        renderChart();
+        renderStats();
+        renderFreqTable();
+        showToast(`${n} 件のデータを分析しました`);
+    }
+
+    // ── Render Chart ──
+    function renderChart() {
+        if (!processedData) return;
+        const d = processedData;
+        const ctx = document.getElementById('chartCanvas').getContext('2d');
+        if (dataChart) dataChart.destroy();
+
+        if (currentChartType === 'histogram') {
+            renderHistogram(ctx, d);
+        } else if (currentChartType === 'line') {
+            renderLineChart(ctx, d);
+        } else {
+            renderNormalOverlay(ctx, d);
+        }
+    }
+
+    function specAnnotationPlugin(d) {
+        return {
+            id: 'specLines',
+            afterDraw(chart) {
+                const { ctx, chartArea, scales: { x } } = chart;
+                if (!x) return;
+                ctx.save();
+
+                const drawLine = (val, label, color) => {
+                    const px = x.getPixelForValue(val);
+                    if (px < chartArea.left || px > chartArea.right) return;
+                    // Dashed line
+                    ctx.beginPath();
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([6, 4]);
+                    ctx.moveTo(px, chartArea.top);
+                    ctx.lineTo(px, chartArea.bottom);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    // Label
+                    ctx.fillStyle = color;
+                    ctx.font = '600 11px "Noto Sans JP"';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(label, px, chartArea.top - 6);
+                };
+
+                if ((d.specType === 'twoSided' || d.specType === 'oneSidedLower') && !isNaN(d.lsl))
+                    drawLine(d.lsl, `LSL ${d.lsl}`, '#f87171');
+                if ((d.specType === 'twoSided' || d.specType === 'oneSidedUpper') && !isNaN(d.usl))
+                    drawLine(d.usl, `USL ${d.usl}`, '#f87171');
+                // Mean line
+                drawLine(d.mean, `μ=${d.mean.toFixed(d.dataPrecision)}`, 'rgba(99,140,255,0.7)');
+
+                ctx.restore();
+            }
+        };
+    }
+
+    function getXRange(d) {
+        let lo = d.binBounds[0], hi = d.binBounds[d.binBounds.length - 1];
+        if (!isNaN(d.lsl) && d.lsl < lo) lo = d.lsl;
+        if (!isNaN(d.usl) && d.usl > hi) hi = d.usl;
+        const buf = (hi - lo) * 0.12;
+        return { min: lo - buf, max: hi + buf };
+    }
+
+    function chartOptions(d, titleText) {
+        const xr = getXRange(d);
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 600, easing: 'easeOutQuart' },
+            layout: { padding: { top: 24, right: 12 } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.04)' },
+                    ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 11 } },
+                    title: { display: true, text: '度数', color: 'rgba(255,255,255,0.4)', font: { size: 11 } }
+                },
+                x: {
+                    type: 'linear', min: xr.min, max: xr.max,
+                    grid: { color: 'rgba(255,255,255,0.04)' },
+                    ticks: {
+                        color: 'rgba(255,255,255,0.35)', font: { size: 11 },
+                        callback: v => v.toFixed(d.dataPrecision)
+                    },
+                    title: { display: true, text: '値', color: 'rgba(255,255,255,0.4)', font: { size: 11 } }
+                }
+            },
+            plugins: {
+                title: { display: false },
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(22,25,35,0.95)',
+                    titleColor: '#e8eaf0',
+                    bodyColor: '#8b90a0',
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    padding: 10,
+                    titleFont: { weight: '600', size: 12 },
+                    bodyFont: { size: 11 }
+                }
+            }
+        };
+    }
+
+    function renderHistogram(ctx, d) {
+        const barData = d.binMids.map((mid, i) => ({ x: mid, y: d.histData[i] }));
+        const opts = chartOptions(d);
+        opts.scales.x.type = 'linear';
+
+        dataChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    data: barData,
+                    backgroundColor: 'rgba(99,140,255,0.4)',
+                    borderColor: 'rgba(99,140,255,0.8)',
+                    borderWidth: 1,
+                    barPercentage: 1.0,
+                    categoryPercentage: 1.0,
+                    borderRadius: 2,
+                    maxBarThickness: 80
+                }]
+            },
+            options: opts,
+            plugins: [specAnnotationPlugin(d)]
+        });
+    }
+
+    function renderLineChart(ctx, d) {
+        const pts = d.binMids.map((mid, i) => ({ x: mid, y: d.histData[i] }));
+        const opts = chartOptions(d);
+
+        dataChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    data: pts,
+                    fill: true,
+                    backgroundColor: 'rgba(99,140,255,0.12)',
+                    borderColor: 'rgba(99,140,255,0.9)',
+                    borderWidth: 2.5,
+                    tension: 0.35,
+                    pointBackgroundColor: '#638cff',
+                    pointBorderColor: '#1e2230',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: opts,
+            plugins: [specAnnotationPlugin(d)]
+        });
+    }
+
+    function renderNormalOverlay(ctx, d) {
+        // Histogram as bars
+        const barData = d.binMids.map((mid, i) => ({ x: mid, y: d.histData[i] }));
+
+        // Normal curve points (scaled to match histogram)
+        const xr = getXRange(d);
+        const nPts = 80;
+        const step = (xr.max - xr.min) / nPts;
+        const totalArea = d.n * d.binWidth;
+        const normalPts = [];
+        for (let i = 0; i <= nPts; i++) {
+            const x = xr.min + i * step;
+            normalPts.push({ x, y: normalPDF(x, d.mean, d.stdDev) * totalArea });
+        }
+
+        const opts = chartOptions(d);
+        opts.scales.x.type = 'linear';
+
+        dataChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                datasets: [
+                    {
+                        type: 'bar',
+                        data: barData,
+                        backgroundColor: 'rgba(99,140,255,0.35)',
+                        borderColor: 'rgba(99,140,255,0.7)',
+                        borderWidth: 1,
+                        barPercentage: 1.0,
+                        categoryPercentage: 1.0,
+                        borderRadius: 2,
+                        maxBarThickness: 80,
+                        order: 2
+                    },
+                    {
+                        type: 'line',
+                        data: normalPts,
+                        borderColor: 'rgba(251,191,36,0.9)',
+                        borderWidth: 2.5,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: false,
+                        order: 1
+                    }
+                ]
+            },
+            options: opts,
+            plugins: [specAnnotationPlugin(d)]
+        });
+    }
+
+    // ── Render Stats ──
+    function renderStats() {
+        const d = processedData;
+        const p = d.dataPrecision;
+        const grid = document.getElementById('statsGrid');
+
+        const cpkClass = d.cpk === null ? '' : d.cpk >= 1.33 ? 'accent-green' : d.cpk >= 1.0 ? 'accent-amber' : 'accent-red';
+        const cpkBadge = d.cpk === null ? '' : d.cpk >= 1.33 ? '<span class="cpk-badge cpk-good">良好</span>' : d.cpk >= 1.0 ? '<span class="cpk-badge cpk-warn">注意</span>' : '<span class="cpk-badge cpk-bad">不足</span>';
+
+        const items = [
+            { label: 'データ数 (n)', value: d.n, cls: '' },
+            { label: '平均値 (x̄)', value: d.mean.toFixed(p + 1), cls: 'accent-blue' },
+            { label: '標準偏差 (s)', value: d.stdDev.toFixed(p + 2), cls: '' },
+            { label: '中央値', value: d.median.toFixed(p + 1), cls: '' },
+            { label: '最小値', value: d.min.toFixed(p), cls: '' },
+            { label: '最大値', value: d.max.toFixed(p), cls: '' },
+            { label: '範囲 (R)', value: d.range.toFixed(p), cls: '' },
+            { label: '歪度', value: d.skewness.toFixed(3), cls: '' },
+            { label: '尖度', value: d.kurtosis.toFixed(3), cls: '' },
+        ];
+
+        if (d.cp !== null) items.push({ label: 'Cp', value: d.cp.toFixed(3), cls: cpkClass });
+        if (d.cpk !== null) items.push({ label: 'Cpk', value: d.cpk.toFixed(3), cls: cpkClass, badge: cpkBadge });
+
+        grid.innerHTML = items.map(it => `
+            <div class="stat-card">
+                <div class="stat-label">${it.label}</div>
+                <div class="stat-value ${it.cls}">${it.value}${it.badge || ''}</div>
+            </div>
+        `).join('');
+    }
+
+    // ── Render Frequency Table ──
+    function renderFreqTable() {
+        const d = processedData;
+        const body = document.getElementById('freqBody');
+        const maxFreq = Math.max(...d.histData);
+        let cumPct = 0;
+
+        body.innerHTML = d.binLabels.map((label, i) => {
+            const freq = d.histData[i];
+            const relFreq = (freq / d.n * 100).toFixed(1);
+            cumPct += freq / d.n * 100;
+            const barW = maxFreq > 0 ? (freq / maxFreq * 100) : 0;
+            return `<tr>
+                <td>${label}</td>
+                <td>${freq}</td>
+                <td>${relFreq}%</td>
+                <td>${cumPct.toFixed(1)}%</td>
+                <td class="freq-bar-cell"><div class="freq-bar-bg" style="width:${barW}%">${freq > 0 ? freq : ''}</div></td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ── Export ──
+    function exportPNG() {
+        const canvas = document.getElementById('chartCanvas');
+        // Create temp canvas with white background for better export
+        const tmpCanvas = document.createElement('canvas');
+        tmpCanvas.width = canvas.width * 2;
+        tmpCanvas.height = canvas.height * 2;
+        const tmpCtx = tmpCanvas.getContext('2d');
+        tmpCtx.fillStyle = '#1e2230';
+        tmpCtx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+        tmpCtx.drawImage(canvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
+
+        const link = document.createElement('a');
+        link.download = `histogram_${new Date().toISOString().slice(0,10)}.png`;
+        link.href = tmpCanvas.toDataURL('image/png');
+        link.click();
+        showToast('PNG画像を保存しました');
+    }
+
+    function exportCSV() {
+        if (!processedData) return;
+        const d = processedData;
+        let csv = '\uFEFF区間,度数,相対度数(%),累積度数(%)\n';
+        let cum = 0;
+        d.binLabels.forEach((label, i) => {
+            const freq = d.histData[i];
+            const rel = (freq / d.n * 100).toFixed(2);
+            cum += freq / d.n * 100;
+            csv += `"${label}",${freq},${rel},${cum.toFixed(2)}\n`;
+        });
+        csv += `\n統計量\nデータ数,${d.n}\n平均値,${d.mean}\n標準偏差,${d.stdDev}\n`;
+        if (d.cp !== null) csv += `Cp,${d.cp.toFixed(3)}\n`;
+        if (d.cpk !== null) csv += `Cpk,${d.cpk.toFixed(3)}\n`;
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const link = document.createElement('a');
+        link.download = `histogram_${new Date().toISOString().slice(0,10)}.csv`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        showToast('CSVファイルを出力しました');
+    }
+
+    function copyStats() {
+        if (!processedData) return;
+        const d = processedData;
+        const p = d.dataPrecision;
+        let text = `データ数: ${d.n}\n平均値: ${d.mean.toFixed(p+1)}\n標準偏差: ${d.stdDev.toFixed(p+2)}\n中央値: ${d.median.toFixed(p+1)}\n最小値: ${d.min.toFixed(p)}\n最大値: ${d.max.toFixed(p)}\n範囲: ${d.range.toFixed(p)}\n歪度: ${d.skewness.toFixed(3)}\n尖度: ${d.kurtosis.toFixed(3)}`;
+        if (d.cp !== null) text += `\nCp: ${d.cp.toFixed(3)}`;
+        if (d.cpk !== null) text += `\nCpk: ${d.cpk.toFixed(3)}`;
+        navigator.clipboard.writeText(text).then(() => showToast('統計量をコピーしました'));
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>散布図・回帰分析ツール</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #232733;
+  --border: #2e3344;
+  --text: #e4e6ef;
+  --text2: #9498ab;
+  --accent: #6c8cff;
+  --accent2: #4ecdc4;
+  --accent-glow: rgba(108,140,255,0.15);
+  --warn: #ff6b8a;
+  --success: #4ecdc4;
+  --orange: #ffb347;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+.app-header {
+  background: linear-gradient(135deg, #1a1d27 0%, #232733 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-header .logo {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700; color: #fff;
+}
+
+.app-header h1 {
+  font-size: 20px; font-weight: 600;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.app-header .subtitle {
+  font-size: 12px; color: var(--text2); font-weight: 300;
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .container { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.panel-header .icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+
+.panel-body { padding: 20px; }
+
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-desc {
+  font-size: 11px;
+  color: var(--text2);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+textarea {
+  width: 100%;
+  min-height: 140px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 12px;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+textarea::placeholder { color: #555; }
+
+select, input[type="number"] {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 13px;
+  transition: border-color 0.2s;
+}
+
+select:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.row > * { flex: 1; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Noto Sans JP', sans-serif;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #5a7aee);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(108,140,255,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(108,140,255,0.4);
+}
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover { background: var(--border); }
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+.btn-block { width: 100%; }
+
+.btn-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text2);
+  transition: all 0.2s;
+}
+
+.chip.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.chip:hover:not(.active) {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.toggle-row label {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.switch {
+  position: relative;
+  width: 42px; height: 22px;
+  cursor: pointer;
+}
+
+.switch input { display: none; }
+
+.switch .slider {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--border);
+  border-radius: 11px;
+  transition: 0.3s;
+}
+
+.switch .slider::before {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  left: 3px; bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.switch input:checked + .slider {
+  background: var(--accent);
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.stat-card .stat-label {
+  font-size: 10px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-card .stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.stat-card .stat-value.good { color: var(--success); }
+.stat-card .stat-value.warn { color: var(--orange); }
+.stat-card .stat-value.bad { color: var(--warn); }
+
+.stat-card-wide {
+  grid-column: 1 / -1;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.results-table th, .results-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.results-table th {
+  color: var(--text2);
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.results-table td {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.chart-container {
+  min-height: 500px;
+  position: relative;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--text2);
+  text-align: center;
+  padding: 40px;
+}
+
+.empty-state .big-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+
+.empty-state h3 {
+  font-size: 16px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 13px;
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.badge-blue { background: rgba(108,140,255,0.15); color: var(--accent); }
+.badge-green { background: rgba(78,205,196,0.15); color: var(--accent2); }
+.badge-red { background: rgba(255,107,138,0.15); color: var(--warn); }
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 1000;
+  animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
+  pointer-events: none;
+}
+
+.notification.success {
+  background: rgba(78,205,196,0.15);
+  border: 1px solid var(--accent2);
+  color: var(--accent2);
+}
+
+.notification.error {
+  background: rgba(255,107,138,0.15);
+  border: 1px solid var(--warn);
+  color: var(--warn);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+
+.right-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.help-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text2);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: help;
+  position: relative;
+}
+
+.help-tip:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 400;
+  white-space: nowrap;
+  z-index: 100;
+  color: var(--text);
+  max-width: 280px;
+  white-space: normal;
+}
+
+.sample-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.correlation-interpretation {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--bg);
+  border-left: 3px solid var(--accent);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text2);
+  margin-top: 10px;
+}
+
+.polynomial-info {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 6px;
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="logo">📊</div>
+  <div>
+    <h1>散布図・回帰分析ツール</h1>
+    <div class="subtitle">Scatter Plot & Regression Analysis</div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- LEFT PANEL -->
+  <div style="display:flex;flex-direction:column;gap:20px;">
+    <!-- DATA INPUT -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="icon" style="background:rgba(108,140,255,0.15);color:var(--accent);">📋</div>
+        データ入力
+      </div>
+      <div class="panel-body">
+        <div class="section">
+          <div class="section-title">
+            <span class="step-badge">1</span>
+            サンプルデータまたは自分のデータを貼付
+          </div>
+          <div class="section-desc">
+            TSV/CSV形式（Excel等からコピペ可）。1行目はヘッダー。<br>
+            カテゴリ列がある場合は3列目に配置してください。
+          </div>
+          <div class="sample-buttons">
+            <button class="btn btn-secondary btn-sm" onclick="loadSample('basic')">基本サンプル</button>
+            <button class="btn btn-secondary btn-sm" onclick="loadSample('category')">カテゴリ付き</button>
+            <button class="btn btn-secondary btn-sm" onclick="loadSample('nonlinear')">非線形</button>
+          </div>
+          <textarea id="dataInput" placeholder="X&#9;Y&#9;Group&#10;1.2&#9;3.4&#9;A&#10;2.3&#9;5.6&#9;B&#10;...&#10;&#10;ここにデータを貼り付けてください&#10;（タブ区切り or カンマ区切り）"></textarea>
+        </div>
+
+        <button class="btn btn-primary btn-block" onclick="analyzeData()">
+          ▶ 解析を実行
+        </button>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="panel" id="settingsPanel" style="display:none;">
+      <div class="panel-header">
+        <div class="icon" style="background:rgba(78,205,196,0.15);color:var(--accent2);">⚙️</div>
+        解析設定
+      </div>
+      <div class="panel-body">
+        <div class="section">
+          <div class="section-title">
+            <span class="step-badge">2</span>
+            変数の選択
+          </div>
+          <div class="row" style="margin-bottom:12px;">
+            <div>
+              <label>X軸（説明変数）</label>
+              <select id="xCol" onchange="updateChart()"></select>
+            </div>
+            <div>
+              <label>Y軸（目的変数）</label>
+              <select id="yCol" onchange="updateChart()"></select>
+            </div>
+          </div>
+          <div id="catColWrapper" style="display:none;">
+            <label>カテゴリ列（色分け用 / 任意）</label>
+            <select id="catCol" onchange="updateChart()">
+              <option value="">なし</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+          <div class="section-title">
+            <span class="step-badge">⇄</span>
+            軸の対数変換
+            <span class="help-tip" data-tip="対数変換すると、べき乗関係や指数関係のデータを線形化でき、回帰精度が向上する場合があります。0以下の値は除外されます。">?</span>
+          </div>
+          <div class="section-desc">
+            データの分布が偏っている場合やべき乗関係（y∝x^n）が疑われる場合に有効です。
+          </div>
+          <div style="display:flex;gap:16px;">
+            <div style="flex:1;">
+              <div class="toggle-row">
+                <label>X軸: log変換</label>
+                <label class="switch">
+                  <input type="checkbox" id="logX" onchange="onLogChange()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="btn-group" id="logXTypeGroup" style="margin-top:6px;display:none;">
+                <span class="chip active" data-value="ln" onclick="selectLogType('X',this)">ln</span>
+                <span class="chip" data-value="log10" onclick="selectLogType('X',this)">log₁₀</span>
+                <span class="chip" data-value="log2" onclick="selectLogType('X',this)">log₂</span>
+              </div>
+            </div>
+            <div style="flex:1;">
+              <div class="toggle-row">
+                <label>Y軸: log変換</label>
+                <label class="switch">
+                  <input type="checkbox" id="logY" onchange="onLogChange()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="btn-group" id="logYTypeGroup" style="margin-top:6px;display:none;">
+                <span class="chip active" data-value="ln" onclick="selectLogType('Y',this)">ln</span>
+                <span class="chip" data-value="log10" onclick="selectLogType('Y',this)">log₁₀</span>
+                <span class="chip" data-value="log2" onclick="selectLogType('Y',this)">log₂</span>
+              </div>
+            </div>
+          </div>
+          <div id="logTransformInfo" class="polynomial-info" style="margin-top:8px;display:none;"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+          <div class="section-title">
+            <span class="step-badge">3</span>
+            回帰モデル
+          </div>
+          <div class="btn-group" id="modelType" style="margin-bottom: 12px;">
+            <span class="chip active" data-value="linear" onclick="selectModel(this)">線形 (1次)</span>
+            <span class="chip" data-value="poly2" onclick="selectModel(this)">2次多項式</span>
+            <span class="chip" data-value="poly3" onclick="selectModel(this)">3次多項式</span>
+            <span class="chip" data-value="poly4" onclick="selectModel(this)">4次多項式</span>
+          </div>
+          <div class="polynomial-info" id="polyInfo">
+            線形回帰: y = a + bx
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+          <div class="section-title">
+            <span class="step-badge">4</span>
+            予測区間
+            <span class="help-tip" data-tip="回帰線の周囲に、新しい観測値がこの確率で含まれる範囲を表示します">?</span>
+          </div>
+          <div class="btn-group" id="intervalGroup">
+            <span class="chip active" data-value="none" onclick="selectInterval(this)">なし</span>
+            <span class="chip" data-value="0.95" onclick="selectInterval(this)">95%</span>
+            <span class="chip" data-value="0.9973" onclick="selectInterval(this)">99.73%</span>
+            <span class="chip" data-value="0.9999" onclick="selectInterval(this)">99.99%</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+          <div class="toggle-row">
+            <label>回帰線を表示</label>
+            <label class="switch">
+              <input type="checkbox" id="showRegLine" checked onchange="updateChart()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <label>残差プロットを表示</label>
+            <label class="switch">
+              <input type="checkbox" id="showResiduals" onchange="updateChart()">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANELS -->
+  <div class="right-panels">
+    <!-- CHART -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="icon" style="background:rgba(108,140,255,0.15);color:var(--accent);">📈</div>
+        散布図 & 回帰分析
+        <span id="dataCountBadge" class="badge badge-blue" style="margin-left:auto;display:none;">N=0</span>
+      </div>
+      <div class="panel-body">
+        <div id="chartArea">
+          <div class="empty-state">
+            <div class="big-icon">📊</div>
+            <h3>データを入力して解析を開始</h3>
+            <p>左のパネルにデータを貼り付け（またはサンプルを選択）し、「解析を実行」ボタンを押してください。</p>
+          </div>
+        </div>
+        <div id="residualArea" style="display:none; margin-top:16px;"></div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="panel" id="resultsPanel" style="display:none;">
+      <div class="panel-header">
+        <div class="icon" style="background:rgba(255,179,71,0.15);color:var(--orange);">📊</div>
+        統計結果
+      </div>
+      <div class="panel-body fade-in">
+        <div class="stat-grid" id="statGrid"></div>
+        <div id="interpretationBox" class="correlation-interpretation" style="display:none;"></div>
+        <div style="margin-top:16px;">
+          <div class="section-title">回帰係数</div>
+          <table class="results-table" id="coeffTable">
+            <thead><tr><th>項目</th><th>係数</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div style="margin-top:16px;" id="equationBox">
+          <div class="section-title">回帰式</div>
+          <div style="background:var(--bg);padding:12px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;word-break:break-all;" id="equationText"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== GLOBALS =====
+let parsedData = null;       // { headers:[], rows:[][] }
+let numericCols = [];
+let categoryCols = [];
+let currentModel = 'linear';
+let currentInterval = 'none';
+let logXType = 'ln';   // 'ln', 'log10', 'log2'
+let logYType = 'ln';
+
+// ===== LOG TRANSFORM HELPERS =====
+function applyLog(val, type) {
+  if (val <= 0) return NaN;
+  if (type === 'log10') return Math.log10(val);
+  if (type === 'log2') return Math.log2(val);
+  return Math.log(val); // ln
+}
+
+function applyExp(val, type) {
+  if (type === 'log10') return Math.pow(10, val);
+  if (type === 'log2') return Math.pow(2, val);
+  return Math.exp(val); // ln
+}
+
+function logLabel(type) {
+  if (type === 'log10') return 'log₁₀';
+  if (type === 'log2') return 'log₂';
+  return 'ln';
+}
+
+function onLogChange() {
+  const lx = document.getElementById('logX').checked;
+  const ly = document.getElementById('logY').checked;
+  document.getElementById('logXTypeGroup').style.display = lx ? 'flex' : 'none';
+  document.getElementById('logYTypeGroup').style.display = ly ? 'flex' : 'none';
+  
+  // Update info text
+  const info = document.getElementById('logTransformInfo');
+  if (lx || ly) {
+    info.style.display = '';
+    let txt = '変換: ';
+    if (lx && ly) txt += `${logLabel(logXType)}(X) vs ${logLabel(logYType)}(Y) — べき乗関係の検出に最適`;
+    else if (lx) txt += `${logLabel(logXType)}(X) vs Y — 対数関係の検出`;
+    else txt += `X vs ${logLabel(logYType)}(Y) — 指数関係の検出`;
+    info.textContent = txt;
+  } else {
+    info.style.display = 'none';
+  }
+  updateChart();
+}
+
+function selectLogType(axis, el) {
+  const groupId = axis === 'X' ? 'logXTypeGroup' : 'logYTypeGroup';
+  document.querySelectorAll(`#${groupId} .chip`).forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  if (axis === 'X') logXType = el.dataset.value;
+  else logYType = el.dataset.value;
+  onLogChange();
+}
+
+// ===== SAMPLE DATA =====
+const SAMPLES = {
+  basic: `温度\t収率
+150\t62.3
+160\t65.1
+170\t69.8
+180\t73.2
+190\t77.5
+200\t80.1
+210\t83.7
+220\t86.4
+230\t89.2
+240\t91.8
+155\t63.5
+165\t67.2
+175\t71.5
+185\t75.8
+195\t78.9
+205\t82.3
+215\t85.1
+225\t87.9
+235\t90.5
+245\t93.1`,
+  category: `圧力\t強度\t材料
+10\t245\tA
+20\t268\tA
+30\t289\tA
+40\t312\tA
+50\t330\tA
+60\t348\tA
+10\t220\tB
+20\t241\tB
+30\t260\tB
+40\t278\tB
+50\t295\tB
+60\t310\tB
+10\t260\tC
+20\t285\tC
+30\t310\tC
+40\t338\tC
+50\t362\tC
+60\t385\tC`,
+  nonlinear: `速度\tエネルギー
+1\t2.1
+2\t8.5
+3\t18.2
+4\t33.0
+5\t51.8
+6\t74.3
+7\t100.5
+8\t130.2
+9\t164.1
+10\t202.0
+1.5\t4.8
+2.5\t13.0
+3.5\t25.2
+4.5\t42.0
+5.5\t62.5
+6.5\t86.8
+7.5\t114.9
+8.5\t146.5
+9.5\t182.0
+10.5\t224.5`
+};
+
+function loadSample(name) {
+  document.getElementById('dataInput').value = SAMPLES[name];
+  notify('サンプルデータを読み込みました', 'success');
+}
+
+// ===== NOTIFICATION =====
+function notify(msg, type='success') {
+  const el = document.createElement('div');
+  el.className = `notification ${type}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ===== DATA PARSING =====
+function parseData(raw) {
+  raw = raw.trim();
+  if (!raw) return null;
+  
+  // Detect delimiter
+  const firstLine = raw.split('\n')[0];
+  const delimiter = firstLine.includes('\t') ? '\t' : ',';
+  
+  const lines = raw.split('\n').map(l => l.trim()).filter(l => l);
+  const headers = lines[0].split(delimiter).map(h => h.trim());
+  const rows = [];
+  
+  for (let i = 1; i < lines.length; i++) {
+    const cells = lines[i].split(delimiter).map(c => c.trim());
+    if (cells.length >= 2) rows.push(cells);
+  }
+  
+  if (rows.length < 3) return null;
+  
+  // Detect column types
+  numericCols = [];
+  categoryCols = [];
+  
+  headers.forEach((h, idx) => {
+    const vals = rows.map(r => r[idx]).filter(v => v !== '' && v !== undefined);
+    const numCount = vals.filter(v => !isNaN(parseFloat(v))).length;
+    if (numCount / vals.length > 0.8) {
+      numericCols.push(idx);
+    } else {
+      categoryCols.push(idx);
+    }
+  });
+  
+  return { headers, rows };
+}
+
+// ===== ANALYZE =====
+function analyzeData() {
+  const raw = document.getElementById('dataInput').value;
+  parsedData = parseData(raw);
+  
+  if (!parsedData || numericCols.length < 2) {
+    notify('データを正しく読み込めませんでした。数値列が2つ以上必要です。', 'error');
+    return;
+  }
+  
+  // Populate selects
+  const xSel = document.getElementById('xCol');
+  const ySel = document.getElementById('yCol');
+  const catSel = document.getElementById('catCol');
+  
+  xSel.innerHTML = '';
+  ySel.innerHTML = '';
+  catSel.innerHTML = '<option value="">なし</option>';
+  
+  numericCols.forEach(idx => {
+    xSel.innerHTML += `<option value="${idx}">${parsedData.headers[idx]}</option>`;
+    ySel.innerHTML += `<option value="${idx}">${parsedData.headers[idx]}</option>`;
+  });
+  
+  if (numericCols.length >= 2) ySel.value = numericCols[1];
+  
+  categoryCols.forEach(idx => {
+    catSel.innerHTML += `<option value="${idx}">${parsedData.headers[idx]}</option>`;
+  });
+  
+  // Auto-select category if exists
+  if (categoryCols.length > 0) {
+    catSel.value = categoryCols[0];
+    document.getElementById('catColWrapper').style.display = 'block';
+  } else {
+    document.getElementById('catColWrapper').style.display = 'none';
+  }
+  
+  document.getElementById('settingsPanel').style.display = '';
+  document.getElementById('resultsPanel').style.display = '';
+  
+  updateChart();
+  notify(`${parsedData.rows.length}行のデータを読み込みました`, 'success');
+}
+
+function selectModel(el) {
+  document.querySelectorAll('#modelType .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentModel = el.dataset.value;
+  
+  const labels = { linear:'線形回帰: y = a + bx', poly2:'2次多項式: y = a + bx + cx²', poly3:'3次多項式: y = a + bx + cx² + dx³', poly4:'4次多項式: y = a + bx + cx² + dx³ + ex⁴' };
+  document.getElementById('polyInfo').textContent = labels[currentModel];
+  updateChart();
+}
+
+function selectInterval(el) {
+  document.querySelectorAll('#intervalGroup .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentInterval = el.dataset.value;
+  updateChart();
+}
+
+// ===== REGRESSION =====
+function polyDegree() {
+  return { linear:1, poly2:2, poly3:3, poly4:4 }[currentModel] || 1;
+}
+
+function polyFit(xArr, yArr, degree) {
+  const n = xArr.length;
+  const size = degree + 1;
+  
+  // Build normal equations: (X^T X) β = X^T y
+  const XTX = Array.from({length:size}, () => new Array(size).fill(0));
+  const XTy = new Array(size).fill(0);
+  
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < size; j++) {
+      for (let k = 0; k < size; k++) {
+        XTX[j][k] += Math.pow(xArr[i], j + k);
+      }
+      XTy[j] += yArr[i] * Math.pow(xArr[i], j);
+    }
+  }
+  
+  // Gauss elimination
+  const A = XTX.map((row, i) => [...row, XTy[i]]);
+  for (let i = 0; i < size; i++) {
+    let maxRow = i;
+    for (let k = i+1; k < size; k++) {
+      if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) maxRow = k;
+    }
+    [A[i], A[maxRow]] = [A[maxRow], A[i]];
+    
+    if (Math.abs(A[i][i]) < 1e-12) continue;
+    
+    for (let k = i+1; k < size; k++) {
+      const c = A[k][i] / A[i][i];
+      for (let j = i; j <= size; j++) A[k][j] -= c * A[i][j];
+    }
+  }
+  
+  const coeffs = new Array(size).fill(0);
+  for (let i = size - 1; i >= 0; i--) {
+    coeffs[i] = A[i][size];
+    for (let j = i+1; j < size; j++) coeffs[i] -= A[i][j] * coeffs[j];
+    coeffs[i] /= A[i][i];
+  }
+  
+  return coeffs; // [a0, a1, a2, ...] where y = a0 + a1*x + a2*x^2 + ...
+}
+
+function polyPredict(coeffs, x) {
+  let y = 0;
+  for (let i = 0; i < coeffs.length; i++) y += coeffs[i] * Math.pow(x, i);
+  return y;
+}
+
+function computeR2(yArr, yPred) {
+  const yMean = yArr.reduce((s,v)=>s+v,0) / yArr.length;
+  const ssTot = yArr.reduce((s,v)=>s+(v-yMean)**2, 0);
+  const ssRes = yArr.reduce((s,v,i)=>s+(v-yPred[i])**2, 0);
+  return 1 - ssRes / ssTot;
+}
+
+function computeAdjR2(r2, n, p) {
+  if (n - p - 1 <= 0) return r2;
+  return 1 - (1 - r2) * (n - 1) / (n - p - 1);
+}
+
+function pearsonR(xArr, yArr) {
+  const n = xArr.length;
+  const mx = xArr.reduce((s,v)=>s+v,0)/n;
+  const my = yArr.reduce((s,v)=>s+v,0)/n;
+  let num = 0, dx = 0, dy = 0;
+  for (let i = 0; i < n; i++) {
+    num += (xArr[i]-mx)*(yArr[i]-my);
+    dx += (xArr[i]-mx)**2;
+    dy += (yArr[i]-my)**2;
+  }
+  return num / Math.sqrt(dx*dy);
+}
+
+// ===== ROBUST t-distribution inverse CDF via beta function + bisection =====
+
+// Log-gamma using Lanczos approximation
+function lnGamma(z) {
+  const g = 7;
+  const coef = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+    771.32342877765313, -176.61502916214059, 12.507343278686905,
+    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  if (z < 0.5) {
+    return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
+  }
+  z -= 1;
+  let x = coef[0];
+  for (let i = 1; i < g + 2; i++) x += coef[i] / (z + i);
+  const t = z + g + 0.5;
+  return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+}
+
+// Regularized incomplete beta function I_x(a, b) using continued fraction
+function betaIncomplete(x, a, b) {
+  if (x <= 0) return 0;
+  if (x >= 1) return 1;
+  // Use symmetry: if x > (a+1)/(a+b+2), compute 1 - I_{1-x}(b,a)
+  if (x > (a + 1) / (a + b + 2)) {
+    return 1 - betaIncomplete(1 - x, b, a);
+  }
+  const lnBeta = lnGamma(a) + lnGamma(b) - lnGamma(a + b);
+  const front = Math.exp(Math.log(x) * a + Math.log(1 - x) * b - lnBeta) / a;
+  // Lentz continued fraction
+  let f = 1, c = 1, d = 1 - (a + b) * x / (a + 1);
+  if (Math.abs(d) < 1e-30) d = 1e-30;
+  d = 1 / d; f = d;
+  for (let m = 1; m <= 200; m++) {
+    // even step: d_{2m}
+    let num = m * (b - m) * x / ((a + 2*m - 1) * (a + 2*m));
+    d = 1 + num * d; if (Math.abs(d) < 1e-30) d = 1e-30; d = 1 / d;
+    c = 1 + num / c; if (Math.abs(c) < 1e-30) c = 1e-30;
+    f *= d * c;
+    // odd step: d_{2m+1}
+    num = -(a + m) * (a + b + m) * x / ((a + 2*m) * (a + 2*m + 1));
+    d = 1 + num * d; if (Math.abs(d) < 1e-30) d = 1e-30; d = 1 / d;
+    c = 1 + num / c; if (Math.abs(c) < 1e-30) c = 1e-30;
+    const delta = d * c;
+    f *= delta;
+    if (Math.abs(delta - 1) < 1e-12) break;
+  }
+  return front * f;
+}
+
+// t-distribution CDF
+function tCDF(t, df) {
+  const x = df / (df + t * t);
+  const ib = betaIncomplete(x, df / 2, 0.5);
+  return t >= 0 ? 1 - 0.5 * ib : 0.5 * ib;
+}
+
+// t-distribution inverse CDF (quantile) via bisection – always reliable
+// p is the cumulative probability, e.g. 0.975 for two-sided 95%
+function tInv(p, df) {
+  if (p <= 0 || p >= 1 || df <= 0) return NaN;
+  // Bisection on a wide range
+  let lo = -1000, hi = 1000;
+  for (let i = 0; i < 100; i++) {
+    const mid = (lo + hi) / 2;
+    if (tCDF(mid, df) < p) lo = mid; else hi = mid;
+    if (hi - lo < 1e-10) break;
+  }
+  return (lo + hi) / 2;
+}
+
+// ===== PREDICTION INTERVAL =====
+function computePredictionInterval(xArr, yArr, coeffs, degree, confidence) {
+  const n = xArr.length;
+  const p = degree + 1; // number of parameters
+  const yPred = xArr.map(x => polyPredict(coeffs, x));
+  const residuals = yArr.map((y,i) => y - yPred[i]);
+  const sse = residuals.reduce((s,r) => s + r*r, 0);
+  const dfResid = n - p;
+  if (dfResid <= 0) return null;
+  const s = Math.sqrt(sse / dfResid); // residual standard error
+  
+  const alpha = 1 - confidence;
+  const tVal = tInv(1 - alpha/2, dfResid);
+  
+  const xMin = Math.min(...xArr);
+  const xMax = Math.max(...xArr);
+  const xLine = [];
+  const nPts = 80;
+  for (let i = 0; i <= nPts; i++) xLine.push(xMin + (xMax - xMin) * i / nPts);
+  
+  // Build design matrix row for a given x: [1, x, x^2, ..., x^d]
+  const buildXRow = (x) => {
+    const row = [];
+    for (let j = 0; j <= degree; j++) row.push(Math.pow(x, j));
+    return row;
+  };
+  
+  // Compute (X^T X)
+  const XTX = Array.from({length: p}, () => new Array(p).fill(0));
+  for (let i = 0; i < n; i++) {
+    const xi = buildXRow(xArr[i]);
+    for (let j = 0; j < p; j++)
+      for (let k = 0; k < p; k++)
+        XTX[j][k] += xi[j] * xi[k];
+  }
+  
+  // Invert XTX using Gauss-Jordan elimination
+  const aug = XTX.map((row, i) => {
+    const r = [...row];
+    for (let j = 0; j < p; j++) r.push(i === j ? 1 : 0);
+    return r;
+  });
+  
+  for (let i = 0; i < p; i++) {
+    let maxRow = i;
+    for (let k = i+1; k < p; k++)
+      if (Math.abs(aug[k][i]) > Math.abs(aug[maxRow][i])) maxRow = k;
+    [aug[i], aug[maxRow]] = [aug[maxRow], aug[i]];
+    
+    const pivot = aug[i][i];
+    if (Math.abs(pivot) < 1e-30) continue;
+    for (let j = 0; j < 2*p; j++) aug[i][j] /= pivot;
+    for (let k = 0; k < p; k++) {
+      if (k === i) continue;
+      const factor = aug[k][i];
+      for (let j = 0; j < 2*p; j++) aug[k][j] -= factor * aug[i][j];
+    }
+  }
+  
+  const XTXinv = aug.map(row => row.slice(p));
+  
+  const lower = [], upper = [];
+  xLine.forEach(x => {
+    const xRow = buildXRow(x);
+    // Leverage: h = x0^T (X^T X)^-1 x0
+    let h = 0;
+    for (let j = 0; j < p; j++)
+      for (let k = 0; k < p; k++)
+        h += xRow[j] * XTXinv[j][k] * xRow[k];
+    
+    // Clamp h to valid range for safety
+    if (h < 0) h = 0;
+    
+    const yHat = polyPredict(coeffs, x);
+    // Prediction interval SE = s * sqrt(1 + h)
+    const se = s * Math.sqrt(1 + h);
+    lower.push(yHat - tVal * se);
+    upper.push(yHat + tVal * se);
+  });
+  
+  return { xLine, lower, upper };
+}
+
+// ===== UPDATE CHART =====
+function updateChart() {
+  if (!parsedData) return;
+  
+  const xIdx = parseInt(document.getElementById('xCol').value);
+  const yIdx = parseInt(document.getElementById('yCol').value);
+  const catVal = document.getElementById('catCol').value;
+  const catIdx = catVal !== '' ? parseInt(catVal) : -1;
+  const degree = polyDegree();
+  const showReg = document.getElementById('showRegLine').checked;
+  const showRes = document.getElementById('showResiduals').checked;
+  const confidence = currentInterval !== 'none' ? parseFloat(currentInterval) : 0;
+  
+  const useLogX = document.getElementById('logX').checked;
+  const useLogY = document.getElementById('logY').checked;
+  
+  // Extract data (apply log transforms)
+  const allX = [], allY = [], allCat = [];
+  // Also keep raw values for display on original scale
+  const rawX = [], rawY = [];
+  let skippedLog = 0;
+  parsedData.rows.forEach(row => {
+    const xRaw = parseFloat(row[xIdx]);
+    const yRaw = parseFloat(row[yIdx]);
+    if (isNaN(xRaw) || isNaN(yRaw)) return;
+    
+    const x = useLogX ? applyLog(xRaw, logXType) : xRaw;
+    const y = useLogY ? applyLog(yRaw, logYType) : yRaw;
+    
+    if (isNaN(x) || isNaN(y)) { skippedLog++; return; }
+    
+    allX.push(x);
+    allY.push(y);
+    rawX.push(xRaw);
+    rawY.push(yRaw);
+    allCat.push(catIdx >= 0 ? (row[catIdx] || '') : '');
+  });
+  
+  if (skippedLog > 0) {
+    notify(`${skippedLog}件のデータが0以下のため対数変換から除外されました`, 'error');
+  }
+  
+  const n = allX.length;
+  if (n < 3) {
+    notify('有効なデータが3点未満です', 'error');
+    return;
+  }
+  
+  // Update badge
+  const badge = document.getElementById('dataCountBadge');
+  badge.style.display = '';
+  badge.textContent = `N=${n}`;
+  
+  // Color palette
+  const palette = ['#6c8cff','#4ecdc4','#ff6b8a','#ffb347','#a29bfe','#fd79a8','#00cec9','#e17055','#74b9ff','#55efc4'];
+  
+  // Build axis labels
+  const traces = [];
+  const baseXName = parsedData.headers[xIdx];
+  const baseYName = parsedData.headers[yIdx];
+  const xName = useLogX ? `${logLabel(logXType)}(${baseXName})` : baseXName;
+  const yName = useLogY ? `${logLabel(logYType)}(${baseYName})` : baseYName;
+  
+  if (catIdx >= 0) {
+    const cats = [...new Set(allCat)];
+    cats.forEach((cat, ci) => {
+      const cx = [], cy = [], crx = [], cry = [];
+      allX.forEach((x,i) => {
+        if (allCat[i] === cat) { cx.push(x); cy.push(allY[i]); crx.push(rawX[i]); cry.push(rawY[i]); }
+      });
+      const hoverParts = [`${xName}: %{x:.4f}`, `${yName}: %{y:.4f}`];
+      if (useLogX) hoverParts.push(`${baseXName}(元値): %{customdata[0]}`);
+      if (useLogY) hoverParts.push(`${baseYName}(元値): %{customdata[1]}`);
+      hoverParts.push(`カテゴリ: ${cat}`);
+      traces.push({
+        x: cx, y: cy,
+        customdata: crx.map((v,i) => [v, cry[i]]),
+        mode: 'markers',
+        type: 'scatter',
+        name: cat || '(空)',
+        marker: { color: palette[ci % palette.length], size: 9, opacity: 0.85,
+                  line: { color: 'rgba(255,255,255,0.3)', width: 1 } },
+        hovertemplate: hoverParts.join('<br>') + '<extra></extra>'
+      });
+    });
+  } else {
+    const hoverParts = [`${xName}: %{x:.4f}`, `${yName}: %{y:.4f}`];
+    if (useLogX) hoverParts.push(`${baseXName}(元値): %{customdata[0]}`);
+    if (useLogY) hoverParts.push(`${baseYName}(元値): %{customdata[1]}`);
+    traces.push({
+      x: allX, y: allY,
+      customdata: rawX.map((v,i) => [v, rawY[i]]),
+      mode: 'markers',
+      type: 'scatter',
+      name: '実測値',
+      marker: { color: '#6c8cff', size: 9, opacity: 0.85,
+                line: { color: 'rgba(255,255,255,0.3)', width: 1 } },
+      hovertemplate: hoverParts.join('<br>') + '<extra></extra>'
+    });
+  }
+  
+  // Fit regression on ALL data
+  const coeffs = polyFit(allX, allY, degree);
+  const yPred = allX.map(x => polyPredict(coeffs, x));
+  const r2 = computeR2(allY, yPred);
+  const adjR2 = computeAdjR2(r2, n, degree);
+  const r = pearsonR(allX, allY);
+  const residuals = allY.map((y,i) => y - yPred[i]);
+  const rmse = Math.sqrt(residuals.reduce((s,r)=>s+r*r,0) / (n - degree - 1));
+  
+  // Regression line
+  if (showReg) {
+    const xMin = Math.min(...allX);
+    const xMax = Math.max(...allX);
+    const xLine = [];
+    const nPts = 100;
+    for (let i = 0; i <= nPts; i++) xLine.push(xMin + (xMax - xMin) * i / nPts);
+    const yLine = xLine.map(x => polyPredict(coeffs, x));
+    
+    traces.push({
+      x: xLine, y: yLine,
+      mode: 'lines',
+      type: 'scatter',
+      name: degree === 1 ? '回帰線' : `${degree}次回帰`,
+      line: { color: '#ffb347', width: 3, dash: degree > 1 ? 'solid' : 'solid' },
+      hoverinfo: 'skip'
+    });
+  }
+  
+  // Prediction interval
+  if (confidence > 0 && showReg) {
+    const pi = computePredictionInterval(allX, allY, coeffs, degree, confidence);
+    if (pi) {
+    const confLabel = currentInterval === '0.95' ? '95%' : currentInterval === '0.9973' ? '99.73%' : '99.99%';
+    
+    // Upper bound line (visible, no fill)
+    traces.push({
+      x: pi.xLine, y: pi.upper,
+      mode: 'lines',
+      type: 'scatter',
+      name: `${confLabel} 予測区間`,
+      line: { color: 'rgba(255,107,138,0.7)', width: 1.5, dash: 'dash' },
+      legendgroup: 'pi',
+      hovertemplate: `${confLabel} 上限: %{y:.3f}<extra></extra>`
+    });
+    // Lower bound line (fill to upper)
+    traces.push({
+      x: pi.xLine, y: pi.lower,
+      mode: 'lines',
+      type: 'scatter',
+      name: `${confLabel} 予測区間下限`,
+      line: { color: 'rgba(255,107,138,0.7)', width: 1.5, dash: 'dash' },
+      fill: 'tonexty',
+      fillcolor: 'rgba(255,107,138,0.1)',
+      legendgroup: 'pi',
+      showlegend: false,
+      hovertemplate: `${confLabel} 下限: %{y:.3f}<extra></extra>`
+    });
+    } // end if (pi)
+  }
+  
+  const layout = {
+    xaxis: { title: xName, gridcolor: '#2e3344', zerolinecolor: '#2e3344', color: '#9498ab' },
+    yaxis: { title: yName, gridcolor: '#2e3344', zerolinecolor: '#2e3344', color: '#9498ab' },
+    plot_bgcolor: '#0f1117',
+    paper_bgcolor: '#1a1d27',
+    font: { family: 'Noto Sans JP, sans-serif', color: '#e4e6ef', size: 12 },
+    legend: { bgcolor: 'rgba(0,0,0,0)', font: { size: 11 } },
+    margin: { t: 30, r: 30, b: 60, l: 70 },
+    hovermode: 'closest',
+    dragmode: 'zoom'
+  };
+  
+  Plotly.newPlot('chartArea', traces, layout, { responsive: true, displayModeBar: true,
+    modeBarButtonsToRemove: ['lasso2d','select2d','toImage'],
+    displaylogo: false });
+  
+  // Residual plot
+  const residualArea = document.getElementById('residualArea');
+  if (showRes) {
+    residualArea.style.display = '';
+    const resTraces = [{
+      x: yPred, y: residuals,
+      mode: 'markers',
+      type: 'scatter',
+      name: '残差',
+      marker: { color: '#a29bfe', size: 7, opacity: 0.8 },
+      hovertemplate: `予測値: %{x:.3f}<br>残差: %{y:.3f}<extra></extra>`
+    }, {
+      x: [Math.min(...yPred), Math.max(...yPred)], y: [0, 0],
+      mode: 'lines',
+      name: 'ゼロ線',
+      line: { color: '#555', width: 1, dash: 'dash' },
+      hoverinfo: 'skip'
+    }];
+    
+    const resLayout = {
+      ...layout,
+      xaxis: { ...layout.xaxis, title: '予測値' },
+      yaxis: { ...layout.yaxis, title: '残差' },
+      height: 280,
+      margin: { t: 20, r: 30, b: 50, l: 70 }
+    };
+    
+    Plotly.newPlot('residualArea', resTraces, resLayout, { responsive: true, displayModeBar: false });
+  } else {
+    residualArea.style.display = 'none';
+  }
+  
+  // ===== UPDATE STATISTICS =====
+  const grid = document.getElementById('statGrid');
+  const r2Class = r2 > 0.8 ? 'good' : r2 > 0.5 ? 'warn' : 'bad';
+  const rClass = Math.abs(r) > 0.8 ? 'good' : Math.abs(r) > 0.5 ? 'warn' : 'bad';
+  
+  grid.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">相関係数 r</div>
+      <div class="stat-value ${rClass}">${r.toFixed(4)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">決定係数 R²</div>
+      <div class="stat-value ${r2Class}">${r2.toFixed(4)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">自由度調整済 R²</div>
+      <div class="stat-value">${adjR2.toFixed(4)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">RMSE</div>
+      <div class="stat-value">${rmse.toFixed(4)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">サンプル数</div>
+      <div class="stat-value">${n}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">次数</div>
+      <div class="stat-value">${degree}</div>
+    </div>
+    ${(useLogX || useLogY) ? `<div class="stat-card stat-card-wide">
+      <div class="stat-label">対数変換</div>
+      <div class="stat-value" style="font-size:13px;color:var(--accent2);">${useLogX ? 'X: '+logLabel(logXType) : ''}${useLogX && useLogY ? ' / ' : ''}${useLogY ? 'Y: '+logLabel(logYType) : ''}</div>
+    </div>` : ''}
+  `;
+  
+  // Interpretation
+  const interp = document.getElementById('interpretationBox');
+  interp.style.display = '';
+  const absR = Math.abs(r);
+  let strength = '';
+  if (absR >= 0.9) strength = '非常に強い';
+  else if (absR >= 0.7) strength = '強い';
+  else if (absR >= 0.5) strength = '中程度の';
+  else if (absR >= 0.3) strength = '弱い';
+  else strength = 'ほぼ無い';
+  const direction = r >= 0 ? '正' : '負';
+  
+  let interpText = `💡 <b>${direction}の${strength}相関</b>（r = ${r.toFixed(3)}）が見られます。`;
+  if (useLogX || useLogY) {
+    interpText += `<br>📐 <b>対数変換適用中</b>: `;
+    if (useLogX && useLogY) interpText += `両軸 — 回帰式はべき乗モデル（${baseYName} ∝ ${baseXName}^b）に対応`;
+    else if (useLogY) interpText += `Y軸 — 回帰式は指数モデル（${baseYName} ∝ e^(bx)）に対応`;
+    else interpText += `X軸 — 回帰式は対数モデル（${baseYName} ∝ log(${baseXName})）に対応`;
+  }
+  if (r2 < 0.5 && degree === 1 && !useLogX && !useLogY) {
+    interpText += `<br>⚠️ R²が低いため、対数変換や多項式回帰を試すことをお勧めします。`;
+  } else if (r2 < 0.5 && degree === 1) {
+    interpText += `<br>⚠️ R²が低いため、多項式回帰や別の変換を試すことをお勧めします。`;
+  }
+  if (degree > 1 && adjR2 < r2 - 0.05) {
+    interpText += `<br>📌 自由度調整済みR²がR²より大きく低下しています。過適合の可能性に注意してください。`;
+  }
+  interp.innerHTML = interpText;
+  
+  // Coefficient table
+  const tbody = document.querySelector('#coeffTable tbody');
+  tbody.innerHTML = '';
+  const xSymbol = useLogX ? `${logLabel(logXType)}(${baseXName})` : baseXName;
+  const ySymbol = useLogY ? `${logLabel(logYType)}(${baseYName})` : baseYName;
+  const labels = ['切片 (a₀)', '1次係数 (a₁)', '2次係数 (a₂)', '3次係数 (a₃)', '4次係数 (a₄)'];
+  coeffs.forEach((c, i) => {
+    tbody.innerHTML += `<tr><td>${labels[i]}</td><td>${c.toFixed(6)}</td></tr>`;
+  });
+  
+  // Equation
+  const eqBox = document.getElementById('equationText');
+  const xv = useLogX ? `${logLabel(logXType)}(x)` : 'x';
+  const yv = useLogY ? `${logLabel(logYType)}(y)` : 'y';
+  let eq = `${yv} = ${coeffs[0].toFixed(4)}`;
+  if (degree >= 1) eq += ` ${coeffs[1] >= 0 ? '+' : '−'} ${Math.abs(coeffs[1]).toFixed(4)}·${xv}`;
+  if (degree >= 2) eq += ` ${coeffs[2] >= 0 ? '+' : '−'} ${Math.abs(coeffs[2]).toFixed(6)}·${xv}²`;
+  if (degree >= 3) eq += ` ${coeffs[3] >= 0 ? '+' : '−'} ${Math.abs(coeffs[3]).toFixed(8)}·${xv}³`;
+  if (degree >= 4) eq += ` ${coeffs[4] >= 0 ? '+' : '−'} ${Math.abs(coeffs[4]).toFixed(10)}·${xv}⁴`;
+  eqBox.textContent = eq;
+}
+</script>
+
+</body>
+</html>

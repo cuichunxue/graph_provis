@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro-Vis: データ可視化・統計解析ツール</title>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --c-bg: #f0f2f5;
+            --c-surface: #ffffff;
+            --c-surface-alt: #f7f8fa;
+            --c-primary: #1a73e8;
+            --c-primary-hover: #1557b0;
+            --c-primary-light: #e8f0fe;
+            --c-accent: #ff6d00;
+            --c-text: #202124;
+            --c-text-secondary: #5f6368;
+            --c-text-hint: #9aa0a6;
+            --c-border: #dadce0;
+            --c-success: #0d904f;
+            --c-error: #d93025;
+            --c-warning: #f9ab00;
+            --radius: 10px;
+            --shadow-sm: 0 1px 3px rgba(60,64,67,0.12);
+            --shadow-md: 0 2px 8px rgba(60,64,67,0.15);
+            --shadow-lg: 0 4px 16px rgba(60,64,67,0.18);
+            --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        body {
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--c-bg);
+            color: var(--c-text);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ====== LAYOUT ====== */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 370px 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* ====== HEADER ====== */
+        .app-header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #1a237e 0%, #1a73e8 100%);
+            color: #fff;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+        .app-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .app-header .logo-icon {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 700;
+        }
+        .app-header h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .app-header .subtitle {
+            font-size: 0.78rem;
+            opacity: 0.8;
+            font-weight: 300;
+        }
+        .header-actions {
+            display: flex; gap: 8px;
+        }
+        .header-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .header-btn:hover { background: rgba(255,255,255,0.25); }
+
+        /* ====== SIDEBAR ====== */
+        .sidebar {
+            background: var(--c-surface);
+            border-right: 1px solid var(--c-border);
+            overflow-y: auto;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
+
+        .sidebar-section {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--c-border);
+        }
+        .sidebar-section:last-child { border-bottom: none; }
+
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--c-text-hint);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .section-label .step-num {
+            background: var(--c-primary);
+            color: #fff;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 0.65rem;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group:last-child { margin-bottom: 0; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--c-text);
+            margin-bottom: 5px;
+        }
+
+        select, textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid var(--c-border);
+            border-radius: 7px;
+            font-size: 0.88rem;
+            font-family: inherit;
+            color: var(--c-text);
+            background: var(--c-surface);
+            transition: var(--transition);
+            outline: none;
+        }
+        select:focus, textarea:focus {
+            border-color: var(--c-primary);
+            box-shadow: 0 0 0 3px var(--c-primary-light);
+        }
+        textarea {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            line-height: 1.5;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .hint {
+            font-size: 0.72rem;
+            color: var(--c-text-hint);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* File drop zone */
+        .drop-zone {
+            border: 2px dashed var(--c-border);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 10px;
+            background: var(--c-surface-alt);
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--c-primary);
+            background: var(--c-primary-light);
+        }
+        .drop-zone .icon { font-size: 1.5rem; margin-bottom: 4px; }
+        .drop-zone .text { font-size: 0.78rem; color: var(--c-text-secondary); }
+        .drop-zone input[type=file] { display: none; }
+
+        /* Chart type selector grid */
+        .chart-type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .chart-type-btn {
+            border: 2px solid var(--c-border);
+            background: var(--c-surface);
+            border-radius: 8px;
+            padding: 10px 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            font-family: inherit;
+        }
+        .chart-type-btn:hover {
+            border-color: var(--c-primary);
+            background: var(--c-primary-light);
+        }
+        .chart-type-btn.active {
+            border-color: var(--c-primary);
+            background: var(--c-primary-light);
+            box-shadow: 0 0 0 2px var(--c-primary-light);
+        }
+        .chart-type-btn .ct-icon { font-size: 1.4rem; margin-bottom: 2px; }
+        .chart-type-btn .ct-label { font-size: 0.72rem; font-weight: 500; color: var(--c-text-secondary); }
+        .chart-type-btn.active .ct-label { color: var(--c-primary); font-weight: 600; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 7px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+        .btn-primary {
+            background: var(--c-primary);
+            color: #fff;
+        }
+        .btn-primary:hover { background: var(--c-primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn-secondary {
+            background: var(--c-surface-alt);
+            color: var(--c-text-secondary);
+            border: 1px solid var(--c-border);
+        }
+        .btn-secondary:hover { background: #eef0f3; }
+        .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+
+        /* Tabs for data input */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--c-border);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background: none;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--c-text-hint);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: var(--transition);
+        }
+        .tab-btn.active {
+            color: var(--c-primary);
+            border-bottom-color: var(--c-primary);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ====== MAIN CONTENT ====== */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--c-surface-alt);
+            padding: 16px;
+            gap: 12px;
+        }
+
+        .chart-container {
+            flex: 1;
+            background: var(--c-surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            min-height: 0;
+        }
+        #chartDiv {
+            width: 100%;
+            height: 100%;
+        }
+        .chart-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--c-text-hint);
+            gap: 12px;
+        }
+        .chart-placeholder .ph-icon { font-size: 3rem; opacity: 0.4; }
+        .chart-placeholder .ph-text { font-size: 0.95rem; }
+        .chart-placeholder .ph-sub { font-size: 0.78rem; }
+
+        /* ====== STATS PANEL ====== */
+        .stats-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: var(--c-surface);
+            border-radius: 8px;
+            padding: 10px 16px;
+            box-shadow: var(--shadow-sm);
+            min-width: 120px;
+            flex: 1;
+        }
+        .stat-card .stat-label {
+            font-size: 0.68rem;
+            font-weight: 500;
+            color: var(--c-text-hint);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .stat-card .stat-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--c-text);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .stat-card .stat-sub {
+            font-size: 0.7rem;
+            color: var(--c-text-secondary);
+        }
+
+        /* ====== DATA PREVIEW TABLE ====== */
+        .data-preview-toggle {
+            font-size: 0.78rem;
+            color: var(--c-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-weight: 500;
+            padding: 4px 0;
+        }
+        .data-preview {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .data-preview.open { max-height: 200px; overflow-y: auto; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.76rem;
+        }
+        .data-table th {
+            background: var(--c-surface-alt);
+            padding: 6px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--c-text-secondary);
+            position: sticky;
+            top: 0;
+            border-bottom: 2px solid var(--c-border);
+        }
+        .data-table td {
+            padding: 5px 10px;
+            border-bottom: 1px solid var(--c-border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.73rem;
+        }
+        .data-table tr:hover td { background: var(--c-primary-light); }
+
+        /* Column type badges */
+        .col-badge {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 0.62rem;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+        .col-badge.numeric { background: #e3f2fd; color: #1565c0; }
+        .col-badge.category { background: #fce4ec; color: #c62828; }
+        .col-badge.date { background: #e8f5e9; color: #2e7d32; }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--c-text);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.error { background: var(--c-error); }
+        .toast.success { background: var(--c-success); }
+
+        /* Multi-select Y axis */
+        .multi-y-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 6px;
+        }
+        .multi-y-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1.5px solid var(--c-border);
+            background: var(--c-surface);
+            color: var(--c-text-secondary);
+            font-family: inherit;
+        }
+        .multi-y-chip.selected {
+            background: var(--c-primary-light);
+            border-color: var(--c-primary);
+            color: var(--c-primary);
+        }
+
+        /* Aggregation selector */
+        .agg-row {
+            display: flex; gap: 6px; align-items: center;
+        }
+        .agg-row select { flex: 1; }
+
+        /* Options checkboxes */
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+        }
+        .option-row input[type=checkbox] {
+            accent-color: var(--c-primary);
+            width: 16px; height: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr;
+            }
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--c-border);
+                max-height: 40vh;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="logo">
+            <div class="logo-icon">📊</div>
+            <div>
+                <h1>Pro-Vis</h1>
+                <div class="subtitle">インタラクティブ データ可視化・統計解析</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn" onclick="exportChart('png')">📷 PNG保存</button>
+            <button class="header-btn" onclick="exportChart('svg')">🖼 SVG保存</button>
+            <button class="header-btn" onclick="resetAll()">🔄 リセット</button>
+        </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <!-- STEP 1: DATA -->
+        <div class="sidebar-section">
+            <div class="section-label"><span class="step-num">1</span> データ入力</div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('paste')">テキスト貼り付け</button>
+                <button class="tab-btn" onclick="switchTab('file')">ファイル読込</button>
+            </div>
+
+            <div id="tab-paste" class="tab-content active">
+                <textarea id="dataInput" placeholder="列名1,列名2,列名3&#10;A,10,カテゴリ1&#10;B,20,カテゴリ2&#10;..."></textarea>
+            </div>
+            <div id="tab-file" class="tab-content">
+                <div class="drop-zone" id="dropZone">
+                    <div class="icon">📁</div>
+                    <div class="text">CSVファイルをドラッグ＆ドロップ<br>またはクリックで選択</div>
+                    <input type="file" id="fileInput" accept=".csv,.tsv,.txt">
+                </div>
+                <div id="fileName" class="hint"></div>
+            </div>
+
+            <div style="display:flex; gap:6px; margin-top:8px;">
+                <button class="btn btn-secondary btn-sm" style="flex:1" onclick="loadSampleData('sales')">売上サンプル</button>
+                <button class="btn btn-secondary btn-sm" style="flex:1" onclick="loadSampleData('quality')">品質サンプル</button>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top:10px" onclick="loadData()">データを読み込む</button>
+
+            <button class="data-preview-toggle" id="previewToggle" onclick="togglePreview()" style="display:none;">
+                ▶ データプレビュー (<span id="rowCount">0</span>行)
+            </button>
+            <div class="data-preview" id="dataPreview"></div>
+        </div>
+
+        <!-- STEP 2: CHART TYPE -->
+        <div class="sidebar-section">
+            <div class="section-label"><span class="step-num">2</span> グラフの種類</div>
+            <div class="chart-type-grid">
+                <button class="chart-type-btn active" data-type="bar" onclick="selectChartType('bar', this)">
+                    <div class="ct-icon">📊</div>
+                    <div class="ct-label">棒グラフ</div>
+                </button>
+                <button class="chart-type-btn" data-type="line" onclick="selectChartType('line', this)">
+                    <div class="ct-icon">📈</div>
+                    <div class="ct-label">折れ線グラフ</div>
+                </button>
+                <button class="chart-type-btn" data-type="pie" onclick="selectChartType('pie', this)">
+                    <div class="ct-icon">🥧</div>
+                    <div class="ct-label">円グラフ</div>
+                </button>
+                <button class="chart-type-btn" data-type="box" onclick="selectChartType('box', this)">
+                    <div class="ct-icon">📦</div>
+                    <div class="ct-label">箱ひげ図</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: AXES -->
+        <div class="sidebar-section">
+            <div class="section-label"><span class="step-num">3</span> 軸の設定</div>
+            <div class="form-group">
+                <label for="xAxis">X軸（横軸）</label>
+                <select id="xAxis"><option value="">← データ読み込み後に選択</option></select>
+            </div>
+            <div class="form-group" id="yAxisGroup">
+                <label>Y軸（縦軸・数値）</label>
+                <select id="yAxis"><option value="">← データ読み込み後に選択</option></select>
+                <div class="multi-y-container" id="multiYChips"></div>
+                <div class="hint" id="yHint">数値列を選択してください。複数選択で重ね描きできます。</div>
+            </div>
+            <div class="form-group" id="aggGroup" style="display:none;">
+                <label>集計方法</label>
+                <select id="aggMethod">
+                    <option value="sum">合計 (SUM)</option>
+                    <option value="mean">平均 (MEAN)</option>
+                    <option value="count">件数 (COUNT)</option>
+                    <option value="median">中央値 (MEDIAN)</option>
+                    <option value="none">集計しない (RAW)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- STEP 4: COLOR -->
+        <div class="sidebar-section">
+            <div class="section-label"><span class="step-num">4</span> 色分け・オプション</div>
+            <div class="form-group">
+                <label for="colorCategory">カテゴリ変数で色分け</label>
+                <select id="colorCategory"><option value="none">色分けしない</option></select>
+                <div class="hint">選択した項目の値ごとに色を分けて描画します。</div>
+            </div>
+            <div class="form-group" style="margin-top:10px;">
+                <div class="option-row">
+                    <input type="checkbox" id="optShowLegend" checked>
+                    <label for="optShowLegend" style="margin:0;">凡例を表示</label>
+                </div>
+                <div class="option-row">
+                    <input type="checkbox" id="optShowGrid" checked>
+                    <label for="optShowGrid" style="margin:0;">グリッド線を表示</label>
+                </div>
+                <div class="option-row">
+                    <input type="checkbox" id="optShowValues" id="optShowValues">
+                    <label for="optShowValues" style="margin:0;">値を表示</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- DRAW BUTTON -->
+        <div class="sidebar-section" style="padding-top:8px; border-bottom:none;">
+            <button class="btn btn-primary" onclick="generateChart()" style="font-size:1rem; padding:14px;">
+                🎨 グラフを描画する
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+        <div class="stats-bar" id="statsBar" style="display:none;"></div>
+        <div class="chart-container">
+            <div id="chartDiv">
+                <div class="chart-placeholder" id="placeholder">
+                    <div class="ph-icon">📊</div>
+                    <div class="ph-text">データを読み込んでグラフを描画してください</div>
+                    <div class="ph-sub">左のパネルからサンプルデータを試すこともできます</div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let parsedData = [];
+let headers = [];
+let columnTypes = {};   // { colName: 'numeric'|'category'|'date' }
+let selectedChartType = 'bar';
+let selectedYColumns = [];
+
+// ============================================================
+// COLOR PALETTE (professional, colorblind-friendly)
+// ============================================================
+const PALETTE = [
+    '#1a73e8','#e8710a','#0d904f','#d93025','#9334e6',
+    '#00897b','#c2185b','#6d4c41','#546e7a','#f9a825',
+    '#4fc3f7','#ab47bc','#26a69a','#ef5350','#5c6bc0',
+    '#8d6e63','#78909c','#ffa726','#66bb6a','#ec407a'
+];
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type + ' show';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.className = 'toast', 3000);
+}
+
+function detectColumnType(values) {
+    const sample = values.filter(v => v !== '' && v != null).slice(0, 50);
+    if (sample.length === 0) return 'category';
+    const numCount = sample.filter(v => !isNaN(parseFloat(v)) && isFinite(v)).length;
+    if (numCount / sample.length > 0.8) return 'numeric';
+    const dateRegex = /^\d{4}[-/]\d{1,2}[-/]\d{1,2}/;
+    const dateCount = sample.filter(v => dateRegex.test(String(v))).length;
+    if (dateCount / sample.length > 0.6) return 'date';
+    return 'category';
+}
+
+function getUniqueValues(colName) {
+    return [...new Set(parsedData.map(r => r[colName]))];
+}
+
+function computeStats(values) {
+    const nums = values.filter(v => !isNaN(v) && v !== null);
+    if (nums.length === 0) return null;
+    const sorted = [...nums].sort((a,b) => a - b);
+    const n = sorted.length;
+    const sum = sorted.reduce((a,b) => a + b, 0);
+    const mean = sum / n;
+    const variance = sorted.reduce((a,b) => a + (b - mean) ** 2, 0) / n;
+    const std = Math.sqrt(variance);
+    const median = n % 2 === 0 ? (sorted[n/2-1] + sorted[n/2]) / 2 : sorted[Math.floor(n/2)];
+    const q1 = sorted[Math.floor(n * 0.25)];
+    const q3 = sorted[Math.floor(n * 0.75)];
+    return { n, sum, mean, std, median, min: sorted[0], max: sorted[n-1], q1, q3 };
+}
+
+function aggregate(values, method) {
+    const nums = values.map(v => parseFloat(v)).filter(v => !isNaN(v));
+    if (nums.length === 0) return 0;
+    switch(method) {
+        case 'sum': return nums.reduce((a,b)=>a+b, 0);
+        case 'mean': return nums.reduce((a,b)=>a+b, 0) / nums.length;
+        case 'count': return nums.length;
+        case 'median': {
+            const s = [...nums].sort((a,b)=>a-b);
+            const m = Math.floor(s.length/2);
+            return s.length % 2 ? s[m] : (s[m-1]+s[m])/2;
+        }
+        default: return null;
+    }
+}
+
+function fmt(v) {
+    if (v == null || isNaN(v)) return '—';
+    return Number.isInteger(v) ? v.toLocaleString() : v.toFixed(2);
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+}
+
+// ============================================================
+// FILE HANDLING
+// ============================================================
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+function handleFile(file) {
+    document.getElementById('fileName').textContent = '📄 ' + file.name;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('dataInput').value = e.target.result;
+        loadData();
+    };
+    reader.readAsText(file);
+}
+
+// ============================================================
+// SAMPLE DATA
+// ============================================================
+function loadSampleData(type) {
+    let csv = '';
+    if (type === 'sales') {
+        csv = `月,部署,売上万円,顧客数,満足度
+1月,営業部,320,45,4.2
+2月,営業部,350,48,4.3
+3月,営業部,410,55,4.5
+4月,営業部,380,50,4.1
+5月,営業部,420,58,4.4
+6月,営業部,450,62,4.6
+1月,開発部,180,30,4.5
+2月,開発部,200,32,4.6
+3月,開発部,220,35,4.7
+4月,開発部,210,33,4.5
+5月,開発部,240,38,4.8
+6月,開発部,260,40,4.9
+1月,マーケティング部,150,25,3.8
+2月,マーケティング部,170,28,4.0
+3月,マーケティング部,190,30,4.1
+4月,マーケティング部,180,29,3.9
+5月,マーケティング部,200,32,4.2
+6月,マーケティング部,220,35,4.3`;
+    } else if (type === 'quality') {
+        csv = `ロット,ライン,寸法mm,硬度HRC,不良率%,判定
+L001,A,10.02,58.5,1.2,合格
+L002,A,10.05,59.0,0.8,合格
+L003,A,9.98,57.8,2.1,合格
+L004,A,10.08,60.2,0.5,合格
+L005,A,10.15,61.0,3.5,不合格
+L006,B,10.01,58.0,1.5,合格
+L007,B,9.95,56.5,2.8,合格
+L008,B,10.03,58.8,1.0,合格
+L009,B,10.20,62.0,4.0,不合格
+L010,B,10.00,57.5,1.8,合格
+L011,C,9.99,58.2,1.3,合格
+L012,C,10.04,59.5,0.9,合格
+L013,C,10.10,60.5,2.5,合格
+L014,C,10.25,63.0,5.0,不合格
+L015,C,9.97,57.0,1.6,合格
+L016,A,10.01,58.3,1.1,合格
+L017,B,10.06,59.2,1.4,合格
+L018,C,10.03,58.7,1.2,合格
+L019,A,10.12,60.8,3.2,不合格
+L020,B,9.96,56.8,2.0,合格`;
+    }
+    document.getElementById('dataInput').value = csv;
+    switchTab('paste');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-paste').classList.add('active');
+    loadData();
+}
+
+// ============================================================
+// PARSE & LOAD DATA
+// ============================================================
+function loadData() {
+    const csvString = document.getElementById('dataInput').value.trim();
+    if (!csvString) { showToast('データを入力してください', 'error'); return; }
+
+    Papa.parse(csvString, {
+        header: true,
+        skipEmptyLines: true,
+        dynamicTyping: false,
+        complete: function(results) {
+            if (results.errors.length > 0 && results.data.length === 0) {
+                showToast('CSVの解析に失敗しました: ' + results.errors[0].message, 'error');
+                return;
+            }
+            parsedData = results.data;
+            headers = results.meta.fields.filter(f => f && f.trim());
+            // Detect column types
+            columnTypes = {};
+            headers.forEach(h => {
+                columnTypes[h] = detectColumnType(parsedData.map(r => r[h]));
+            });
+            updateSelectBoxes();
+            buildDataPreview();
+            selectedYColumns = [];
+            updateMultiYChips();
+            showToast(`${parsedData.length}行 × ${headers.length}列 を読み込みました`, 'success');
+        }
+    });
+}
+
+function updateSelectBoxes() {
+    const xSel = document.getElementById('xAxis');
+    const ySel = document.getElementById('yAxis');
+    const cSel = document.getElementById('colorCategory');
+
+    xSel.innerHTML = '';
+    ySel.innerHTML = '';
+    cSel.innerHTML = '<option value="none">色分けしない</option>';
+
+    const numericCols = headers.filter(h => columnTypes[h] === 'numeric');
+    const categoryCols = headers.filter(h => columnTypes[h] !== 'numeric');
+
+    headers.forEach(h => {
+        const badge = columnTypes[h] === 'numeric' ? ' [数値]' : columnTypes[h] === 'date' ? ' [日付]' : ' [カテゴリ]';
+        xSel.innerHTML += `<option value="${h}">${h}${badge}</option>`;
+        ySel.innerHTML += `<option value="${h}">${h}${badge}</option>`;
+    });
+
+    // Color: prefer category/date columns
+    [...categoryCols, ...numericCols].forEach(h => {
+        const badge = columnTypes[h] === 'numeric' ? ' [数値]' : columnTypes[h] === 'date' ? ' [日付]' : ' [カテゴリ]';
+        cSel.innerHTML += `<option value="${h}">${h}${badge}</option>`;
+    });
+
+    // Smart defaults
+    if (categoryCols.length > 0) xSel.value = categoryCols[0];
+    if (numericCols.length > 0) ySel.value = numericCols[0];
+    if (categoryCols.length > 1) cSel.value = categoryCols[1];
+
+    updateMultiYChips();
+}
+
+function updateMultiYChips() {
+    const container = document.getElementById('multiYChips');
+    const numericCols = headers.filter(h => columnTypes[h] === 'numeric');
+    container.innerHTML = '';
+    numericCols.forEach(col => {
+        const chip = document.createElement('button');
+        chip.className = 'multi-y-chip' + (selectedYColumns.includes(col) ? ' selected' : '');
+        chip.textContent = col;
+        chip.onclick = () => toggleYColumn(col);
+        container.appendChild(chip);
+    });
+}
+
+function toggleYColumn(col) {
+    const idx = selectedYColumns.indexOf(col);
+    if (idx >= 0) selectedYColumns.splice(idx, 1);
+    else selectedYColumns.push(col);
+    updateMultiYChips();
+}
+
+function buildDataPreview() {
+    const toggle = document.getElementById('previewToggle');
+    toggle.style.display = 'block';
+    document.getElementById('rowCount').textContent = parsedData.length;
+    const container = document.getElementById('dataPreview');
+    const rows = parsedData.slice(0, 30);
+    let html = '<table class="data-table"><thead><tr>';
+    headers.forEach(h => {
+        const cls = columnTypes[h] === 'numeric' ? 'numeric' : columnTypes[h] === 'date' ? 'date' : 'category';
+        html += `<th>${h}<span class="col-badge ${cls}">${cls === 'numeric' ? '数値' : cls === 'date' ? '日付' : 'カテゴリ'}</span></th>`;
+    });
+    html += '</tr></thead><tbody>';
+    rows.forEach(r => {
+        html += '<tr>';
+        headers.forEach(h => html += `<td>${r[h] ?? ''}</td>`);
+        html += '</tr>';
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function togglePreview() {
+    const p = document.getElementById('dataPreview');
+    const t = document.getElementById('previewToggle');
+    p.classList.toggle('open');
+    t.innerHTML = (p.classList.contains('open') ? '▼' : '▶') + ` データプレビュー (<span id="rowCount">${parsedData.length}</span>行)`;
+}
+
+// ============================================================
+// CHART TYPE SELECTION
+// ============================================================
+function selectChartType(type, el) {
+    selectedChartType = type;
+    document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    // Show/hide aggregation for bar/pie
+    const showAgg = (type === 'bar' || type === 'pie');
+    document.getElementById('aggGroup').style.display = showAgg ? 'block' : 'none';
+    // Update Y axis visibility for pie
+    document.getElementById('yAxisGroup').style.display = type === 'pie' ? 'block' : 'block';
+}
+
+// ============================================================
+// CHART GENERATION
+// ============================================================
+function generateChart() {
+    if (parsedData.length === 0) {
+        loadData();
+        if (parsedData.length === 0) return;
+    }
+
+    const xField = document.getElementById('xAxis').value;
+    const yField = document.getElementById('yAxis').value;
+    const colorField = document.getElementById('colorCategory').value;
+    const aggMethod = document.getElementById('aggMethod').value;
+    const showLegend = document.getElementById('optShowLegend').checked;
+    const showGrid = document.getElementById('optShowGrid').checked;
+    const showValues = document.getElementById('optShowValues').checked;
+
+    // Determine Y columns
+    let yCols = selectedYColumns.length > 0 ? selectedYColumns : [yField];
+
+    let traces = [];
+
+    // Remove placeholder
+    document.getElementById('placeholder')?.remove();
+
+    try {
+        if (selectedChartType === 'pie') {
+            traces = buildPieTraces(xField, yField, colorField, aggMethod);
+        } else if (selectedChartType === 'box') {
+            traces = buildBoxTraces(xField, yCols, colorField);
+        } else if (selectedChartType === 'bar') {
+            traces = buildBarTraces(xField, yCols, colorField, aggMethod, showValues);
+        } else if (selectedChartType === 'line') {
+            traces = buildLineTraces(xField, yCols, colorField, showValues);
+        }
+    } catch(e) {
+        showToast('グラフ描画エラー: ' + e.message, 'error');
+        console.error(e);
+        return;
+    }
+
+    const layout = buildLayout(xField, yCols, showLegend, showGrid);
+    const config = {
+        responsive: true,
+        displaylogo: false,
+        modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+        locale: 'ja',
+        toImageButtonOptions: { format: 'png', filename: 'provis_chart', scale: 2 }
+    };
+
+    Plotly.newPlot('chartDiv', traces, layout, config);
+    updateStats(xField, yCols);
+    showToast('グラフを描画しました', 'success');
+}
+
+// ============================================================
+// TRACE BUILDERS
+// ============================================================
+function buildBarTraces(xField, yCols, colorField, aggMethod, showValues) {
+    let traces = [];
+    const needAgg = aggMethod !== 'none' && columnTypes[xField] !== 'numeric';
+
+    if (colorField !== 'none') {
+        const categories = getUniqueValues(colorField);
+        categories.forEach((cat, i) => {
+            const filtered = parsedData.filter(r => r[colorField] === cat);
+            yCols.forEach((yCol, j) => {
+                let xData, yData;
+                if (needAgg) {
+                    const groups = {};
+                    filtered.forEach(r => {
+                        const key = r[xField];
+                        if (!groups[key]) groups[key] = [];
+                        groups[key].push(r[yCol]);
+                    });
+                    xData = Object.keys(groups);
+                    yData = xData.map(k => aggregate(groups[k], aggMethod));
+                } else {
+                    xData = filtered.map(r => r[xField]);
+                    yData = filtered.map(r => parseFloat(r[yCol]));
+                }
+                const label = yCols.length > 1 ? `${cat} - ${yCol}` : String(cat);
+                traces.push({
+                    x: xData, y: yData,
+                    type: 'bar',
+                    name: label,
+                    marker: { color: PALETTE[(i * yCols.length + j) % PALETTE.length], opacity: 0.88 },
+                    text: showValues ? yData.map(v => fmt(v)) : undefined,
+                    textposition: 'auto',
+                    hovertemplate: `<b>${label}</b><br>${xField}: %{x}<br>${yCol}: %{y:,.2f}<extra></extra>`
+                });
+            });
+        });
+    } else {
+        yCols.forEach((yCol, i) => {
+            let xData, yData;
+            if (needAgg) {
+                const groups = {};
+                parsedData.forEach(r => {
+                    const key = r[xField];
+                    if (!groups[key]) groups[key] = [];
+                    groups[key].push(r[yCol]);
+                });
+                xData = Object.keys(groups);
+                yData = xData.map(k => aggregate(groups[k], aggMethod));
+            } else {
+                xData = parsedData.map(r => r[xField]);
+                yData = parsedData.map(r => parseFloat(r[yCol]));
+            }
+            traces.push({
+                x: xData, y: yData,
+                type: 'bar',
+                name: yCol,
+                marker: { color: PALETTE[i % PALETTE.length], opacity: 0.88 },
+                text: showValues ? yData.map(v => fmt(v)) : undefined,
+                textposition: 'auto',
+                hovertemplate: `<b>${yCol}</b><br>${xField}: %{x}<br>値: %{y:,.2f}<extra></extra>`
+            });
+        });
+    }
+    return traces;
+}
+
+function buildLineTraces(xField, yCols, colorField, showValues) {
+    let traces = [];
+    if (colorField !== 'none') {
+        const categories = getUniqueValues(colorField);
+        categories.forEach((cat, i) => {
+            const filtered = parsedData.filter(r => r[colorField] === cat);
+            yCols.forEach((yCol, j) => {
+                const label = yCols.length > 1 ? `${cat} - ${yCol}` : String(cat);
+                traces.push({
+                    x: filtered.map(r => r[xField]),
+                    y: filtered.map(r => parseFloat(r[yCol])),
+                    type: 'scatter', mode: showValues ? 'lines+markers+text' : 'lines+markers',
+                    name: label,
+                    line: { width: 2.5, color: PALETTE[(i * yCols.length + j) % PALETTE.length] },
+                    marker: { size: 6 },
+                    text: showValues ? filtered.map(r => fmt(parseFloat(r[yCol]))) : undefined,
+                    textposition: 'top center',
+                    hovertemplate: `<b>${label}</b><br>${xField}: %{x}<br>${yCol}: %{y:,.2f}<extra></extra>`
+                });
+            });
+        });
+    } else {
+        yCols.forEach((yCol, i) => {
+            traces.push({
+                x: parsedData.map(r => r[xField]),
+                y: parsedData.map(r => parseFloat(r[yCol])),
+                type: 'scatter', mode: showValues ? 'lines+markers+text' : 'lines+markers',
+                name: yCol,
+                line: { width: 2.5, color: PALETTE[i % PALETTE.length] },
+                marker: { size: 6 },
+                text: showValues ? parsedData.map(r => fmt(parseFloat(r[yCol]))) : undefined,
+                textposition: 'top center',
+                hovertemplate: `<b>${yCol}</b><br>${xField}: %{x}<br>値: %{y:,.2f}<extra></extra>`
+            });
+        });
+    }
+    return traces;
+}
+
+function buildBoxTraces(xField, yCols, colorField) {
+    let traces = [];
+    if (colorField !== 'none') {
+        const categories = getUniqueValues(colorField);
+        categories.forEach((cat, i) => {
+            const filtered = parsedData.filter(r => r[colorField] === cat);
+            yCols.forEach((yCol, j) => {
+                const label = yCols.length > 1 ? `${cat} - ${yCol}` : String(cat);
+                traces.push({
+                    x: filtered.map(r => r[xField]),
+                    y: filtered.map(r => parseFloat(r[yCol])),
+                    type: 'box',
+                    name: label,
+                    marker: { color: PALETTE[(i * yCols.length + j) % PALETTE.length] },
+                    boxpoints: 'outliers',
+                    jitter: 0.3,
+                    pointpos: -1.5
+                });
+            });
+        });
+    } else {
+        yCols.forEach((yCol, i) => {
+            traces.push({
+                x: parsedData.map(r => r[xField]),
+                y: parsedData.map(r => parseFloat(r[yCol])),
+                type: 'box',
+                name: yCol,
+                marker: { color: PALETTE[i % PALETTE.length] },
+                boxpoints: 'outliers',
+                jitter: 0.3,
+                pointpos: -1.5
+            });
+        });
+    }
+    return traces;
+}
+
+function buildPieTraces(xField, yField, colorField, aggMethod) {
+    let labels, values;
+    const groupField = colorField !== 'none' ? colorField : xField;
+    const groups = {};
+    parsedData.forEach(r => {
+        const key = r[groupField];
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(r[yField]);
+    });
+    labels = Object.keys(groups);
+    if (aggMethod === 'none' || aggMethod === 'count') {
+        values = labels.map(k => groups[k].length);
+    } else {
+        values = labels.map(k => aggregate(groups[k], aggMethod));
+    }
+    const colors = labels.map((_, i) => PALETTE[i % PALETTE.length]);
+    return [{
+        labels, values,
+        type: 'pie',
+        hole: 0.35,
+        marker: { colors, line: { color: '#fff', width: 2 } },
+        textinfo: 'label+percent',
+        textfont: { size: 12 },
+        hovertemplate: '<b>%{label}</b><br>値: %{value:,.2f}<br>割合: %{percent}<extra></extra>',
+        pull: labels.map(() => 0.02)
+    }];
+}
+
+// ============================================================
+// LAYOUT
+// ============================================================
+function buildLayout(xField, yCols, showLegend, showGrid) {
+    const yLabel = yCols.length === 1 ? yCols[0] : 'Values';
+    const titleText = selectedChartType === 'pie'
+        ? `${xField} の構成`
+        : `${xField} × ${yCols.join(', ')}`;
+
+    return {
+        title: {
+            text: titleText,
+            font: { family: 'Noto Sans JP', size: 18, color: '#202124', weight: 600 },
+            x: 0.02, xanchor: 'left'
+        },
+        xaxis: {
+            title: { text: xField, font: { size: 13, color: '#5f6368' } },
+            automargin: true,
+            showgrid: showGrid,
+            gridcolor: '#f0f0f0',
+            tickfont: { size: 11 }
+        },
+        yaxis: {
+            title: { text: yLabel, font: { size: 13, color: '#5f6368' } },
+            automargin: true,
+            showgrid: showGrid,
+            gridcolor: '#f0f0f0',
+            zeroline: true,
+            zerolinecolor: '#dadce0',
+            tickfont: { size: 11 }
+        },
+        plot_bgcolor: '#ffffff',
+        paper_bgcolor: '#ffffff',
+        hovermode: 'x unified',
+        hoverlabel: { bgcolor: '#fff', bordercolor: '#dadce0', font: { family: 'Noto Sans JP', size: 12 } },
+        showlegend: showLegend,
+        legend: {
+            orientation: 'h', y: -0.18, x: 0.5, xanchor: 'center',
+            font: { size: 11 },
+            bgcolor: 'rgba(255,255,255,0.8)'
+        },
+        barmode: 'group',
+        boxmode: 'group',
+        margin: { t: 50, b: 70, l: 60, r: 30 },
+        font: { family: 'Noto Sans JP, sans-serif' }
+    };
+}
+
+// ============================================================
+// STATS PANEL
+// ============================================================
+function updateStats(xField, yCols) {
+    const bar = document.getElementById('statsBar');
+    bar.style.display = 'flex';
+    bar.innerHTML = '';
+
+    // N
+    bar.innerHTML += `<div class="stat-card fade-in"><div class="stat-label">データ件数 (N)</div><div class="stat-value">${parsedData.length}</div></div>`;
+
+    // Stats for first Y column
+    const yCol = yCols[0];
+    const vals = parsedData.map(r => parseFloat(r[yCol])).filter(v => !isNaN(v));
+    const stats = computeStats(vals);
+    if (stats) {
+        bar.innerHTML += `<div class="stat-card fade-in"><div class="stat-label">平均 (${yCol})</div><div class="stat-value">${fmt(stats.mean)}</div><div class="stat-sub">SD: ${fmt(stats.std)}</div></div>`;
+        bar.innerHTML += `<div class="stat-card fade-in"><div class="stat-label">中央値</div><div class="stat-value">${fmt(stats.median)}</div><div class="stat-sub">Q1: ${fmt(stats.q1)} / Q3: ${fmt(stats.q3)}</div></div>`;
+        bar.innerHTML += `<div class="stat-card fade-in"><div class="stat-label">範囲</div><div class="stat-value">${fmt(stats.min)} ～ ${fmt(stats.max)}</div></div>`;
+    }
+
+    // Category count
+    const colorField = document.getElementById('colorCategory').value;
+    if (colorField !== 'none') {
+        const cats = getUniqueValues(colorField);
+        bar.innerHTML += `<div class="stat-card fade-in"><div class="stat-label">カテゴリ数</div><div class="stat-value">${cats.length}</div><div class="stat-sub">${colorField}</div></div>`;
+    }
+}
+
+// ============================================================
+// EXPORT
+// ============================================================
+function exportChart(format) {
+    if (!document.querySelector('.js-plotly-plot')) {
+        showToast('先にグラフを描画してください', 'error');
+        return;
+    }
+    Plotly.downloadImage('chartDiv', {
+        format: format,
+        width: 1600, height: 900,
+        filename: 'provis_chart',
+        scale: 2
+    });
+    showToast(`${format.toUpperCase()}で保存しました`, 'success');
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetAll() {
+    parsedData = [];
+    headers = [];
+    columnTypes = {};
+    selectedYColumns = [];
+    document.getElementById('dataInput').value = '';
+    document.getElementById('xAxis').innerHTML = '<option value="">← データ読み込み後に選択</option>';
+    document.getElementById('yAxis').innerHTML = '<option value="">← データ読み込み後に選択</option>';
+    document.getElementById('colorCategory').innerHTML = '<option value="none">色分けしない</option>';
+    document.getElementById('multiYChips').innerHTML = '';
+    document.getElementById('statsBar').style.display = 'none';
+    document.getElementById('statsBar').innerHTML = '';
+    document.getElementById('previewToggle').style.display = 'none';
+    document.getElementById('dataPreview').classList.remove('open');
+    document.getElementById('dataPreview').innerHTML = '';
+    document.getElementById('chartDiv').innerHTML = `
+        <div class="chart-placeholder" id="placeholder">
+            <div class="ph-icon">📊</div>
+            <div class="ph-text">データを読み込んでグラフを描画してください</div>
+            <div class="ph-sub">左のパネルからサンプルデータを試すこともできます</div>
+        </div>`;
+    showToast('リセットしました');
+}
+
+// ============================================================
+// AUTO-DRAW on Y axis change
+// ============================================================
+document.getElementById('yAxis').addEventListener('change', () => {
+    if (parsedData.length > 0 && document.querySelector('.js-plotly-plot')) generateChart();
+});
+document.getElementById('xAxis').addEventListener('change', () => {
+    if (parsedData.length > 0 && document.querySelector('.js-plotly-plot')) generateChart();
+});
+document.getElementById('colorCategory').addEventListener('change', () => {
+    if (parsedData.length > 0 && document.querySelector('.js-plotly-plot')) generateChart();
+});
+
+</script>
+</body>
+</html>
