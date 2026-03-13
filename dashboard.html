@@ -3,1107 +3,427 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Graph Pro-Vis | 統括データ解析ダッシュボード</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<title>Graph Pro-Vis | データ解析ツール</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
-/* ============================================================
-   CSS Custom Properties
-   ============================================================ */
 :root {
-  --bg: #0c0e14;
-  --bg-subtle: #111420;
-  --surface: #171b26;
-  --surface-2: #1e2233;
-  --surface-3: #252a3a;
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface-2: #232733;
   --border: #2a2f42;
-  --border-hover: #3a4060;
-  --text: #e6e8f0;
-  --text-2: #9499af;
+  --text: #e4e6f0;
+  --text-2: #9498ab;
   --text-3: #636882;
   --accent: #5b8def;
-  --accent-hover: #7aa3ff;
   --accent-dim: rgba(91,141,239,0.12);
-  --accent-glow: rgba(91,141,239,0.25);
   --green: #34d399;
   --green-dim: rgba(52,211,153,0.12);
   --amber: #fbbf24;
   --amber-dim: rgba(251,191,36,0.12);
-  --rose: #fb7185;
-  --rose-dim: rgba(251,113,133,0.12);
   --purple: #a78bfa;
   --purple-dim: rgba(167,139,250,0.12);
   --teal: #2dd4bf;
   --teal-dim: rgba(45,212,191,0.12);
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-xs: 6px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.35);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
-  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
-  --nav-h: 56px;
+  --rose: #fb7185;
+  --nav-h: 48px;
+  --transition: 0.2s ease;
 }
 
-/* ============================================================
-   Reset & Base
-   ============================================================ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Noto Sans JP', sans-serif;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
   overflow: hidden;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* ============================================================
-   Top Navigation Bar
-   ============================================================ */
-.topnav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
+/* ── Nav ── */
+.nav {
   height: var(--nav-h);
-  background: linear-gradient(180deg, #141825 0%, var(--surface) 100%);
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  z-index: 100;
-  gap: 0;
+  padding: 0 16px;
+  gap: 4px;
 }
 
-.topnav-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-right: 28px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.topnav-brand .brand-icon {
-  width: 34px; height: 34px;
-  background: linear-gradient(135deg, var(--accent), var(--teal));
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 700; color: #fff;
-  box-shadow: 0 2px 12px rgba(91,141,239,0.3);
-}
-
-.topnav-brand .brand-text {
-  font-size: 15px;
+.nav-brand {
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: -0.02em;
-  background: linear-gradient(90deg, var(--accent), var(--teal));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--accent);
+  margin-right: 16px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.topnav-brand .brand-sub {
-  font-size: 10px;
-  color: var(--text-3);
-  font-weight: 400;
-}
-
-/* Tab buttons in topnav */
-.topnav-tabs {
+.nav-tabs {
   display: flex;
-  align-items: center;
   gap: 2px;
   flex: 1;
   overflow-x: auto;
   scrollbar-width: none;
 }
-.topnav-tabs::-webkit-scrollbar { display: none; }
+.nav-tabs::-webkit-scrollbar { display: none; }
 
-.tab-btn {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 16px;
+.nav-tab {
+  padding: 6px 14px;
   border: none;
-  background: transparent;
+  background: none;
   color: var(--text-2);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
+  font: 500 13px 'Noto Sans JP', sans-serif;
   cursor: pointer;
-  border-radius: var(--radius-xs);
+  border-radius: 6px;
   transition: var(--transition);
   white-space: nowrap;
-  position: relative;
 }
+.nav-tab:hover { background: var(--surface-2); color: var(--text); }
+.nav-tab.active { background: var(--accent-dim); color: var(--accent); }
 
-.tab-btn:hover {
-  background: var(--surface-2);
-  color: var(--text);
-}
-
-.tab-btn.active {
-  background: var(--accent-dim);
-  color: var(--accent-hover);
-}
-
-.tab-btn.active::after {
-  content: '';
-  position: absolute;
-  bottom: -9px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 24px;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 1px;
-}
-
-.tab-btn .tab-icon {
-  width: 22px; height: 22px;
+.nav-help {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px;
+  background: none;
+  color: var(--text-3);
+  font: 12px 'Noto Sans JP', sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-left: 8px;
   flex-shrink: 0;
 }
+.nav-help:hover { border-color: var(--accent); color: var(--accent); }
 
-.tab-btn .tab-icon.icon-home { background: var(--accent-dim); }
-.tab-btn .tab-icon.icon-provis { background: var(--green-dim); }
-.tab-btn .tab-icon.icon-pareto { background: var(--teal-dim); }
-.tab-btn .tab-icon.icon-hist { background: var(--purple-dim); }
-.tab-btn .tab-icon.icon-scatter { background: var(--amber-dim); }
+/* ── Views ── */
+.main { position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0; }
+.view { display: none; width: 100%; height: 100%; }
+.view.active { display: flex; }
 
-.topnav-right {
+/* ── Home ── */
+.home {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 32px;
+}
+
+.home-msg {
+  text-align: center;
+  max-width: 480px;
+}
+.home-msg h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.home-msg p {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+.home-msg .safe {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--green);
+  background: var(--green-dim);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* ── Cards ── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  max-width: 960px;
+  width: 100%;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.card:hover {
+  border-color: #3a4060;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.card-top {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-shrink: 0;
-  margin-left: 12px;
-}
-
-.topnav-help {
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
-  background: transparent;
-  color: var(--text-2);
-  font-size: 12px;
-  font-family: inherit;
-  cursor: pointer;
-  transition: var(--transition);
-}
-.topnav-help:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-dim);
-}
-
-/* ============================================================
-   Main Content Area
-   ============================================================ */
-.main-area {
-  position: fixed;
-  top: var(--nav-h);
-  left: 0; right: 0; bottom: 0;
-  z-index: 1;
-}
-
-/* ============================================================
-   Home Dashboard
-   ============================================================ */
-.view {
-  display: none;
-  width: 100%;
-  height: 100%;
-}
-.view.active { display: flex; }
-
-.home-view {
-  flex-direction: column;
-  align-items: center;
-  overflow-y: auto;
-  padding: 40px 24px 80px;
-  position: relative;
-}
-
-/* Subtle background grid — scoped to home view only */
-.home-view::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(91,141,239,0.012) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(91,141,239,0.012) 1px, transparent 1px);
-  background-size: 64px 64px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.home-view > * {
-  position: relative;
-  z-index: 1;
-}
-
-.home-hero {
-  text-align: center;
-  margin-bottom: 40px;
-  max-width: 600px;
-}
-
-.home-hero h2 {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
   margin-bottom: 10px;
-  background: linear-gradient(135deg, var(--text) 30%, var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
-
-.home-hero p {
-  font-size: 14px;
-  color: var(--text-2);
-  line-height: 1.8;
-}
-
-/* Tool Cards Grid */
-.tool-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 18px;
-  max-width: 1100px;
-  width: 100%;
-  margin-bottom: 40px;
-}
-
-.tool-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  cursor: pointer;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-}
-
-.tool-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.tool-card:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-}
-
-.tool-card:hover::before { opacity: 1; }
-
-.tool-card.card-provis::before { background: linear-gradient(90deg, var(--green), var(--accent)); }
-.tool-card.card-pareto::before { background: linear-gradient(90deg, var(--teal), var(--green)); }
-.tool-card.card-hist::before { background: linear-gradient(90deg, var(--purple), var(--accent)); }
-.tool-card.card-scatter::before { background: linear-gradient(90deg, var(--amber), var(--rose)); }
-
-.tool-card .card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.tool-card .card-icon {
-  width: 42px; height: 42px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.card-provis .card-icon { background: var(--green-dim); }
-.card-pareto .card-icon { background: var(--teal-dim); }
-.card-hist .card-icon { background: var(--purple-dim); }
-.card-scatter .card-icon { background: var(--amber-dim); }
-
-.tool-card .card-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.tool-card .card-desc {
-  font-size: 13px;
-  color: var(--text-2);
-  line-height: 1.7;
-  margin-bottom: 16px;
-}
-
-.tool-card .card-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.tool-card .feature-tag {
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 500;
-  background: var(--surface-2);
-  color: var(--text-2);
-  border: 1px solid var(--border);
-}
-
-.tool-card .card-action {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 16px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--accent);
-  transition: var(--transition);
-}
-
-.tool-card:hover .card-action { gap: 10px; }
-
-/* Workflow Section */
-.home-section {
-  max-width: 1100px;
-  width: 100%;
-  margin-bottom: 36px;
-}
-
-.home-section h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.home-section h3 .sec-icon {
-  width: 24px; height: 24px;
-  border-radius: 6px;
-  background: var(--accent-dim);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px;
-}
-
-.workflow-steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
-}
-
-.workflow-step {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 18px;
-  position: relative;
-}
-
-.workflow-step .step-num {
-  position: absolute;
-  top: 12px; right: 14px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--surface-3);
-}
-
-.workflow-step .step-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: var(--text);
-}
-
-.workflow-step .step-desc {
-  font-size: 12px;
-  color: var(--text-2);
-  line-height: 1.6;
-}
-
-/* Quick Tips */
-.tips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 14px;
-}
-
-.tip-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 16px;
-  display: flex;
-  gap: 12px;
-}
-
-.tip-card.clickable {
-  cursor: pointer;
-  transition: var(--transition);
-}
-.tip-card.clickable:hover {
-  border-color: var(--border-hover);
-}
-
-.tip-card .tip-icon {
-  width: 32px; height: 32px;
+.card-icon {
+  width: 36px; height: 36px;
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
+  font-size: 16px;
   flex-shrink: 0;
-  background: var(--surface-2);
 }
-
-.tip-card .tip-text {
+.card-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.card-desc {
   font-size: 12px;
   color: var(--text-2);
   line-height: 1.6;
+  margin-bottom: 12px;
+}
+.card-hint {
+  font-size: 11px;
+  color: var(--text-3);
+  padding: 4px 10px;
+  background: var(--surface-2);
+  border-radius: 6px;
+  display: inline-block;
+}
+.card-go {
+  float: right;
+  font-size: 12px;
+  color: var(--accent);
+  margin-top: -18px;
 }
 
-.tip-card .tip-text strong {
-  color: var(--text);
-  display: block;
-  margin-bottom: 2px;
-  font-size: 13px;
-}
-
-/* ============================================================
-   Tool iframe View
-   ============================================================ */
-.tool-view {
-  position: relative;
-}
-
-.tool-view iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: var(--bg);
-}
-
+/* ── iframe ── */
+.tool-view { position: relative; }
+.tool-view iframe { width: 100%; height: 100%; border: none; background: var(--bg); }
 .tool-loading {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  z-index: 5;
-  gap: 14px;
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--bg); gap: 10px; z-index: 5;
   transition: opacity 0.3s;
 }
-
-.tool-loading.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.loading-spinner {
-  width: 36px; height: 36px;
+.tool-loading.hide { opacity: 0; pointer-events: none; }
+.spinner {
+  width: 28px; height: 28px;
   border: 3px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
-
 @keyframes spin { to { transform: rotate(360deg); } }
+.tool-loading span { font-size: 12px; color: var(--text-2); }
 
-.tool-loading span {
-  font-size: 13px;
-  color: var(--text-2);
+/* ── Help Modal ── */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 200;
+  align-items: center; justify-content: center;
 }
-
-/* ============================================================
-   Help Modal
-   ============================================================ */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-overlay.show {
-  display: flex;
-}
-
+.overlay.show { display: flex; }
 .modal {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  width: 90%;
-  max-width: 640px;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 28px;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-  position: relative;
+  border-radius: 10px;
+  width: 90%; max-width: 520px;
+  max-height: 80vh; overflow-y: auto;
+  padding: 24px; position: relative;
 }
-
-.modal h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 6px;
+.modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+.modal-x {
+  position: absolute; top: 12px; right: 14px;
+  background: none; border: none; color: var(--text-3); font-size: 18px; cursor: pointer;
 }
-
-.modal .modal-sub {
-  font-size: 13px;
-  color: var(--text-2);
-  margin-bottom: 20px;
+.modal section { margin-bottom: 16px; }
+.modal section h4 { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+.modal li, .modal p { font-size: 12px; color: var(--text-2); line-height: 1.7; }
+.modal ul { padding-left: 16px; }
+.modal li { margin-bottom: 3px; }
+.modal kbd {
+  display: inline-block; padding: 1px 5px;
+  border: 1px solid var(--border); border-radius: 3px;
+  background: var(--surface-2); font-size: 11px; color: var(--text-2);
 }
-
-.modal-close {
-  position: absolute;
-  top: 16px; right: 16px;
-  background: none;
-  border: none;
-  color: var(--text-2);
-  font-size: 20px;
+.modal-close-btn {
+  display: block; margin: 12px 0 0 auto;
+  padding: 6px 16px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface-2); color: var(--text); font: 13px 'Noto Sans JP', sans-serif;
   cursor: pointer;
 }
 
-.help-section {
-  margin-bottom: 20px;
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .nav-brand { font-size: 12px; margin-right: 8px; }
+  .nav-tab { padding: 5px 8px; font-size: 12px; }
+  .home { padding: 16px; gap: 20px; }
+  .cards { grid-template-columns: 1fr; }
 }
 
-.help-section h4 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--accent);
-}
-
-.help-section p,
-.help-section li {
-  font-size: 13px;
-  color: var(--text-2);
-  line-height: 1.7;
-}
-
-.help-section ul {
-  padding-left: 18px;
-}
-
-.help-section li {
-  margin-bottom: 4px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
-}
-
-.btn-close-modal {
-  padding: 8px 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
-  background: var(--surface-2);
-  color: var(--text);
-  font-family: inherit;
-  font-size: 13px;
-  cursor: pointer;
-  transition: var(--transition);
-}
-.btn-close-modal:hover {
-  background: var(--surface-3);
-}
-
-/* ============================================================
-   Keyboard Shortcut Hints
-   ============================================================ */
-kbd {
-  display: inline-block;
-  padding: 2px 6px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--surface-2);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: var(--text-2);
-  line-height: 1.4;
-}
-
-/* ============================================================
-   Responsive
-   ============================================================ */
-@media (max-width: 768px) {
-  .topnav { padding: 0 12px; }
-  .topnav-brand .brand-text { display: none; }
-  .topnav-brand .brand-sub { display: none; }
-  .tab-btn { padding: 6px 10px; font-size: 12px; }
-  .tab-btn span:not(.tab-icon) { display: none; }
-  .home-view { padding: 24px 14px 60px; }
-  .home-hero h2 { font-size: 22px; }
-  .tool-cards { grid-template-columns: 1fr; }
-}
-
-/* ============================================================
-   Scrollbar
-   ============================================================ */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 </style>
 </head>
 <body>
 
-<!-- ============================================================
-     Top Navigation
-     ============================================================ -->
-<nav class="topnav">
-  <div class="topnav-brand" data-view="home" title="ホームへ戻る">
-    <div class="brand-icon">GP</div>
-    <div>
-      <div class="brand-text">Graph Pro-Vis</div>
-      <div class="brand-sub">統括データ解析</div>
-    </div>
+<nav class="nav">
+  <div class="nav-brand" data-view="home">Graph Pro-Vis</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-view="home">ホーム</button>
+    <button class="nav-tab" data-view="provis">統計解析</button>
+    <button class="nav-tab" data-view="pareto">パレート図</button>
+    <button class="nav-tab" data-view="hist">ヒストグラム</button>
+    <button class="nav-tab" data-view="scatter">散布図・回帰</button>
   </div>
-
-  <div class="topnav-tabs" id="topnavTabs">
-    <button class="tab-btn active" data-view="home">
-      <span class="tab-icon icon-home">&#9776;</span>
-      <span>ホーム</span>
-    </button>
-    <button class="tab-btn" data-view="provis">
-      <span class="tab-icon icon-provis">&#9679;</span>
-      <span>Pro-Vis 統計解析</span>
-    </button>
-    <button class="tab-btn" data-view="pareto">
-      <span class="tab-icon icon-pareto">&#9650;</span>
-      <span>パレート図</span>
-    </button>
-    <button class="tab-btn" data-view="hist">
-      <span class="tab-icon icon-hist">&#9608;</span>
-      <span>ヒストグラム</span>
-    </button>
-    <button class="tab-btn" data-view="scatter">
-      <span class="tab-icon icon-scatter">&#8226;</span>
-      <span>散布図・回帰</span>
-    </button>
-  </div>
-
-  <div class="topnav-right">
-    <button class="topnav-help" id="helpBtn" title="使い方ガイド">? ヘルプ</button>
-  </div>
+  <button class="nav-help" id="helpBtn">? ヘルプ</button>
 </nav>
 
-<!-- ============================================================
-     Main Content
-     ============================================================ -->
-<div class="main-area">
-
-  <!-- Home Dashboard -->
-  <div class="view home-view active" id="view-home">
-    <div class="home-hero">
-      <h2>データ解析を、もっと簡単に</h2>
-      <p>4つの専門ツールを統合した解析プラットフォーム。<br>
-      CSVやExcelデータを読み込んで、すぐにグラフ化・分析できます。</p>
+<div class="main">
+  <div class="view home active" id="view-home">
+    <div class="home-msg">
+      <h2>使いたいツールを選んでください</h2>
+      <p>下のカードをクリックするだけで、すぐに使えます。<br>
+      データはお使いのPC上で処理されます。</p>
+      <span class="safe">サンプルデータ付き &mdash; すぐ試せます</span>
     </div>
-
-    <!-- Tool Cards (generated by JS) -->
-    <div class="tool-cards" id="toolCards"></div>
-
-    <!-- Workflow Guide -->
-    <div class="home-section">
-      <h3><span class="sec-icon">&#9654;</span> 基本ワークフロー</h3>
-      <div class="workflow-steps">
-        <div class="workflow-step">
-          <div class="step-num">01</div>
-          <div class="step-title">データを準備</div>
-          <div class="step-desc">Excel/CSVファイルを用意するか、ツール上で直接データを入力します。</div>
-        </div>
-        <div class="workflow-step">
-          <div class="step-num">02</div>
-          <div class="step-title">ツールを選択</div>
-          <div class="step-desc">分析目的に合ったツールを上のカードからクリックして起動します。</div>
-        </div>
-        <div class="workflow-step">
-          <div class="step-num">03</div>
-          <div class="step-title">データを読み込み</div>
-          <div class="step-desc">CSVファイルをドロップ、またはコピー&amp;ペーストでデータを入力します。</div>
-        </div>
-        <div class="workflow-step">
-          <div class="step-num">04</div>
-          <div class="step-title">結果を出力</div>
-          <div class="step-desc">グラフをSVG/PNG/CSVとして保存。レポートに貼り付けられます。</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tips -->
-    <div class="home-section">
-      <h3><span class="sec-icon">&#9733;</span> 使い方のヒント</h3>
-      <div class="tips-grid">
-        <div class="tip-card">
-          <div class="tip-icon">&#9889;</div>
-          <div class="tip-text">
-            <strong>ショートカットキー</strong>
-            <kbd>1</kbd>~<kbd>4</kbd> キーでツール切替、<kbd>H</kbd> でホームに戻れます。
-          </div>
-        </div>
-        <div class="tip-card">
-          <div class="tip-icon">&#128203;</div>
-          <div class="tip-text">
-            <strong>Excelからの貼り付け</strong>
-            Excelでセルを選択してコピーし、各ツールのテキストエリアに貼り付けるだけでOK。
-          </div>
-        </div>
-        <div class="tip-card">
-          <div class="tip-icon">&#127912;</div>
-          <div class="tip-text">
-            <strong>グラフのカスタマイズ</strong>
-            各ツールの設定パネルから色・ラベル・表示項目を自由に調整できます。
-          </div>
-        </div>
-        <div class="tip-card">
-          <div class="tip-icon">&#128190;</div>
-          <div class="tip-text">
-            <strong>高品質なエクスポート</strong>
-            SVG形式で保存すれば、拡大しても劣化しないベクター画像として利用可能。
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tool Selection Guide (generated by JS) -->
-    <div class="home-section">
-      <h3><span class="sec-icon">&#128269;</span> どのツールを使えばいい？</h3>
-      <div class="tips-grid" id="toolGuide"></div>
-    </div>
+    <div class="cards" id="cards"></div>
   </div>
-
-  <!-- Tool views (generated by JS) -->
 </div>
 
-<!-- ============================================================
-     Help Modal
-     ============================================================ -->
-<div class="modal-overlay" id="helpModal">
+<div class="overlay" id="helpModal">
   <div class="modal">
-    <button class="modal-close" id="modalCloseBtn">&#10005;</button>
-    <h3>Graph Pro-Vis 使い方ガイド</h3>
-    <p class="modal-sub">初めての方向けのクイックガイドです</p>
-
-    <div class="help-section">
-      <h4>1. ツールの選び方</h4>
+    <button class="modal-x" id="modalX">&#10005;</button>
+    <h3>使い方ガイド</h3>
+    <section>
+      <h4>ツールの選び方</h4>
       <ul>
-        <li><strong>Pro-Vis 統計解析</strong> &#8212; CSVデータの読み込み・多角的なグラフ化・基本統計量の算出。まず最初に使うツール。</li>
-        <li><strong>パレート図</strong> &#8212; 品質管理のQC七つ道具。不良項目を重要度順に可視化し、改善の優先順位をつけます。</li>
-        <li><strong>ヒストグラム</strong> &#8212; データの分布を確認。正規分布曲線との比較や規格線の表示ができます。</li>
-        <li><strong>散布図・回帰分析</strong> &#8212; 2変数間の相関関係を把握。回帰式と決定係数を自動算出します。</li>
+        <li><strong>統計解析</strong> &mdash; CSVを読み込んでグラフ化・統計量算出</li>
+        <li><strong>パレート図</strong> &mdash; 項目別の重要度を可視化（QC七つ道具）</li>
+        <li><strong>ヒストグラム</strong> &mdash; データの分布・ばらつきを確認</li>
+        <li><strong>散布図・回帰</strong> &mdash; 2変数の相関・回帰分析</li>
       </ul>
-    </div>
-
-    <div class="help-section">
-      <h4>2. データの入力方法</h4>
+    </section>
+    <section>
+      <h4>データの入れ方</h4>
       <ul>
-        <li>CSVファイルをドラッグ&amp;ドロップ（Pro-Vis対応）</li>
-        <li>Excelからコピー&amp;ペースト（全ツール対応）</li>
-        <li>画面上のテーブルに直接入力（パレート図・散布図）</li>
-        <li>各ツールにサンプルデータが用意されています</li>
+        <li>CSVファイルをドラッグ&amp;ドロップ</li>
+        <li>Excelからコピー&amp;ペースト</li>
+        <li>画面上で直接入力</li>
+        <li>各ツールにサンプルデータが入っています</li>
       </ul>
-    </div>
-
-    <div class="help-section">
-      <h4>3. キーボードショートカット</h4>
+    </section>
+    <section>
+      <h4>キーボードショートカット</h4>
       <ul>
-        <li><kbd>H</kbd> &#8212; ホーム画面に戻る</li>
-        <li><kbd>1</kbd> &#8212; Pro-Vis 統計解析</li>
-        <li><kbd>2</kbd> &#8212; パレート図</li>
-        <li><kbd>3</kbd> &#8212; ヒストグラム</li>
-        <li><kbd>4</kbd> &#8212; 散布図・回帰分析</li>
-        <li><kbd>?</kbd> &#8212; このヘルプを表示</li>
-        <li><kbd>Esc</kbd> &#8212; ヘルプを閉じる</li>
+        <li><kbd>H</kbd> ホーム &nbsp; <kbd>1</kbd> 統計解析 &nbsp; <kbd>2</kbd> パレート &nbsp; <kbd>3</kbd> ヒストグラム &nbsp; <kbd>4</kbd> 散布図</li>
+        <li><kbd>?</kbd> ヘルプ &nbsp; <kbd>Esc</kbd> 閉じる/戻る</li>
       </ul>
-    </div>
-
-    <div class="help-section">
-      <h4>4. 出力・保存</h4>
-      <p>各ツールのエクスポートボタンからグラフをSVG・PNG・CSVとして保存できます。
-      SVG形式は拡大しても劣化しないため、論文やレポートに最適です。</p>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-close-modal" id="modalDoneBtn">閉じる</button>
-    </div>
+    </section>
+    <button class="modal-close-btn" id="modalDone">閉じる</button>
   </div>
 </div>
 
-<!-- ============================================================
-     JavaScript
-     ============================================================ -->
 <script>
 (function() {
   'use strict';
 
-  // ── Tool & view definitions (single source of truth) ──
-  const TOOLS = {
-    provis: {
-      file: 'graph_provis.html',
-      name: 'Pro-Vis 統計解析',
-      icon: '&#128202;',
-      cardClass: 'card-provis',
-      iconBg: 'var(--green-dim)',
-      desc: 'CSV/Excelデータを読み込み、多彩なグラフと統計量を一画面で表示。折れ線・棒・箱ひげ・バイオリン図など多数のグラフタイプに対応。',
-      features: ['CSV読み込み', '多彩なグラフ', '統計量算出', 'Plotly.js'],
-      guide: 'データ全体を概観したい',
-      guideDesc: 'Pro-Vis 統計解析: CSVデータの探索的分析に最適。複数のグラフを素早く切り替えて比較できます。',
-    },
-    pareto: {
-      file: 'pareto.html',
-      name: 'パレート図メーカー',
-      icon: '&#128200;',
-      cardClass: 'card-pareto',
-      iconBg: 'var(--teal-dim)',
-      desc: '項目名と値を入力するだけで正確なパレート図を自動生成。80%ライン・累積比率・SVG/PNG/CSV出力に対応。',
-      features: ['手動入力', '80%ライン', 'SVG/PNG出力', 'QC七つ道具'],
-      guide: '品質問題の原因を特定したい',
-      guideDesc: 'パレート図: 不良項目や原因を重要度順に並べ、「重点管理すべき項目」が一目でわかります。',
-    },
-    hist: {
-      file: 'histgram.html',
-      name: 'ヒストグラム作成',
-      icon: '&#128201;',
-      cardClass: 'card-hist',
-      iconBg: 'var(--purple-dim)',
-      desc: '数値データの分布を視覚化。ビン数の自動・手動設定、正規分布曲線のオーバーレイ、規格線の表示にも対応。',
-      features: ['分布可視化', '正規分布曲線', '規格線', '工程能力指数'],
-      guide: 'データのばらつきを分析したい',
-      guideDesc: 'ヒストグラム: 測定値の分布形状を確認し、規格内に収まっているか判断できます。',
-    },
-    scatter: {
-      file: 'scatter_regression_app.html',
-      name: '散布図・回帰分析',
-      icon: '&#128208;',
-      cardClass: 'card-scatter',
-      iconBg: 'var(--amber-dim)',
-      desc: '2変数間の相関を散布図で可視化し、回帰分析を実行。線形・多項式・対数回帰に対応、相関係数やR\u00B2を自動算出。',
-      features: ['相関分析', '回帰分析', 'R\u00B2算出', 'Plotly.js'],
-      guide: '2つの変数の関係を調べたい',
-      guideDesc: '散布図・回帰分析: 温度と不良率、時間と生産量など、2つの数値データの関係を明確にします。',
-    },
+  var TOOLS = {
+    provis:  { file: 'graph_provis.html', name: '統計解析', icon: '\u{1F4CA}', bg: 'var(--green-dim)',
+               desc: 'CSVを読み込んで折れ線・棒・箱ひげ図などを作成。統計量も自動算出。',
+               hint: 'CSVファイルをドロップして開始' },
+    pareto:  { file: 'pareto.html', name: 'パレート図', icon: '\u{1F4C8}', bg: 'var(--teal-dim)',
+               desc: '項目名と値を入力するだけで、パレート図を自動生成。80%ライン付き。',
+               hint: 'サンプルデータですぐ試せます' },
+    hist:    { file: 'histgram.html', name: 'ヒストグラム', icon: '\u{1F4C9}', bg: 'var(--purple-dim)',
+               desc: '数値データの分布を可視化。正規分布曲線・規格線の表示にも対応。',
+               hint: '数値を貼り付けて分析開始' },
+    scatter: { file: 'scatter_regression_app.html', name: '散布図・回帰', icon: '\u{1F4D0}', bg: 'var(--amber-dim)',
+               desc: '2変数の散布図と回帰分析。相関係数・R\u00B2を自動算出。',
+               hint: 'X,Yデータを入力して相関を確認' },
   };
 
-  // Keyboard shortcut map
-  const KEY_MAP = {
-    'h': 'home', 'H': 'home',
-    '1': 'provis', '2': 'pareto', '3': 'hist', '4': 'scatter',
-  };
+  var KEY_MAP = { h:'home', H:'home', '1':'provis', '2':'pareto', '3':'hist', '4':'scatter' };
 
-  // ── Cached DOM elements ──
-  const helpModal = document.getElementById('helpModal');
-  const mainArea = document.querySelector('.main-area');
+  var helpModal = document.getElementById('helpModal');
+  var mainArea = document.querySelector('.main');
+  var currentView = 'home';
+  var activeView = document.getElementById('view-home');
+  var activeTab = document.querySelector('.nav-tab.active');
 
-  // ── State ──
-  let currentView = 'home';
-  let activeViewEl = document.getElementById('view-home');
-  let activeTabEl = document.querySelector('.tab-btn.active');
-
-  // ── Generate tool cards from data ──
-  function buildToolCards() {
-    const container = document.getElementById('toolCards');
-    const fragment = document.createDocumentFragment();
-
-    for (const [key, tool] of Object.entries(TOOLS)) {
-      const card = document.createElement('div');
-      card.className = 'tool-card ' + tool.cardClass;
-      card.dataset.view = key;
-      card.innerHTML = `
-        <div class="card-header">
-          <div class="card-icon">${tool.icon}</div>
-          <div class="card-title">${tool.name}</div>
-        </div>
-        <div class="card-desc">${tool.desc}</div>
-        <div class="card-features">
-          ${tool.features.map(f => '<span class="feature-tag">' + f + '</span>').join('')}
-        </div>
-        <div class="card-action">ツールを開く &#8594;</div>
-      `;
-      card.addEventListener('click', () => switchView(key));
-      fragment.appendChild(card);
-    }
-    container.appendChild(fragment);
-  }
-
-  // ── Generate tool guide tips from data ──
-  function buildToolGuide() {
-    const container = document.getElementById('toolGuide');
-    const fragment = document.createDocumentFragment();
-
-    for (const [key, tool] of Object.entries(TOOLS)) {
-      const tip = document.createElement('div');
-      tip.className = 'tip-card clickable';
-      tip.innerHTML = `
-        <div class="tip-icon" style="background:${tool.iconBg}">${tool.icon}</div>
-        <div class="tip-text">
-          <strong>${tool.guide}</strong>
-          ${tool.guideDesc}
-        </div>
-      `;
-      tip.addEventListener('click', () => switchView(key));
-      fragment.appendChild(tip);
-    }
-    container.appendChild(fragment);
-  }
-
-  // ── Generate tool view containers from data ──
-  function buildToolViews() {
-    for (const [key, tool] of Object.entries(TOOLS)) {
-      const view = document.createElement('div');
-      view.className = 'view tool-view';
-      view.id = 'view-' + key;
-      view.innerHTML = `
-        <div class="tool-loading" id="loading-${key}">
-          <div class="loading-spinner"></div>
-          <span>${tool.name}を読み込み中...</span>
-        </div>
-      `;
-      mainArea.appendChild(view);
-    }
-  }
-
-  // ── Switch active view/tab ──
-  function switchView(viewKey) {
-    if (viewKey === currentView) return;
-
-    // Deactivate previous
-    if (activeViewEl) activeViewEl.classList.remove('active');
-    if (activeTabEl) activeTabEl.classList.remove('active');
-
-    // Activate target view
-    const viewEl = document.getElementById('view-' + viewKey);
-    if (viewEl) {
-      viewEl.classList.add('active');
-      activeViewEl = viewEl;
-    }
-
-    // Activate corresponding tab
-    const tabEl = document.querySelector('.tab-btn[data-view="' + viewKey + '"]');
-    if (tabEl) {
-      tabEl.classList.add('active');
-      activeTabEl = tabEl;
-    }
-
-    // Lazy load iframe for tool views (check DOM instead of separate map)
-    if (TOOLS[viewKey] && !viewEl.querySelector('iframe')) {
-      loadTool(viewKey, viewEl);
-    }
-
-    currentView = viewKey;
-
-    // Update page title
-    if (viewKey === 'home') {
-      document.title = 'Graph Pro-Vis | 統括データ解析ダッシュボード';
-    } else if (TOOLS[viewKey]) {
-      document.title = TOOLS[viewKey].name + ' | Graph Pro-Vis';
-    }
-  }
-
-  // ── Lazy-load a tool's iframe ──
-  function loadTool(key, viewEl) {
-    const tool = TOOLS[key];
-    const loadingEl = document.getElementById('loading-' + key);
-
-    const iframe = document.createElement('iframe');
-    iframe.src = tool.file;
-    iframe.title = tool.name;
-
-    iframe.addEventListener('load', function() {
-      if (loadingEl) {
-        loadingEl.classList.add('hidden');
-        setTimeout(function() { loadingEl.remove(); }, 300);
-      }
-    });
-
-    iframe.addEventListener('error', function() {
-      if (loadingEl) {
-        loadingEl.innerHTML = '<span style="color:var(--rose);">ツールの読み込みに失敗しました。ファイルが同じフォルダにあるか確認してください。</span>';
-      }
-    });
-
-    viewEl.appendChild(iframe);
-  }
-
-  // ── Toggle help modal ──
-  function toggleHelp() {
-    helpModal.classList.toggle('show');
-  }
-
-  // ── Event listeners (no inline onclick) ──
-
-  // Brand click
-  document.querySelector('.topnav-brand').addEventListener('click', function() {
-    switchView('home');
+  // Build cards
+  var cardsEl = document.getElementById('cards');
+  Object.keys(TOOLS).forEach(function(key) {
+    var t = TOOLS[key];
+    var d = document.createElement('div');
+    d.className = 'card';
+    d.innerHTML =
+      '<div class="card-top"><div class="card-icon" style="background:'+t.bg+'">'+t.icon+'</div>' +
+      '<div class="card-name">'+t.name+'</div></div>' +
+      '<div class="card-desc">'+t.desc+'</div>' +
+      '<span class="card-hint">'+t.hint+'</span>' +
+      '<span class="card-go">\u2192</span>';
+    d.addEventListener('click', function() { switchView(key); });
+    cardsEl.appendChild(d);
   });
 
-  // Tab buttons
-  document.querySelectorAll('.tab-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      switchView(btn.dataset.view);
-    });
+  // Build tool views
+  Object.keys(TOOLS).forEach(function(key) {
+    var v = document.createElement('div');
+    v.className = 'view tool-view';
+    v.id = 'view-' + key;
+    v.innerHTML = '<div class="tool-loading" id="load-'+key+'"><div class="spinner"></div><span>'+TOOLS[key].name+'を読み込み中...</span></div>';
+    mainArea.appendChild(v);
   });
 
-  // Help buttons
+  function switchView(key) {
+    if (key === currentView) return;
+    if (activeView) activeView.classList.remove('active');
+    if (activeTab) activeTab.classList.remove('active');
+
+    var v = document.getElementById('view-' + key);
+    if (v) { v.classList.add('active'); activeView = v; }
+
+    var tab = document.querySelector('.nav-tab[data-view="'+key+'"]');
+    if (tab) { tab.classList.add('active'); activeTab = tab; }
+
+    if (TOOLS[key] && !v.querySelector('iframe')) {
+      var iframe = document.createElement('iframe');
+      iframe.src = TOOLS[key].file;
+      iframe.title = TOOLS[key].name;
+      var loader = document.getElementById('load-' + key);
+      iframe.onload = function() {
+        if (loader) { loader.classList.add('hide'); setTimeout(function(){ loader.remove(); }, 300); }
+      };
+      v.appendChild(iframe);
+    }
+
+    currentView = key;
+    document.title = key === 'home' ? 'Graph Pro-Vis | データ解析ツール' : TOOLS[key].name + ' | Graph Pro-Vis';
+  }
+
+  function toggleHelp() { helpModal.classList.toggle('show'); }
+
+  // Events
+  document.querySelector('.nav-brand').addEventListener('click', function() { switchView('home'); });
+  document.querySelectorAll('.nav-tab').forEach(function(b) {
+    b.addEventListener('click', function() { switchView(b.dataset.view); });
+  });
   document.getElementById('helpBtn').addEventListener('click', toggleHelp);
-  document.getElementById('modalCloseBtn').addEventListener('click', toggleHelp);
-  document.getElementById('modalDoneBtn').addEventListener('click', toggleHelp);
+  document.getElementById('modalX').addEventListener('click', toggleHelp);
+  document.getElementById('modalDone').addEventListener('click', toggleHelp);
+  helpModal.addEventListener('click', function(e) { if (e.target === helpModal) toggleHelp(); });
 
-  // Close modal on overlay click
-  helpModal.addEventListener('click', function(e) {
-    if (e.target === helpModal) toggleHelp();
-  });
-
-  // Keyboard shortcuts
   document.addEventListener('keydown', function(e) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-
-    // If help modal is open, only Escape closes it
     if (helpModal.classList.contains('show')) {
-      if (e.key === 'Escape') {
-        toggleHelp();
-        e.preventDefault();
-      }
+      if (e.key === 'Escape') { toggleHelp(); e.preventDefault(); }
       return;
     }
-
-    // Data-driven shortcut lookup
-    if (KEY_MAP[e.key]) {
-      switchView(KEY_MAP[e.key]);
-      e.preventDefault();
-      return;
-    }
-
-    if (e.key === '?') {
-      toggleHelp();
-      e.preventDefault();
-    } else if (e.key === 'Escape' && currentView !== 'home') {
-      switchView('home');
-      e.preventDefault();
-    }
+    if (KEY_MAP[e.key]) { switchView(KEY_MAP[e.key]); e.preventDefault(); return; }
+    if (e.key === '?') { toggleHelp(); e.preventDefault(); }
+    else if (e.key === 'Escape' && currentView !== 'home') { switchView('home'); e.preventDefault(); }
   });
-
-  // ── Init: build dynamic content ──
-  buildToolCards();
-  buildToolGuide();
-  buildToolViews();
-
 })();
 </script>
 </body>

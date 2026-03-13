@@ -11,24 +11,24 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --c-bg: #f0f2f5;
-            --c-surface: #ffffff;
-            --c-surface-alt: #f7f8fa;
-            --c-primary: #1a73e8;
-            --c-primary-hover: #1557b0;
-            --c-primary-light: #e8f0fe;
+            --c-bg: #0f1117;
+            --c-surface: #1a1d27;
+            --c-surface-alt: #1e2230;
+            --c-primary: #5b8def;
+            --c-primary-hover: #7aa3ff;
+            --c-primary-light: rgba(91,141,239,0.15);
             --c-accent: #ff6d00;
-            --c-text: #202124;
-            --c-text-secondary: #5f6368;
-            --c-text-hint: #9aa0a6;
-            --c-border: #dadce0;
-            --c-success: #0d904f;
-            --c-error: #d93025;
-            --c-warning: #f9ab00;
+            --c-text: #e4e6f0;
+            --c-text-secondary: #9498ab;
+            --c-text-hint: #636882;
+            --c-border: #2a2f42;
+            --c-success: #34d399;
+            --c-error: #fb7185;
+            --c-warning: #fbbf24;
             --radius: 10px;
-            --shadow-sm: 0 1px 3px rgba(60,64,67,0.12);
-            --shadow-md: 0 2px 8px rgba(60,64,67,0.15);
-            --shadow-lg: 0 4px 16px rgba(60,64,67,0.18);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 2px 8px rgba(0,0,0,0.35);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.4);
             --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
         }
 
@@ -52,7 +52,7 @@
         /* ====== HEADER ====== */
         .app-header {
             grid-column: 1 / -1;
-            background: linear-gradient(135deg, #1a237e 0%, #1a73e8 100%);
+            background: linear-gradient(135deg, #141825 0%, var(--c-surface) 100%);
             color: #fff;
             padding: 14px 28px;
             display: flex;
@@ -254,7 +254,7 @@
             color: var(--c-text-secondary);
             border: 1px solid var(--c-border);
         }
-        .btn-secondary:hover { background: #eef0f3; }
+        .btn-secondary:hover { background: #252a3a; }
         .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
 
         /* Tabs for data input */
@@ -404,9 +404,9 @@
             font-weight: 600;
             margin-left: 4px;
         }
-        .col-badge.numeric { background: #e3f2fd; color: #1565c0; }
-        .col-badge.category { background: #fce4ec; color: #c62828; }
-        .col-badge.date { background: #e8f5e9; color: #2e7d32; }
+        .col-badge.numeric { background: rgba(91,141,239,0.15); color: #7aa3ff; }
+        .col-badge.category { background: rgba(251,113,133,0.15); color: #fb7185; }
+        .col-badge.date { background: rgba(52,211,153,0.15); color: #34d399; }
 
         /* Toast notification */
         .toast {
@@ -1166,7 +1166,7 @@ function buildPieTraces(xField, yField, colorField, aggMethod) {
         labels, values,
         type: 'pie',
         hole: 0.35,
-        marker: { colors, line: { color: '#fff', width: 2 } },
+        marker: { colors, line: { color: '#1a1d27', width: 2 } },
         textinfo: 'label+percent',
         textfont: { size: 12 },
         hovertemplate: '<b>%{label}</b><br>値: %{value:,.2f}<br>割合: %{percent}<extra></extra>',
@@ -1186,34 +1186,37 @@ function buildLayout(xField, yCols, showLegend, showGrid) {
     return {
         title: {
             text: titleText,
-            font: { family: 'Noto Sans JP', size: 18, color: '#202124', weight: 600 },
+            font: { family: 'Noto Sans JP', size: 18, color: '#e4e6f0', weight: 600 },
             x: 0.02, xanchor: 'left'
         },
         xaxis: {
-            title: { text: xField, font: { size: 13, color: '#5f6368' } },
+            title: { text: xField, font: { size: 13, color: '#9498ab' } },
             automargin: true,
             showgrid: showGrid,
-            gridcolor: '#f0f0f0',
-            tickfont: { size: 11 }
+            gridcolor: '#2a2f42',
+            tickfont: { size: 11, color: '#9498ab' },
+            linecolor: '#2a2f42',
+            zerolinecolor: '#2a2f42'
         },
         yaxis: {
-            title: { text: yLabel, font: { size: 13, color: '#5f6368' } },
+            title: { text: yLabel, font: { size: 13, color: '#9498ab' } },
             automargin: true,
             showgrid: showGrid,
-            gridcolor: '#f0f0f0',
+            gridcolor: '#2a2f42',
             zeroline: true,
-            zerolinecolor: '#dadce0',
-            tickfont: { size: 11 }
+            zerolinecolor: '#2a2f42',
+            tickfont: { size: 11, color: '#9498ab' },
+            linecolor: '#2a2f42'
         },
-        plot_bgcolor: '#ffffff',
-        paper_bgcolor: '#ffffff',
+        plot_bgcolor: '#1a1d27',
+        paper_bgcolor: '#1a1d27',
         hovermode: 'x unified',
-        hoverlabel: { bgcolor: '#fff', bordercolor: '#dadce0', font: { family: 'Noto Sans JP', size: 12 } },
+        hoverlabel: { bgcolor: '#232733', bordercolor: '#2a2f42', font: { family: 'Noto Sans JP', size: 12, color: '#e4e6f0' } },
         showlegend: showLegend,
         legend: {
             orientation: 'h', y: -0.18, x: 0.5, xanchor: 'center',
-            font: { size: 11 },
-            bgcolor: 'rgba(255,255,255,0.8)'
+            font: { size: 11, color: '#9498ab' },
+            bgcolor: 'rgba(26,29,39,0.8)'
         },
         barmode: 'group',
         boxmode: 'group',
