@@ -611,7 +611,7 @@
                         <span class="data-count" id="dataCount">0 件</span>
                     </div>
                     <div class="card-body">
-                        <textarea id="dataInput" placeholder="数値データを入力&#10;スペース・カンマ・改行・タブで区切り&#10;&#10;例: 10.5 11.2 9.8 10.3 11.0"></textarea>
+                        <textarea id="dataInput" placeholder="列名（省略可）&#10;10.02&#10;10.05&#10;9.98&#10;...&#10;&#10;CSV/TSV形式（1列）またはスペース区切り"></textarea>
                         <div class="quick-actions">
                             <button class="quick-btn" onclick="loadSample()">サンプル</button>
                             <button class="quick-btn" onclick="pasteClipboard()">📋 貼付</button>
@@ -786,9 +786,32 @@
         updateSpecFields();
     });
 
+    function parseValues(raw) {
+        if (!raw) return [];
+        const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l);
+        if (lines.length === 0) return [];
+        // Detect delimiter
+        const firstLine = lines[0];
+        const delimiter = firstLine.includes('\t') ? '\t' : firstLine.includes(',') ? ',' : null;
+        // Detect header: first value is non-numeric
+        const firstVal = delimiter ? firstLine.split(delimiter)[0].trim() : firstLine.trim();
+        const startIdx = (firstVal === '' || isNaN(Number(firstVal))) ? 1 : 0;
+        const data = [];
+        for (let i = startIdx; i < lines.length; i++) {
+            const cell = delimiter ? lines[i].split(delimiter)[0].trim() : lines[i].trim();
+            const v = Number(cell);
+            if (!isNaN(v) && cell !== '') data.push(v);
+        }
+        // Fallback: space-separated on single or few lines
+        if (data.length === 0) {
+            return raw.split(/[\s,\t\n]+/).map(Number).filter(v => !isNaN(v));
+        }
+        return data;
+    }
+
     function updateDataCount() {
         const raw = document.getElementById('dataInput').value.trim();
-        const count = raw ? raw.split(/[\s,\t\n]+/).filter(v => v && !isNaN(Number(v))).length : 0;
+        const count = parseValues(raw).length;
         document.getElementById('dataCount').textContent = `${count} 件`;
     }
 
@@ -806,10 +829,8 @@
 
     // ── Quick Actions ──
     function loadSample() {
-        const samples = [
-            "10.02 10.05 9.98 10.01 10.03 9.99 10.04 10.00 9.97 10.06 10.01 9.98 10.03 10.02 9.99 10.05 10.00 9.96 10.04 10.01 9.98 10.03 10.07 10.00 9.99 10.02 10.01 9.97 10.04 10.03 10.00 9.98 10.05 10.02 9.99 10.01 10.06 10.00 9.97 10.03 10.02 10.04 9.98 10.01 10.00 9.99 10.05 10.03 9.96 10.02",
-        ];
-        document.getElementById('dataInput').value = samples[0];
+        const values = [10.02,10.05,9.98,10.01,10.03,9.99,10.04,10.00,9.97,10.06,10.01,9.98,10.03,10.02,9.99,10.05,10.00,9.96,10.04,10.01,9.98,10.03,10.07,10.00,9.99,10.02,10.01,9.97,10.04,10.03,10.00,9.98,10.05,10.02,9.99,10.01,10.06,10.00,9.97,10.03,10.02,10.04,9.98,10.01,10.00,9.99,10.05,10.03,9.96,10.02];
+        document.getElementById('dataInput').value = '寸法\n' + values.join('\n');
         document.getElementById('lowerSpec').value = '9.90';
         document.getElementById('upperSpec').value = '10.10';
         updateDataCount();
@@ -835,10 +856,33 @@
 
     function sortData() {
         const ta = document.getElementById('dataInput');
-        const arr = ta.value.trim().split(/[\s,\t\n]+/).map(Number).filter(v => !isNaN(v));
-        if (arr.length === 0) return;
-        arr.sort((a, b) => a - b);
-        ta.value = arr.join(' ');
+        const raw = ta.value.trim();
+        const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l);
+        if (lines.length === 0) return;
+        const firstLine = lines[0];
+        const delimiter = firstLine.includes('\t') ? '\t' : firstLine.includes(',') ? ',' : null;
+        const firstVal = delimiter ? firstLine.split(delimiter)[0].trim() : firstLine.trim();
+        const hasHeader = (firstVal === '' || isNaN(Number(firstVal)));
+        const headerLine = hasHeader ? lines[0] : null;
+        const startIdx = hasHeader ? 1 : 0;
+        const nums = [];
+        for (let i = startIdx; i < lines.length; i++) {
+            const cell = delimiter ? lines[i].split(delimiter)[0].trim() : lines[i].trim();
+            const v = Number(cell);
+            if (!isNaN(v) && cell !== '') nums.push(v);
+        }
+        if (nums.length === 0) {
+            const arr = raw.split(/[\s,\t\n]+/).map(Number).filter(v => !isNaN(v));
+            if (arr.length === 0) return;
+            arr.sort((a, b) => a - b);
+            ta.value = arr.join(' ');
+        } else {
+            nums.sort((a, b) => a - b);
+            const result = [];
+            if (headerLine) result.push(headerLine);
+            nums.forEach(v => result.push(String(v)));
+            ta.value = result.join('\n');
+        }
         showToast('データを昇順に並び替えました');
     }
 
@@ -879,7 +923,7 @@
         const raw = document.getElementById('dataInput').value.trim();
         if (!raw) { showToast('データを入力してください'); return; }
 
-        const data = raw.split(/[\s,\t\n]+/).map(Number).filter(v => !isNaN(v));
+        const data = parseValues(raw);
         if (data.length < 2) { showToast('有効なデータが2つ以上必要です'); return; }
 
         const specType = currentSpecType;
