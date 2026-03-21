@@ -590,16 +590,52 @@
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .chart-wrapper { height: 300px; }
         }
+
+        /* ── Unified Pro-Vis Nav Header ── */
+        .provis-header {
+            background: linear-gradient(135deg, #141825 0%, #1a1d27 100%);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .provis-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .provis-logo-icon {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .provis-logo-title {
+            font-size: 1.2rem; font-weight: 700; color: #fff;
+            letter-spacing: -0.02em;
+        }
+        .provis-nav { display: flex; gap: 2px; flex: 1; }
+        .nav-tab {
+            padding: 5px 13px; border-radius: 6px; font-size: 0.8rem;
+            font-weight: 500; color: #9498ab; text-decoration: none;
+            transition: 0.2s; white-space: nowrap;
+        }
+        .nav-tab:hover { background: #1e2230; color: #e4e6f0; }
+        .nav-tab.active { background: rgba(91,141,239,0.15); color: #5b8def; }
     </style>
 </head>
 <body>
+    <header class="provis-header">
+        <a href="graph_provis.html" class="provis-logo">
+            <div class="provis-logo-icon">📊</div>
+            <span class="provis-logo-title">Pro-Vis</span>
+        </a>
+        <nav class="provis-nav">
+            <a href="graph_provis.html" class="nav-tab">📊 グラフ</a>
+            <a href="histgram.html" class="nav-tab active">📈 ヒストグラム</a>
+            <a href="pareto.html" class="nav-tab">📉 パレート</a>
+            <a href="scatter_regression_app.html" class="nav-tab">🔵 散布図</a>
+        </nav>
+    </header>
     <div class="app">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-icon">📊</div>
-            <h1>ヒストグラム作成ツール</h1>
-            <span class="header-badge">v2.0</span>
-        </div>
 
         <div class="main-grid">
             <!-- ── Left Panel ── -->
