@@ -57,9 +57,14 @@
             padding: 14px 28px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
+            gap: 20px;
             z-index: 10;
         }
+        .app-nav { display: flex; gap: 2px; flex: 1; }
+        .nav-tab { padding: 5px 13px; border-radius: 6px; font-size: 0.8rem; font-weight: 500; color: var(--c-text-secondary); text-decoration: none; transition: var(--transition); white-space: nowrap; }
+        .nav-tab:hover { background: var(--c-surface-alt); color: var(--c-text); }
+        .nav-tab.active { background: var(--c-primary-light); color: var(--c-primary); }
         .app-header .logo {
             display: flex;
             align-items: center;
@@ -502,9 +507,13 @@
             <div class="logo-icon">📊</div>
             <div>
                 <h1>Pro-Vis</h1>
-                <div class="subtitle">インタラクティブ データ可視化・統計解析</div>
             </div>
         </div>
+        <nav class="app-nav">
+            <a href="graph_provis.html" class="nav-tab active">📊 グラフ</a>
+            <a href="histgram.html" class="nav-tab">📈 ヒストグラム</a>
+            <a href="scatter_regression_app.html" class="nav-tab">🔵 散布図</a>
+        </nav>
         <div class="header-actions">
             <button class="header-btn" onclick="exportChart('png')">📷 PNG保存</button>
             <button class="header-btn" onclick="exportChart('svg')">🖼 SVG保存</button>
