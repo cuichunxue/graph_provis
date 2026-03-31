@@ -8,24 +8,24 @@
 <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface-2: #232733;
-  --border: #2a2f42;
-  --text: #e4e6f0;
-  --text-2: #9498ab;
-  --text-3: #636882;
-  --accent: #5b8def;
-  --accent-dim: rgba(91,141,239,0.12);
-  --green: #34d399;
-  --green-dim: rgba(52,211,153,0.12);
-  --amber: #fbbf24;
-  --amber-dim: rgba(251,191,36,0.12);
-  --purple: #a78bfa;
-  --purple-dim: rgba(167,139,250,0.12);
-  --teal: #2dd4bf;
-  --teal-dim: rgba(45,212,191,0.12);
-  --rose: #fb7185;
+  --c-bg: #0f1117;
+  --c-surface: #1a1d27;
+  --c-surface-alt: #232733;
+  --c-border: #2a2f42;
+  --c-text: #e4e6f0;
+  --c-text-secondary: #9498ab;
+  --c-text-hint: #636882;
+  --c-primary: #5b8def;
+  --c-primary-light: rgba(91,141,239,0.12);
+  --c-success: #34d399;
+  --c-success-dim: rgba(52,211,153,0.12);
+  --c-warning: #fbbf24;
+  --c-warning-dim: rgba(251,191,36,0.12);
+  --c-accent-purple: #a78bfa;
+  --c-accent-purple-dim: rgba(167,139,250,0.12);
+  --c-accent: #2dd4bf;
+  --c-accent-dim: rgba(45,212,191,0.12);
+  --c-error: #fb7185;
   --nav-h: 48px;
   --transition: 0.2s ease;
 }
@@ -34,16 +34,16 @@
 
 body {
   font-family: 'Noto Sans JP', sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--c-bg);
+  color: var(--c-text);
   overflow: hidden;
 }
 
 /* ── Nav ── */
 .nav {
   height: var(--nav-h);
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
   display: flex;
   align-items: center;
   padding: 0 16px;
@@ -53,7 +53,7 @@ body {
 .nav-brand {
   font-size: 14px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--c-primary);
   margin-right: 16px;
   cursor: pointer;
   white-space: nowrap;
@@ -72,29 +72,29 @@ body {
   padding: 6px 14px;
   border: none;
   background: none;
-  color: var(--text-2);
+  color: var(--c-text-secondary);
   font: 500 13px 'Noto Sans JP', sans-serif;
   cursor: pointer;
   border-radius: 6px;
   transition: var(--transition);
   white-space: nowrap;
 }
-.nav-tab:hover { background: var(--surface-2); color: var(--text); }
-.nav-tab.active { background: var(--accent-dim); color: var(--accent); }
+.nav-tab:hover { background: var(--c-surface-alt); color: var(--c-text); }
+.nav-tab.active { background: var(--c-primary-light); color: var(--c-primary); }
 
 .nav-help {
   padding: 4px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   background: none;
-  color: var(--text-3);
+  color: var(--c-text-hint);
   font: 12px 'Noto Sans JP', sans-serif;
   cursor: pointer;
   transition: var(--transition);
   margin-left: 8px;
   flex-shrink: 0;
 }
-.nav-help:hover { border-color: var(--accent); color: var(--accent); }
+.nav-help:hover { border-color: var(--c-primary); color: var(--c-primary); }
 
 /* ── Views ── */
 .main { position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0; }
@@ -121,15 +121,15 @@ body {
 }
 .home-msg p {
   font-size: 13px;
-  color: var(--text-2);
+  color: var(--c-text-secondary);
   line-height: 1.7;
 }
 .home-msg .safe {
   display: inline-block;
   margin-top: 10px;
   font-size: 12px;
-  color: var(--green);
-  background: var(--green-dim);
+  color: var(--c-success);
+  background: var(--c-success-dim);
   padding: 4px 12px;
   border-radius: 20px;
 }
@@ -144,8 +144,8 @@ body {
 }
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 10px;
   padding: 20px;
   cursor: pointer;
@@ -176,44 +176,44 @@ body {
 }
 .card-desc {
   font-size: 12px;
-  color: var(--text-2);
+  color: var(--c-text-secondary);
   line-height: 1.6;
   margin-bottom: 12px;
 }
 .card-hint {
   font-size: 11px;
-  color: var(--text-3);
+  color: var(--c-text-hint);
   padding: 4px 10px;
-  background: var(--surface-2);
+  background: var(--c-surface-alt);
   border-radius: 6px;
   display: inline-block;
 }
 .card-go {
   float: right;
   font-size: 12px;
-  color: var(--accent);
+  color: var(--c-primary);
   margin-top: -18px;
 }
 
 /* ── iframe ── */
 .tool-view { position: relative; }
-.tool-view iframe { width: 100%; height: 100%; border: none; background: var(--bg); }
+.tool-view iframe { width: 100%; height: 100%; border: none; background: var(--c-bg); }
 .tool-loading {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: var(--bg); gap: 10px; z-index: 5;
+  background: var(--c-bg); gap: 10px; z-index: 5;
   transition: opacity 0.3s;
 }
 .tool-loading.hide { opacity: 0; pointer-events: none; }
 .spinner {
   width: 28px; height: 28px;
-  border: 3px solid var(--border);
-  border-top-color: var(--accent);
+  border: 3px solid var(--c-border);
+  border-top-color: var(--c-primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.tool-loading span { font-size: 12px; color: var(--text-2); }
+.tool-loading span { font-size: 12px; color: var(--c-text-secondary); }
 
 /* ── Help Modal ── */
 .overlay {
@@ -223,8 +223,8 @@ body {
 }
 .overlay.show { display: flex; }
 .modal {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 10px;
   width: 90%; max-width: 520px;
   max-height: 80vh; overflow-y: auto;
@@ -233,22 +233,22 @@ body {
 .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
 .modal-x {
   position: absolute; top: 12px; right: 14px;
-  background: none; border: none; color: var(--text-3); font-size: 18px; cursor: pointer;
+  background: none; border: none; color: var(--c-text-hint); font-size: 18px; cursor: pointer;
 }
 .modal section { margin-bottom: 16px; }
-.modal section h4 { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
-.modal li, .modal p { font-size: 12px; color: var(--text-2); line-height: 1.7; }
+.modal section h4 { font-size: 13px; font-weight: 600; color: var(--c-primary); margin-bottom: 6px; }
+.modal li, .modal p { font-size: 12px; color: var(--c-text-secondary); line-height: 1.7; }
 .modal ul { padding-left: 16px; }
 .modal li { margin-bottom: 3px; }
 .modal kbd {
   display: inline-block; padding: 1px 5px;
-  border: 1px solid var(--border); border-radius: 3px;
-  background: var(--surface-2); font-size: 11px; color: var(--text-2);
+  border: 1px solid var(--c-border); border-radius: 3px;
+  background: var(--c-surface-alt); font-size: 11px; color: var(--c-text-secondary);
 }
 .modal-close-btn {
   display: block; margin: 12px 0 0 auto;
-  padding: 6px 16px; border: 1px solid var(--border); border-radius: 6px;
-  background: var(--surface-2); color: var(--text); font: 13px 'Noto Sans JP', sans-serif;
+  padding: 6px 16px; border: 1px solid var(--c-border); border-radius: 6px;
+  background: var(--c-surface-alt); color: var(--c-text); font: 13px 'Noto Sans JP', sans-serif;
   cursor: pointer;
 }
 
@@ -261,7 +261,7 @@ body {
 }
 
 ::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -328,16 +328,16 @@ body {
   'use strict';
 
   var TOOLS = {
-    provis:  { file: 'graph_provis.html', name: '統計解析', icon: '\u{1F4CA}', bg: 'var(--green-dim)',
+    provis:  { file: 'graph_provis.html', name: '統計解析', icon: '\u{1F4CA}', bg: 'var(--c-success-dim)',
                desc: 'CSVを読み込んで折れ線・棒・箱ひげ図などを作成。統計量も自動算出。',
                hint: 'CSVファイルをドロップして開始' },
-    pareto:  { file: 'pareto.html', name: 'パレート図', icon: '\u{1F4C8}', bg: 'var(--teal-dim)',
+    pareto:  { file: 'pareto.html', name: 'パレート図', icon: '\u{1F4C8}', bg: 'var(--c-accent-dim)',
                desc: '項目名と値を入力するだけで、パレート図を自動生成。80%ライン付き。',
                hint: 'サンプルデータですぐ試せます' },
-    hist:    { file: 'histgram.html', name: 'ヒストグラム', icon: '\u{1F4C9}', bg: 'var(--purple-dim)',
+    hist:    { file: 'histgram.html', name: 'ヒストグラム', icon: '\u{1F4C9}', bg: 'var(--c-accent-purple-dim)',
                desc: '数値データの分布を可視化。正規分布曲線・規格線の表示にも対応。',
                hint: '数値を貼り付けて分析開始' },
-    scatter: { file: 'scatter_regression_app.html', name: '散布図・回帰', icon: '\u{1F4D0}', bg: 'var(--amber-dim)',
+    scatter: { file: 'scatter_regression_app.html', name: '散布図・回帰', icon: '\u{1F4D0}', bg: 'var(--c-warning-dim)',
                desc: '2変数の散布図と回帰分析。相関係数・R\u00B2を自動算出。',
                hint: 'X,Yデータを入力して相関を確認' },
   };
