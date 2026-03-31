@@ -67,41 +67,6 @@
             padding: 24px 20px 60px;
         }
 
-        /* ── Header ── */
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 28px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .header-icon {
-            width: 42px; height: 42px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-            border-radius: var(--radius-md);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 4px 16px rgba(99,140,255,0.2);
-        }
-        .header h1 {
-            font-size: 22px;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .header-badge {
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--accent-blue);
-            background: var(--accent-blue-glow);
-            padding: 3px 10px;
-            border-radius: 20px;
-            border: 1px solid rgba(99,140,255,0.15);
-        }
-
         /* ── Layout Grid ── */
         .main-grid {
             display: grid;
@@ -592,7 +557,7 @@
         }
 
         /* ── Unified Pro-Vis Nav Header ── */
-        .provis-header {
+        .app-header {
             background: linear-gradient(135deg, #141825 0%, #1a1d27 100%);
             padding: 14px 28px;
             display: flex;
@@ -612,7 +577,7 @@
             font-size: 1.2rem; font-weight: 700; color: #fff;
             letter-spacing: -0.02em;
         }
-        .provis-nav { display: flex; gap: 2px; flex: 1; }
+        .app-nav { display: flex; gap: 2px; flex: 1; }
         .nav-tab {
             padding: 5px 13px; border-radius: 6px; font-size: 0.8rem;
             font-weight: 500; color: #9498ab; text-decoration: none;
@@ -623,12 +588,12 @@
     </style>
 </head>
 <body>
-    <header class="provis-header">
+    <header class="app-header">
         <a href="graph_provis.html" class="provis-logo">
             <div class="provis-logo-icon">📊</div>
             <span class="provis-logo-title">Pro-Vis</span>
         </a>
-        <nav class="provis-nav">
+        <nav class="app-nav">
             <a href="graph_provis.html" class="nav-tab">📊 グラフ</a>
             <a href="histgram.html" class="nav-tab active">📈 ヒストグラム</a>
             <a href="pareto.html" class="nav-tab">📉 パレート</a>
