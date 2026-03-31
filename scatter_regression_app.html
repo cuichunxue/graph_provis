@@ -8,18 +8,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface2: #232733;
-  --border: #2e3344;
-  --text: #e4e6ef;
-  --text2: #9498ab;
-  --accent: #6c8cff;
-  --accent2: #4ecdc4;
-  --accent-glow: rgba(108,140,255,0.15);
-  --warn: #ff6b8a;
-  --success: #4ecdc4;
-  --orange: #ffb347;
+  --c-bg: #0f1117;
+  --c-surface: #1a1d27;
+  --c-surface-alt: #232733;
+  --c-border: #2e3344;
+  --c-text: #e4e6ef;
+  --c-text-secondary: #9498ab;
+  --c-primary: #6c8cff;
+  --c-accent: #4ecdc4;
+  --c-primary-light: rgba(108,140,255,0.15);
+  --c-error: #ff6b8a;
+  --c-success: #4ecdc4;
+  --c-warning: #ffb347;
   --radius: 12px;
   --shadow: 0 4px 24px rgba(0,0,0,0.3);
 }
@@ -28,8 +28,8 @@
 
 body {
   font-family: 'Noto Sans JP', sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--c-bg);
+  color: var(--c-text);
   min-height: 100vh;
   line-height: 1.6;
 }
@@ -59,6 +59,15 @@ body {
 }
 .nav-tab:hover { background: #1e2230; color: #e4e6f0; }
 .nav-tab.active { background: rgba(91,141,239,0.15); color: #5b8def; }
+.header-actions { display: flex; gap: 8px; }
+.header-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff; padding: 7px 16px; border-radius: 6px;
+  font-size: 0.82rem; cursor: pointer; transition: 0.2s;
+  font-family: inherit; white-space: nowrap;
+}
+.header-btn:hover { background: rgba(255,255,255,0.25); }
 
 .container {
   max-width: 1440px;
@@ -74,15 +83,15 @@ body {
 }
 
 .panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: var(--radius);
   overflow: hidden;
 }
 
 .panel-header {
   padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--c-border);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -105,7 +114,7 @@ body {
   justify-content: center;
   width: 22px; height: 22px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--c-primary);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -120,7 +129,7 @@ body {
 .section-title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--c-text);
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -129,7 +138,7 @@ body {
 
 .section-desc {
   font-size: 11px;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   margin-bottom: 10px;
   line-height: 1.5;
 }
@@ -137,10 +146,10 @@ body {
 textarea {
   width: 100%;
   min-height: 140px;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   padding: 12px;
@@ -150,8 +159,8 @@ textarea {
 
 textarea:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px var(--c-primary-light);
 }
 
 textarea::placeholder { color: #555; }
@@ -159,10 +168,10 @@ textarea::placeholder { color: #555; }
 select, input[type="number"] {
   width: 100%;
   padding: 8px 12px;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 13px;
   transition: border-color 0.2s;
@@ -170,13 +179,13 @@ select, input[type="number"] {
 
 select:focus, input[type="number"]:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--c-primary);
 }
 
 label {
   display: block;
   font-size: 12px;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   margin-bottom: 5px;
   font-weight: 500;
 }
@@ -205,7 +214,7 @@ label {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #5a7aee);
+  background: linear-gradient(135deg, var(--c-primary), #5a7aee);
   color: #fff;
   box-shadow: 0 2px 12px rgba(108,140,255,0.3);
 }
@@ -216,12 +225,12 @@ label {
 }
 
 .btn-secondary {
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
+  background: var(--c-surface-alt);
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
 }
 
-.btn-secondary:hover { background: var(--border); }
+.btn-secondary:hover { background: var(--c-border); }
 
 .btn-sm {
   padding: 6px 14px;
@@ -244,21 +253,21 @@ label {
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text2);
+  border: 1px solid var(--c-border);
+  background: var(--c-bg);
+  color: var(--c-text-secondary);
   transition: all 0.2s;
 }
 
 .chip.active {
-  background: var(--accent);
+  background: var(--c-primary);
   color: #fff;
-  border-color: var(--accent);
+  border-color: var(--c-primary);
 }
 
 .chip:hover:not(.active) {
-  border-color: var(--accent);
-  color: var(--text);
+  border-color: var(--c-primary);
+  color: var(--c-text);
 }
 
 .toggle-row {
@@ -271,7 +280,7 @@ label {
 .toggle-row label {
   margin: 0;
   font-size: 13px;
-  color: var(--text);
+  color: var(--c-text);
 }
 
 .switch {
@@ -285,7 +294,7 @@ label {
 .switch .slider {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--border);
+  background: var(--c-border);
   border-radius: 11px;
   transition: 0.3s;
 }
@@ -301,7 +310,7 @@ label {
 }
 
 .switch input:checked + .slider {
-  background: var(--accent);
+  background: var(--c-primary);
 }
 
 .switch input:checked + .slider::before {
@@ -315,15 +324,15 @@ label {
 }
 
 .stat-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
   padding: 12px;
 }
 
 .stat-card .stat-label {
   font-size: 10px;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
@@ -333,12 +342,12 @@ label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 16px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--c-primary);
 }
 
-.stat-card .stat-value.good { color: var(--success); }
-.stat-card .stat-value.warn { color: var(--orange); }
-.stat-card .stat-value.bad { color: var(--warn); }
+.stat-card .stat-value.good { color: var(--c-success); }
+.stat-card .stat-value.warn { color: var(--c-warning); }
+.stat-card .stat-value.bad { color: var(--c-error); }
 
 .stat-card-wide {
   grid-column: 1 / -1;
@@ -354,11 +363,11 @@ label {
 .results-table th, .results-table td {
   padding: 8px 10px;
   text-align: left;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--c-border);
 }
 
 .results-table th {
-  color: var(--text2);
+  color: var(--c-text-secondary);
   font-weight: 500;
   font-size: 11px;
 }
@@ -379,7 +388,7 @@ label {
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   text-align: center;
   padding: 40px;
 }
@@ -392,7 +401,7 @@ label {
 
 .empty-state h3 {
   font-size: 16px;
-  color: var(--text);
+  color: var(--c-text);
   margin-bottom: 8px;
 }
 
@@ -404,7 +413,7 @@ label {
 
 .divider {
   height: 1px;
-  background: var(--border);
+  background: var(--c-border);
   margin: 16px 0;
 }
 
@@ -416,9 +425,9 @@ label {
   font-weight: 600;
 }
 
-.badge-blue { background: rgba(108,140,255,0.15); color: var(--accent); }
-.badge-green { background: rgba(78,205,196,0.15); color: var(--accent2); }
-.badge-red { background: rgba(255,107,138,0.15); color: var(--warn); }
+.badge-blue { background: rgba(108,140,255,0.15); color: var(--c-primary); }
+.badge-green { background: rgba(78,205,196,0.15); color: var(--c-accent); }
+.badge-red { background: rgba(255,107,138,0.15); color: var(--c-error); }
 
 .fade-in {
   animation: fadeIn 0.3s ease;
@@ -444,14 +453,14 @@ label {
 
 .notification.success {
   background: rgba(78,205,196,0.15);
-  border: 1px solid var(--accent2);
-  color: var(--accent2);
+  border: 1px solid var(--c-accent);
+  color: var(--c-accent);
 }
 
 .notification.error {
   background: rgba(255,107,138,0.15);
-  border: 1px solid var(--warn);
-  color: var(--warn);
+  border: 1px solid var(--c-error);
+  color: var(--c-error);
 }
 
 @keyframes slideIn {
@@ -475,8 +484,8 @@ label {
   justify-content: center;
   width: 16px; height: 16px;
   border-radius: 50%;
-  background: var(--border);
-  color: var(--text2);
+  background: var(--c-border);
+  color: var(--c-text-secondary);
   font-size: 10px;
   font-weight: 700;
   cursor: help;
@@ -489,15 +498,15 @@ label {
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  background: var(--surface2);
-  border: 1px solid var(--border);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 400;
   white-space: nowrap;
   z-index: 100;
-  color: var(--text);
+  color: var(--c-text);
   max-width: 280px;
   white-space: normal;
 }
@@ -512,17 +521,17 @@ label {
 .correlation-interpretation {
   padding: 10px 14px;
   border-radius: 8px;
-  background: var(--bg);
-  border-left: 3px solid var(--accent);
+  background: var(--c-bg);
+  border-left: 3px solid var(--c-primary);
   font-size: 12px;
   line-height: 1.6;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   margin-top: 10px;
 }
 
 .polynomial-info {
   font-size: 11px;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   margin-top: 6px;
 }
 </style>
@@ -541,6 +550,10 @@ label {
     <a href="pareto.html" class="nav-tab">📉 パレート</a>
     <a href="scatter_regression_app.html" class="nav-tab active">🔵 散布図</a>
   </nav>
+  <div class="header-actions" id="navExportBtns" style="display:none;">
+    <button class="header-btn" onclick="exportChartPNG()">📷 PNG保存</button>
+    <button class="header-btn" onclick="exportChartSVG()">🖼 SVG保存</button>
+  </div>
 </header>
 
 <div class="container">
@@ -549,7 +562,7 @@ label {
     <!-- DATA INPUT -->
     <div class="panel">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(108,140,255,0.15);color:var(--accent);">📋</div>
+        <div class="icon" style="background:rgba(108,140,255,0.15);color:var(--c-primary);">📋</div>
         データ入力
       </div>
       <div class="panel-body">
@@ -579,7 +592,7 @@ label {
     <!-- SETTINGS -->
     <div class="panel" id="settingsPanel" style="display:none;">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(78,205,196,0.15);color:var(--accent2);">⚙️</div>
+        <div class="icon" style="background:rgba(78,205,196,0.15);color:var(--c-accent);">⚙️</div>
         解析設定
       </div>
       <div class="panel-body">
@@ -711,7 +724,7 @@ label {
     <!-- CHART -->
     <div class="panel">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(108,140,255,0.15);color:var(--accent);">📈</div>
+        <div class="icon" style="background:rgba(108,140,255,0.15);color:var(--c-primary);">📈</div>
         散布図 & 回帰分析
         <span id="dataCountBadge" class="badge badge-blue" style="margin-left:auto;display:none;">N=0</span>
         <div id="exportBtns" style="margin-left:8px;display:none;gap:6px;flex-shrink:0;">
@@ -734,7 +747,7 @@ label {
     <!-- RESULTS -->
     <div class="panel" id="resultsPanel" style="display:none;">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(255,179,71,0.15);color:var(--orange);">📊</div>
+        <div class="icon" style="background:rgba(255,179,71,0.15);color:var(--c-warning);">📊</div>
         統計結果
       </div>
       <div class="panel-body fade-in">
@@ -749,7 +762,7 @@ label {
         </div>
         <div style="margin-top:16px;" id="equationBox">
           <div class="section-title">回帰式</div>
-          <div style="background:var(--bg);padding:12px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;word-break:break-all;" id="equationText"></div>
+          <div style="background:var(--c-bg);padding:12px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;word-break:break-all;" id="equationText"></div>
         </div>
       </div>
     </div>
@@ -1407,6 +1420,7 @@ function updateChart() {
   // Show export buttons
   const eb = document.getElementById('exportBtns');
   eb.style.display = 'flex';
+  document.getElementById('navExportBtns').style.display = 'flex';
   
   // Residual plot
   const residualArea = document.getElementById('residualArea');
@@ -1472,7 +1486,7 @@ function updateChart() {
     </div>
     ${(useLogX || useLogY) ? `<div class="stat-card stat-card-wide">
       <div class="stat-label">対数変換</div>
-      <div class="stat-value" style="font-size:13px;color:var(--accent2);">${useLogX ? 'X: '+logLabel(logXType) : ''}${useLogX && useLogY ? ' / ' : ''}${useLogY ? 'Y: '+logLabel(logYType) : ''}</div>
+      <div class="stat-value" style="font-size:13px;color:var(--c-accent);">${useLogX ? 'X: '+logLabel(logXType) : ''}${useLogX && useLogY ? ' / ' : ''}${useLogY ? 'Y: '+logLabel(logYType) : ''}</div>
     </div>` : ''}
   `;
   

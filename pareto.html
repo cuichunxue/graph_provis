@@ -7,28 +7,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface2: #232733;
-  --border: #2e3346;
-  --text: #e4e6f0;
-  --text-dim: #8b8fa4;
-  --accent: #00d4aa;
-  --accent-dim: rgba(0,212,170,0.15);
-  --accent2: #3b82f6;
+  --c-bg: #0f1117;
+  --c-surface: #1a1d27;
+  --c-surface-alt: #232733;
+  --c-border: #2e3346;
+  --c-text: #e4e6f0;
+  --c-text-secondary: #8b8fa4;
+  --c-primary: #00d4aa;
+  --c-primary-light: rgba(0,212,170,0.15);
+  --c-accent: #3b82f6;
   --bar-fill: #00d4aa;
   --bar-stroke: #00b894;
   --line-color: #f59e0b;
-  --danger: #ef4444;
-  --warning: #f59e0b;
+  --c-error: #ef4444;
+  --c-warning: #f59e0b;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
   font-family: 'Noto Sans JP', sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--c-bg);
+  color: var(--c-text);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -58,6 +58,15 @@ body {
 }
 .nav-tab:hover { background: #1e2230; color: #e4e6f0; }
 .nav-tab.active { background: rgba(91,141,239,0.15); color: #5b8def; }
+.header-actions { display: flex; gap: 8px; }
+.header-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff; padding: 7px 16px; border-radius: 6px;
+  font-size: 0.82rem; cursor: pointer; transition: 0.2s;
+  font-family: inherit; white-space: nowrap;
+}
+.header-btn:hover { background: rgba(255,255,255,0.25); }
 
 .main-layout {
   display: flex;
@@ -70,7 +79,7 @@ body {
 .panel-left {
   width: 380px;
   min-width: 380px;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--c-border);
   padding: 20px;
   overflow-y: auto;
   max-height: calc(100vh - 100px);
@@ -91,7 +100,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--accent);
+  color: var(--c-primary);
   margin-bottom: 10px;
 }
 
@@ -104,10 +113,10 @@ body {
 .data-table th {
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   text-align: left;
   padding: 6px 8px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--c-border);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -129,18 +138,18 @@ body {
 .data-table .row-num {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.72rem;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   text-align: center;
 }
 
 .data-table input[type="text"],
 .data-table input[type="number"] {
   width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
   border-radius: 5px;
   padding: 7px 9px;
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 0.85rem;
   outline: none;
@@ -148,8 +157,8 @@ body {
 }
 
 .data-table input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-dim);
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 2px var(--c-primary-light);
 }
 
 .data-table input[type="number"] {
@@ -158,14 +167,14 @@ body {
 }
 
 .data-table input.error {
-  border-color: var(--danger);
+  border-color: var(--c-error);
   box-shadow: 0 0 0 2px rgba(239,68,68,0.15);
 }
 
 .btn-row-delete {
   background: none;
   border: none;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -178,7 +187,7 @@ body {
 }
 
 .btn-row-delete:hover {
-  color: var(--danger);
+  color: var(--c-error);
   background: rgba(239,68,68,0.1);
 }
 
@@ -191,9 +200,9 @@ body {
 .btn {
   padding: 8px 14px;
   border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  color: var(--text);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface-alt);
+  color: var(--c-text);
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
@@ -205,13 +214,13 @@ body {
 }
 
 .btn:hover {
-  background: var(--border);
+  background: var(--c-border);
 }
 
 .btn-primary {
-  background: var(--accent);
+  background: var(--c-primary);
   color: #0f1117;
-  border-color: var(--accent);
+  border-color: var(--c-primary);
   font-weight: 600;
 }
 
@@ -220,7 +229,7 @@ body {
 }
 
 .btn-danger {
-  color: var(--danger);
+  color: var(--c-error);
 }
 
 .btn-danger:hover {
@@ -240,18 +249,18 @@ body {
 
 .setting-row label {
   font-size: 0.8rem;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
 }
 
 .setting-row input[type="text"],
 .setting-row input[type="number"],
 .setting-row select {
   width: 160px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
   border-radius: 5px;
   padding: 6px 9px;
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 0.82rem;
   outline: none;
@@ -259,7 +268,7 @@ body {
 
 .setting-row input:focus,
 .setting-row select:focus {
-  border-color: var(--accent);
+  border-color: var(--c-primary);
 }
 
 .setting-row select {
@@ -274,20 +283,20 @@ body {
 }
 
 .checkbox-row input[type="checkbox"] {
-  accent-color: var(--accent);
+  accent-color: var(--c-primary);
   width: 15px;
   height: 15px;
 }
 
 .checkbox-row label {
   font-size: 0.8rem;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   cursor: pointer;
 }
 
 .divider {
   border: none;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--c-border);
   margin: 16px 0;
 }
 
@@ -295,8 +304,8 @@ body {
 .chart-wrapper {
   width: 100%;
   max-width: 900px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 10px;
   padding: 24px;
   position: relative;
@@ -307,7 +316,7 @@ body {
   font-size: 1.15rem;
   font-weight: 600;
   margin-bottom: 16px;
-  color: var(--text);
+  color: var(--c-text);
 }
 
 .chart-area {
@@ -325,7 +334,7 @@ svg.pareto-svg {
 .tooltip {
   position: fixed;
   background: #232733;
-  border: 1px solid var(--border);
+  border: 1px solid var(--c-border);
   border-radius: 7px;
   padding: 10px 14px;
   font-size: 0.82rem;
@@ -341,18 +350,18 @@ svg.pareto-svg {
 
 .tooltip .tt-label {
   font-weight: 600;
-  color: var(--accent);
+  color: var(--c-primary);
   margin-bottom: 4px;
 }
 
 .tooltip .tt-row {
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   font-size: 0.78rem;
   line-height: 1.5;
 }
 
 .tooltip .tt-row span {
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'JetBrains Mono', monospace;
   font-weight: 500;
 }
@@ -365,7 +374,7 @@ svg.pareto-svg {
   padding: 10px 14px;
   margin-bottom: 14px;
   font-size: 0.78rem;
-  color: var(--warning);
+  color: var(--c-warning);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -386,8 +395,8 @@ svg.pareto-svg {
 .stat-card {
   flex: 1;
   min-width: 120px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
   padding: 12px 14px;
 }
@@ -396,7 +405,7 @@ svg.pareto-svg {
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   margin-bottom: 4px;
 }
 
@@ -404,7 +413,7 @@ svg.pareto-svg {
   font-family: 'JetBrains Mono', monospace;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--c-primary);
 }
 
 /* Export area */
@@ -427,7 +436,7 @@ svg.pareto-svg {
     min-width: 0;
     max-height: none;
     border-right: none;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--c-border);
   }
   .panel-right {
     max-height: none;
@@ -439,7 +448,7 @@ svg.pareto-svg {
   width: 28px;
   height: 28px;
   border-radius: 5px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--c-border);
   cursor: pointer;
   padding: 0;
   overflow: hidden;
@@ -457,7 +466,7 @@ svg.pareto-svg {
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #3e4460; }
 
 /* Import Modal */
@@ -472,8 +481,8 @@ svg.pareto-svg {
 }
 
 .import-modal-content {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 12px;
   padding: 24px;
   width: 90%;
@@ -494,33 +503,33 @@ svg.pareto-svg {
 .import-modal-header h3 {
   font-size: 1.05rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--c-text);
 }
 
 .import-desc {
   font-size: 0.78rem;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   line-height: 1.6;
   margin-bottom: 12px;
 }
 
 .import-desc code {
-  background: var(--surface2);
+  background: var(--c-surface-alt);
   padding: 1px 5px;
   border-radius: 3px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  color: var(--accent);
+  color: var(--c-primary);
 }
 
 #importTextarea {
   width: 100%;
   min-height: 200px;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
   border-radius: 7px;
   padding: 12px;
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.82rem;
   line-height: 1.5;
@@ -529,8 +538,8 @@ svg.pareto-svg {
 }
 
 #importTextarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-dim);
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 2px var(--c-primary-light);
 }
 
 #importTextarea::placeholder {
@@ -569,6 +578,11 @@ svg.pareto-svg {
     <a href="pareto.html" class="nav-tab active">📉 パレート</a>
     <a href="scatter_regression_app.html" class="nav-tab">🔵 散布図</a>
   </nav>
+  <div class="header-actions">
+    <button class="header-btn" onclick="exportSVG()">🖼 SVG保存</button>
+    <button class="header-btn" onclick="exportPNG()">📷 PNG保存</button>
+    <button class="header-btn" onclick="exportCSV()">📄 CSV保存</button>
+  </div>
 </header>
 
 <div class="main-layout">
