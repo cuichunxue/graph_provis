@@ -408,7 +408,7 @@
         }
         .stat-value {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 18px;
+            font-size: 13px; font-weight: 700; letter-spacing: 0.03em; color: #fff;
             font-weight: 600;
             color: var(--c-text);
         }
@@ -571,7 +571,7 @@
             background: rgba(255,255,255,0.2);
             border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
+            font-size: 13px; font-weight: 700; letter-spacing: 0.03em; color: #fff;
         }
         .provis-logo-title {
             font-size: 1.2rem; font-weight: 700; color: #fff;
@@ -599,19 +599,19 @@
 <body>
     <header class="app-header">
         <a href="graph_provis.html" class="provis-logo">
-            <div class="provis-logo-icon">📊</div>
+            <div class="provis-logo-icon">PV</div>
             <span class="provis-logo-title">Pro-Vis</span>
         </a>
         <nav class="app-nav">
-            <a href="dashboard.html" class="nav-tab">🏠 ホーム</a>
-            <a href="graph_provis.html" class="nav-tab">📊 グラフ</a>
-            <a href="histgram.html" class="nav-tab active">📈 ヒストグラム</a>
-            <a href="pareto.html" class="nav-tab">📉 パレート</a>
-            <a href="scatter_regression_app.html" class="nav-tab">🔵 散布図</a>
+            <a href="dashboard.html" class="nav-tab">ホーム</a>
+            <a href="graph_provis.html" class="nav-tab">グラフ</a>
+            <a href="histgram.html" class="nav-tab active">ヒストグラム</a>
+            <a href="pareto.html" class="nav-tab">パレート</a>
+            <a href="scatter_regression_app.html" class="nav-tab">散布図</a>
         </nav>
         <div class="header-actions" id="navExportBar" style="display:none;">
-            <button class="header-btn" onclick="exportPNG()">📷 PNG保存</button>
-            <button class="header-btn" onclick="exportCSV()">📄 CSV出力</button>
+            <button class="header-btn" onclick="exportPNG()">PNG保存</button>
+            <button class="header-btn" onclick="exportCSV()">CSV出力</button>
         </div>
     </header>
     <div class="app">
@@ -710,8 +710,8 @@
                         </div>
                     </div>
                     <div class="export-bar" id="exportBar" style="display:none;">
-                        <button class="btn-export" onclick="exportPNG()">📷 PNG保存</button>
-                        <button class="btn-export" onclick="exportCSV()">📄 CSV出力</button>
+                        <button class="btn-export" onclick="exportPNG()">PNG保存</button>
+                        <button class="btn-export" onclick="exportCSV()">CSV出力</button>
                         <button class="btn-export" onclick="copyStats()">📋 統計量コピー</button>
                     </div>
                 </div>
