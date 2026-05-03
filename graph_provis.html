@@ -192,7 +192,7 @@
             border-color: var(--c-primary);
             background: var(--c-primary-light);
         }
-        .drop-zone .icon { font-size: 1.5rem; margin-bottom: 4px; }
+        .drop-zone .icon { margin-bottom: 4px; display:flex; align-items:center; justify-content:center; }
         .drop-zone .text { font-size: 0.78rem; color: var(--c-text-secondary); }
         .drop-zone input[type=file] { display: none; }
 
@@ -221,7 +221,7 @@
             background: var(--c-primary-light);
             box-shadow: 0 0 0 2px var(--c-primary-light);
         }
-        .chart-type-btn .ct-icon { font-size: 1.4rem; margin-bottom: 2px; }
+        .chart-type-btn .ct-icon { margin-bottom: 2px; display:flex; align-items:center; justify-content:center; }
         .chart-type-btn .ct-label { font-size: 0.72rem; font-weight: 500; color: var(--c-text-secondary); }
         .chart-type-btn.active .ct-label { color: var(--c-primary); font-weight: 600; }
 
@@ -313,7 +313,7 @@
             color: var(--c-text-hint);
             gap: 12px;
         }
-        .chart-placeholder .ph-icon { font-size: 3rem; opacity: 0.4; }
+        .chart-placeholder .ph-icon { opacity: 0.4; display:flex; align-items:center; justify-content:center; }
         .chart-placeholder .ph-text { font-size: 0.95rem; }
         .chart-placeholder .ph-sub { font-size: 0.78rem; }
 
@@ -541,7 +541,7 @@
             </div>
             <div id="tab-file" class="tab-content">
                 <div class="drop-zone" id="dropZone">
-                    <div class="icon">📁</div>
+                    <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
                     <div class="text">CSVファイルをドラッグ＆ドロップ<br>またはクリックで選択</div>
                     <input type="file" id="fileInput" accept=".csv,.tsv,.txt">
                 </div>
@@ -566,19 +566,19 @@
             <div class="section-label"><span class="step-num">2</span> グラフの種類</div>
             <div class="chart-type-grid">
                 <button class="chart-type-btn active" data-type="bar" onclick="selectChartType('bar', this)">
-                    <div class="ct-icon">📊</div>
+                    <div class="ct-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="4" width="4" height="17"/><line x1="1" y1="21" x2="23" y2="21"/></svg></div>
                     <div class="ct-label">棒グラフ</div>
                 </button>
                 <button class="chart-type-btn" data-type="line" onclick="selectChartType('line', this)">
-                    <div class="ct-icon">📈</div>
+                    <div class="ct-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 18 8 12 13 15 20 6"/><polyline points="15 6 20 6 20 11"/></svg></div>
                     <div class="ct-label">折れ線グラフ</div>
                 </button>
                 <button class="chart-type-btn" data-type="pie" onclick="selectChartType('pie', this)">
-                    <div class="ct-icon">🥧</div>
+                    <div class="ct-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div>
                     <div class="ct-label">円グラフ</div>
                 </button>
                 <button class="chart-type-btn" data-type="box" onclick="selectChartType('box', this)">
-                    <div class="ct-icon">📦</div>
+                    <div class="ct-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="7"/><rect x="7" y="7" width="10" height="10"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="9" y1="3" x2="15" y2="3"/><line x1="9" y1="21" x2="15" y2="21"/></svg></div>
                     <div class="ct-label">箱ひげ図</div>
                 </button>
             </div>
@@ -636,7 +636,7 @@
         <!-- DRAW BUTTON -->
         <div class="sidebar-section" style="padding-top:8px; border-bottom:none;">
             <button class="btn btn-primary" onclick="generateChart()" style="font-size:1rem; padding:14px;">
-                🎨 グラフを描画する
+                グラフを描画する
             </button>
         </div>
     </aside>
@@ -647,7 +647,7 @@
         <div class="chart-container">
             <div id="chartDiv">
                 <div class="chart-placeholder" id="placeholder">
-                    <div class="ph-icon">📊</div>
+                    <div class="ph-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
                     <div class="ph-text">データを読み込んでグラフを描画してください</div>
                     <div class="ph-sub">左のパネルからサンプルデータを試すこともできます</div>
                 </div>
@@ -768,7 +768,7 @@ dropZone.addEventListener('drop', e => {
 fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
 
 function handleFile(file) {
-    document.getElementById('fileName').textContent = '📄 ' + file.name;
+    document.getElementById('fileName').textContent = file.name;
     const reader = new FileReader();
     reader.onload = function(e) {
         document.getElementById('dataInput').value = e.target.result;
@@ -1305,7 +1305,7 @@ function resetAll() {
     document.getElementById('dataPreview').innerHTML = '';
     document.getElementById('chartDiv').innerHTML = `
         <div class="chart-placeholder" id="placeholder">
-            <div class="ph-icon">📊</div>
+            <div class="ph-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
             <div class="ph-text">データを読み込んでグラフを描画してください</div>
             <div class="ph-sub">左のパネルからサンプルデータを試すこともできます</div>
         </div>`;

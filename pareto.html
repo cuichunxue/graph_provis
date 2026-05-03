@@ -57,7 +57,7 @@ body {
   transition: 0.2s; white-space: nowrap;
 }
 .nav-tab:hover { background: #1e2230; color: #e4e6f0; }
-.nav-tab.active { background: rgba(91,141,239,0.15); color: #5b8def; }
+.nav-tab.active { background: var(--c-primary-light); color: var(--c-primary); }
 .header-actions { display: flex; gap: 8px; }
 .header-btn {
   background: rgba(255,255,255,0.15);
@@ -333,7 +333,7 @@ body {
   color: var(--c-text-secondary);
   gap: 10px;
 }
-.chart-placeholder .ph-icon { font-size: 2.8rem; opacity: 0.25; }
+.chart-placeholder .ph-icon { opacity: 0.25; display:flex; align-items:center; justify-content:center; }
 .chart-placeholder .ph-text { font-size: 0.95rem; font-weight: 500; }
 .chart-placeholder .ph-sub { font-size: 0.78rem; color: var(--c-text-hint, #636882); }
 
@@ -393,7 +393,7 @@ svg.pareto-svg {
   gap: 8px;
 }
 
-.sample-banner .icon { font-size: 1rem; }
+.sample-banner .icon { display:flex; align-items:center; flex-shrink:0; }
 
 /* Stats bar */
 .stats-bar {
@@ -427,16 +427,6 @@ svg.pareto-svg {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--c-primary);
-}
-
-/* Export area */
-.export-bar {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
-  width: 100%;
-  max-width: 900px;
-  justify-content: flex-end;
 }
 
 /* Responsive */
@@ -614,7 +604,7 @@ svg.pareto-svg {
     <div class="section-label">データ入力</div>
     
     <div class="sample-banner" id="sampleBanner">
-      <span class="icon">💡</span>
+      <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
       <span>サンプルデータが入っています。自由に編集してください。</span>
     </div>
 
@@ -701,8 +691,8 @@ svg.pareto-svg {
     <hr class="divider">
     <div class="section-label">インポート</div>
     <div class="btn-group">
-      <button class="btn" onclick="importCSV()">📋 データ貼り付け</button>
-      <button class="btn" onclick="loadSample()">🔄 サンプル復元</button>
+      <button class="btn" onclick="importCSV()">データ貼り付け</button>
+      <button class="btn" onclick="loadSample()">サンプル復元</button>
     </div>
   </div>
 
@@ -710,7 +700,7 @@ svg.pareto-svg {
     <div class="chart-wrapper">
       <div class="chart-area" id="chartArea">
         <div class="chart-placeholder" id="chartPlaceholder" style="display:none;">
-          <div class="ph-icon">📉</div>
+          <div class="ph-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="4" height="14"/><rect x="8" y="11" width="4" height="10"/><rect x="14" y="15" width="4" height="6"/><polyline points="4 7 10 11 16 15" stroke-dasharray="3 2"/><line x1="0" y1="21" x2="24" y2="21"/></svg></div>
           <div class="ph-text">データを入力してください</div>
           <div class="ph-sub">左パネルで項目と値を入力するとパレート図が描画されます</div>
         </div>
@@ -720,11 +710,6 @@ svg.pareto-svg {
     
     <div class="stats-bar" id="statsBar"></div>
 
-    <div class="export-bar">
-      <button class="btn" onclick="exportSVG()">SVG保存</button>
-      <button class="btn" onclick="exportPNG()">PNG保存</button>
-      <button class="btn" onclick="exportCSV()">CSV保存</button>
-    </div>
   </div>
 </div>
 

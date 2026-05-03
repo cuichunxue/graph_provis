@@ -58,7 +58,7 @@ body {
   transition: 0.2s; white-space: nowrap;
 }
 .nav-tab:hover { background: #1e2230; color: #e4e6f0; }
-.nav-tab.active { background: rgba(91,141,239,0.15); color: #5b8def; }
+.nav-tab.active { background: var(--c-primary-light); color: var(--c-primary); }
 .header-actions { display: flex; gap: 8px; }
 .header-btn {
   background: rgba(255,255,255,0.15);
@@ -113,7 +113,6 @@ body {
   width: 28px; height: 28px;
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
 }
 
 .panel-body { padding: 20px; }
@@ -404,9 +403,9 @@ label {
 }
 
 .empty-state .big-icon {
-  font-size: 64px;
   margin-bottom: 20px;
   opacity: 0.3;
+  display:flex; align-items:center; justify-content:center;
 }
 
 .empty-state h3 {
@@ -575,7 +574,7 @@ label {
     <!-- DATA INPUT -->
     <div class="panel">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(91,141,239,0.15);color:var(--c-primary);">📋</div>
+        <div class="icon" style="background:rgba(91,141,239,0.15);color:var(--c-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></div>
         データ入力
       </div>
       <div class="panel-body">
@@ -605,7 +604,7 @@ label {
     <!-- SETTINGS -->
     <div class="panel" id="settingsPanel" style="display:none;">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(78,205,196,0.15);color:var(--c-accent);">⚙️</div>
+        <div class="icon" style="background:rgba(78,205,196,0.15);color:var(--c-accent);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
         解析設定
       </div>
       <div class="panel-body">
@@ -737,7 +736,7 @@ label {
     <!-- CHART -->
     <div class="panel">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(91,141,239,0.15);color:var(--c-primary);">📈</div>
+        <div class="icon" style="background:rgba(91,141,239,0.15);color:var(--c-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
         散布図 & 回帰分析
         <span id="dataCountBadge" class="badge badge-blue" style="margin-left:auto;display:none;">N=0</span>
         <div id="exportBtns" style="margin-left:8px;display:none;gap:6px;flex-shrink:0;">
@@ -748,7 +747,7 @@ label {
       <div class="panel-body">
         <div id="chartArea">
           <div class="empty-state">
-            <div class="big-icon">📊</div>
+            <div class="big-icon"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="16" r="1.5"/><circle cx="12" cy="10" r="1.5"/><circle cx="17" cy="13" r="1.5"/><circle cx="5" cy="7" r="1.5"/><circle cx="15" cy="5" r="1.5"/><line x1="2" y1="21" x2="22" y2="21"/><line x1="2" y1="4" x2="2" y2="21"/></svg></div>
             <h3>データを入力して解析を開始</h3>
             <p>左のパネルにデータを貼り付け（またはサンプルを選択）し、「解析を実行」ボタンを押してください。</p>
           </div>
@@ -760,7 +759,7 @@ label {
     <!-- RESULTS -->
     <div class="panel" id="resultsPanel" style="display:none;">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(255,179,71,0.15);color:var(--c-warning);">📊</div>
+        <div class="icon" style="background:rgba(255,179,71,0.15);color:var(--c-warning);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
         統計結果
       </div>
       <div class="panel-body fade-in">
@@ -1515,20 +1514,20 @@ function updateChart() {
   else strength = 'ほぼ無い';
   const direction = r >= 0 ? '正' : '負';
   
-  let interpText = `💡 <b>${direction}の${strength}相関</b>（r = ${r.toFixed(3)}）が見られます。`;
+  let interpText = `<b>${direction}の${strength}相関</b>（r = ${r.toFixed(3)}）が見られます。`;
   if (useLogX || useLogY) {
-    interpText += `<br>📐 <b>対数変換適用中</b>: `;
+    interpText += `<br><b>対数変換適用中</b>: `;
     if (useLogX && useLogY) interpText += `両軸 — 回帰式はべき乗モデル（${baseYName} ∝ ${baseXName}^b）に対応`;
     else if (useLogY) interpText += `Y軸 — 回帰式は指数モデル（${baseYName} ∝ e^(bx)）に対応`;
     else interpText += `X軸 — 回帰式は対数モデル（${baseYName} ∝ log(${baseXName})）に対応`;
   }
   if (r2 < 0.5 && degree === 1 && !useLogX && !useLogY) {
-    interpText += `<br>⚠️ R²が低いため、対数変換や多項式回帰を試すことをお勧めします。`;
+    interpText += `<br>注意: R²が低いため、対数変換や多項式回帰を試すことをお勧めします。`;
   } else if (r2 < 0.5 && degree === 1) {
-    interpText += `<br>⚠️ R²が低いため、多項式回帰や別の変換を試すことをお勧めします。`;
+    interpText += `<br>注意: R²が低いため、多項式回帰や別の変換を試すことをお勧めします。`;
   }
   if (degree > 1 && adjR2 < r2 - 0.05) {
-    interpText += `<br>📌 自由度調整済みR²がR²より大きく低下しています。過適合の可能性に注意してください。`;
+    interpText += `<br>注意: 自由度調整済みR²がR²より大きく低下しています。過適合の可能性があります。`;
   }
   interp.innerHTML = interpText;
   
@@ -1592,7 +1591,7 @@ document.addEventListener('keydown', e => {
 function resetAll() {
   document.getElementById('dataInput').value = '';
   document.getElementById('chartArea').innerHTML =
-    '<div class="empty-state"><div class="big-icon">📊</div>' +
+    '<div class="empty-state"><div class="big-icon"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="16" r="1.5"/><circle cx="12" cy="10" r="1.5"/><circle cx="17" cy="13" r="1.5"/><circle cx="5" cy="7" r="1.5"/><circle cx="15" cy="5" r="1.5"/><line x1="2" y1="21" x2="22" y2="21"/><line x1="2" y1="4" x2="2" y2="21"/></svg></div>' +
     '<h3>データを入力して解析を開始</h3>' +
     '<p>左のパネルにデータを貼り付け（またはサンプルを選択）し、「解析を実行」ボタンを押してください。</p></div>';
   document.getElementById('residualArea').style.display = 'none';

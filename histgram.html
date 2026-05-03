@@ -349,8 +349,8 @@
             gap: 12px;
         }
         .chart-placeholder-icon {
-            font-size: 48px;
             opacity: 0.3;
+            display:flex; align-items:center; justify-content:center;
         }
         .chart-placeholder-text {
             font-size: 13px;
@@ -584,7 +584,7 @@
             transition: 0.2s; white-space: nowrap;
         }
         .nav-tab:hover { background: #1e2230; color: #e4e6f0; }
-        .nav-tab.active { background: rgba(91,141,239,0.15); color: #5b8def; }
+        .nav-tab.active { background: var(--c-primary-light); color: var(--c-primary); }
         .header-actions { display: flex; gap: 8px; }
         .header-btn {
             background: rgba(255,255,255,0.15);
@@ -703,7 +703,7 @@
                     <div class="card-body">
                         <div class="chart-wrapper" id="chartWrapper">
                             <div class="chart-placeholder" id="chartPlaceholder">
-                                <div class="chart-placeholder-icon">📈</div>
+                                <div class="chart-placeholder-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="3" height="9"/><rect x="8" y="8" width="3" height="13"/><rect x="13" y="5" width="3" height="16"/><rect x="18" y="9" width="3" height="12"/><line x1="1" y1="21" x2="23" y2="21"/></svg></div>
                                 <div class="chart-placeholder-text">データを入力して「分析実行」を押してください</div>
                             </div>
                             <canvas id="chartCanvas" style="display:none;"></canvas>
