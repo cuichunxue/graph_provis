@@ -14,9 +14,9 @@
   --c-border: #2e3344;
   --c-text: #e4e6ef;
   --c-text-secondary: #9498ab;
-  --c-primary: #6c8cff;
+  --c-primary: #5b8def;
   --c-accent: #4ecdc4;
-  --c-primary-light: rgba(108,140,255,0.15);
+  --c-primary-light: rgba(91,141,239,0.15);
   --c-error: #ff6b8a;
   --c-success: #4ecdc4;
   --c-warning: #ffb347;
@@ -214,14 +214,14 @@ label {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--c-primary), #5a7aee);
+  background: linear-gradient(135deg, var(--c-primary), #4a78d4);
   color: #fff;
-  box-shadow: 0 2px 12px rgba(108,140,255,0.3);
+  box-shadow: 0 2px 12px rgba(91,141,239,0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(108,140,255,0.4);
+  box-shadow: 0 4px 20px rgba(91,141,239,0.4);
 }
 
 .btn-secondary {
@@ -425,7 +425,7 @@ label {
   font-weight: 600;
 }
 
-.badge-blue { background: rgba(108,140,255,0.15); color: var(--c-primary); }
+.badge-blue { background: rgba(91,141,239,0.15); color: var(--c-primary); }
 .badge-green { background: rgba(78,205,196,0.15); color: var(--c-accent); }
 .badge-red { background: rgba(255,107,138,0.15); color: var(--c-error); }
 
@@ -539,7 +539,7 @@ label {
 <body>
 
 <header class="app-header">
-  <a href="graph_provis.html" class="provis-logo">
+  <a href="dashboard.html" class="provis-logo">
     <div class="provis-logo-icon">PV</div>
     <span class="provis-logo-title">Pro-Vis</span>
   </a>
@@ -562,7 +562,7 @@ label {
     <!-- DATA INPUT -->
     <div class="panel">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(108,140,255,0.15);color:var(--c-primary);">📋</div>
+        <div class="icon" style="background:rgba(91,141,239,0.15);color:var(--c-primary);">📋</div>
         データ入力
       </div>
       <div class="panel-body">
@@ -724,7 +724,7 @@ label {
     <!-- CHART -->
     <div class="panel">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(108,140,255,0.15);color:var(--c-primary);">📈</div>
+        <div class="icon" style="background:rgba(91,141,239,0.15);color:var(--c-primary);">📈</div>
         散布図 & 回帰分析
         <span id="dataCountBadge" class="badge badge-blue" style="margin-left:auto;display:none;">N=0</span>
         <div id="exportBtns" style="margin-left:8px;display:none;gap:6px;flex-shrink:0;">

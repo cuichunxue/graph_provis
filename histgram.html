@@ -13,12 +13,12 @@
             --c-surface-alt: #1e2230;
             --c-bg-input: #161923;
             --c-border: rgba(255,255,255,0.06);
-            --c-border-active: rgba(99,140,255,0.4);
+            --c-border-active: rgba(91,141,239,0.4);
             --c-text: #e8eaf0;
             --c-text-secondary: #8b90a0;
             --c-text-hint: #5a5f72;
-            --c-primary: #638cff;
-            --c-primary-light: rgba(99,140,255,0.15);
+            --c-primary: #5b8def;
+            --c-primary-light: rgba(91,141,239,0.15);
             --c-success: #4ade80;
             --c-success-dim: rgba(74,222,128,0.12);
             --c-error: #f87171;
@@ -31,7 +31,7 @@
             --radius-lg: 14px;
             --radius-xl: 18px;
             --shadow-md: 0 2px 12px rgba(0,0,0,0.25), 0 0 0 1px var(--c-border);
-            --c-shadow-glow: 0 0 20px rgba(99,140,255,0.08);
+            --c-shadow-glow: 0 0 20px rgba(91,141,239,0.08);
             --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -177,8 +177,8 @@
         }
         .quick-btn:hover {
             color: var(--c-text);
-            background: rgba(99,140,255,0.08);
-            border-color: rgba(99,140,255,0.2);
+            background: rgba(91,141,239,0.08);
+            border-color: rgba(91,141,239,0.2);
         }
 
         /* ── Spec Section ── */
@@ -208,7 +208,7 @@
         .spec-tab.active {
             background: var(--c-primary);
             color: #fff;
-            box-shadow: 0 2px 8px rgba(99,140,255,0.3);
+            box-shadow: 0 2px 8px rgba(91,141,239,0.3);
         }
 
         .spec-fields { display: flex; flex-direction: column; gap: 10px; }
@@ -279,7 +279,7 @@
         .btn-primary {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, var(--c-primary), #5a7ae6);
+            background: linear-gradient(135deg, var(--c-primary), #4a78d4);
             color: #fff;
             border: none;
             border-radius: var(--radius-md);
@@ -288,7 +288,7 @@
             cursor: pointer;
             transition: all var(--transition);
             letter-spacing: 0.02em;
-            box-shadow: 0 4px 16px rgba(99,140,255,0.25);
+            box-shadow: 0 4px 16px rgba(91,141,239,0.25);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -296,7 +296,7 @@
         }
         .btn-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 24px rgba(99,140,255,0.35);
+            box-shadow: 0 6px 24px rgba(91,141,239,0.35);
         }
         .btn-primary:active { transform: translateY(0); }
 
@@ -378,7 +378,7 @@
         }
         .btn-export:hover {
             color: var(--c-text);
-            border-color: rgba(99,140,255,0.2);
+            border-color: rgba(91,141,239,0.2);
         }
 
         /* ── Stats Grid ── */
@@ -395,7 +395,7 @@
             transition: all var(--transition);
         }
         .stat-card:hover {
-            border-color: rgba(99,140,255,0.15);
+            border-color: rgba(91,141,239,0.15);
             box-shadow: var(--c-shadow-glow);
         }
         .stat-label {
@@ -477,7 +477,7 @@
         }
         .freq-bar-bg {
             height: 34px;
-            background: linear-gradient(90deg, rgba(99,140,255,0.15), rgba(99,140,255,0.04));
+            background: linear-gradient(90deg, rgba(91,141,239,0.15), rgba(99,140,255,0.04));
             border-radius: 0 4px 4px 0;
             display: flex;
             align-items: center;
@@ -598,7 +598,7 @@
 </head>
 <body>
     <header class="app-header">
-        <a href="graph_provis.html" class="provis-logo">
+        <a href="dashboard.html" class="provis-logo">
             <div class="provis-logo-icon">PV</div>
             <span class="provis-logo-title">Pro-Vis</span>
         </a>
