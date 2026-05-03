@@ -507,8 +507,10 @@
             <a href="scatter_regression_app.html" class="nav-tab">散布図</a>
         </nav>
         <div class="header-actions">
-            <button class="header-btn" onclick="exportChart('png')">PNG保存</button>
-            <button class="header-btn" onclick="exportChart('svg')">SVG保存</button>
+            <div id="navExportActions" style="display:none; gap:8px;">
+                <button class="header-btn" onclick="exportChart('png')">PNG保存</button>
+                <button class="header-btn" onclick="exportChart('svg')">SVG保存</button>
+            </div>
             <button class="header-btn" onclick="resetAll()">リセット</button>
         </div>
     </header>
@@ -1000,6 +1002,7 @@ function generateChart() {
 
     Plotly.newPlot('chartDiv', traces, layout, config);
     updateStats(xField, yCols);
+    document.getElementById('navExportActions').style.display = 'flex';
     showToast('グラフを描画しました', 'success');
 }
 
@@ -1296,6 +1299,7 @@ function resetAll() {
             <div class="ph-text">データを読み込んでグラフを描画してください</div>
             <div class="ph-sub">左のパネルからサンプルデータを試すこともできます</div>
         </div>`;
+    document.getElementById('navExportActions').style.display = 'none';
     showToast('リセットしました');
 }
 

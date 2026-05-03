@@ -550,9 +550,12 @@ label {
     <a href="pareto.html" class="nav-tab">パレート</a>
     <a href="scatter_regression_app.html" class="nav-tab active">散布図</a>
   </nav>
-  <div class="header-actions" id="navExportBtns" style="display:none;">
-    <button class="header-btn" onclick="exportChartPNG()">PNG保存</button>
-    <button class="header-btn" onclick="exportChartSVG()">SVG保存</button>
+  <div class="header-actions">
+    <div id="navExportBtns" style="display:none; gap:8px;">
+      <button class="header-btn" onclick="exportChartPNG()">PNG保存</button>
+      <button class="header-btn" onclick="exportChartSVG()">SVG保存</button>
+    </div>
+    <button class="header-btn" onclick="resetAll()">リセット</button>
   </div>
 </header>
 
@@ -1569,6 +1572,20 @@ function exportChartSVG() {
     filename: 'scatter_chart'
   });
   notify('SVG画像を保存しました', 'success');
+}
+
+function resetAll() {
+  document.getElementById('dataInput').value = '';
+  document.getElementById('chartArea').innerHTML =
+    '<div class="empty-state"><div class="big-icon">📊</div>' +
+    '<h3>データを入力して解析を開始</h3>' +
+    '<p>左のパネルにデータを貼り付け（またはサンプルを選択）し、「解析を実行」ボタンを押してください。</p></div>';
+  document.getElementById('residualArea').style.display = 'none';
+  document.getElementById('residualArea').innerHTML = '';
+  document.getElementById('resultsPanel').style.display = 'none';
+  document.getElementById('dataCountBadge').style.display = 'none';
+  document.getElementById('exportBtns').style.display = 'none';
+  document.getElementById('navExportBtns').style.display = 'none';
 }
 </script>
 

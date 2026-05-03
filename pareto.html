@@ -324,6 +324,19 @@ body {
   width: 100%;
 }
 
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: var(--c-text-secondary);
+  gap: 10px;
+}
+.chart-placeholder .ph-icon { font-size: 2.8rem; opacity: 0.25; }
+.chart-placeholder .ph-text { font-size: 0.95rem; font-weight: 500; }
+.chart-placeholder .ph-sub { font-size: 0.78rem; color: var(--c-text-hint, #636882); }
+
 svg.pareto-svg {
   width: 100%;
   height: auto;
@@ -686,6 +699,11 @@ svg.pareto-svg {
   <div class="panel-right">
     <div class="chart-wrapper">
       <div class="chart-area" id="chartArea">
+        <div class="chart-placeholder" id="chartPlaceholder" style="display:none;">
+          <div class="ph-icon">📉</div>
+          <div class="ph-text">データを入力してください</div>
+          <div class="ph-sub">左パネルで項目と値を入力するとパレート図が描画されます</div>
+        </div>
         <svg class="pareto-svg" id="paretoSvg"></svg>
       </div>
     </div>
@@ -966,11 +984,14 @@ function renderChart() {
   const result = computeParetoData();
   
   if (!result) {
-    svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#8b8fa4" font-size="14" font-family="Noto Sans JP">データを入力してください</text>';
-    svg.setAttribute('viewBox', '0 0 800 400');
+    svg.innerHTML = '';
+    svg.style.display = 'none';
+    document.getElementById('chartPlaceholder').style.display = 'flex';
     document.getElementById('statsBar').innerHTML = '';
     return;
   }
+  document.getElementById('chartPlaceholder').style.display = 'none';
+  svg.style.display = 'block';
 
   const { items, total } = result;
   const n = items.length;
