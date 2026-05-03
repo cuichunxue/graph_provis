@@ -82,6 +82,16 @@ body {
   .container { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 600px) {
+  .app-header { padding: 10px 12px; gap: 10px; }
+  .provis-logo-title { display: none; }
+  .app-nav { overflow-x: auto; scrollbar-width: none; }
+  .app-nav::-webkit-scrollbar { display: none; }
+  .nav-tab { padding: 5px 8px; font-size: 0.74rem; }
+  .header-btn { padding: 6px 10px; font-size: 0.76rem; }
+  .container { padding: 12px; gap: 12px; }
+}
+
 .panel {
   background: var(--c-surface);
   border: 1px solid var(--c-border);
@@ -1573,6 +1583,11 @@ function exportChartSVG() {
   });
   notify('SVG画像を保存しました', 'success');
 }
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') analyzeData();
+});
 
 function resetAll() {
   document.getElementById('dataInput').value = '';

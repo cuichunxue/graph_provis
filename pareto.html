@@ -456,6 +456,16 @@ svg.pareto-svg {
   }
 }
 
+@media (max-width: 600px) {
+  .app-header { padding: 10px 12px; gap: 10px; }
+  .provis-logo-title { display: none; }
+  .app-nav { overflow-x: auto; scrollbar-width: none; }
+  .app-nav::-webkit-scrollbar { display: none; }
+  .nav-tab { padding: 5px 8px; font-size: 0.74rem; }
+  .header-btn { padding: 6px 10px; font-size: 0.76rem; }
+  .panel-left { padding: 12px; }
+}
+
 /* Color picker display */
 .color-swatch {
   width: 28px;
@@ -1335,6 +1345,11 @@ function downloadBlob(blob, filename) {
   a.click();
   URL.revokeObjectURL(a.href);
 }
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') renderChart();
+});
 
 // ============================
 // Init

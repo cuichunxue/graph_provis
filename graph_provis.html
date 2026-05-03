@@ -485,6 +485,16 @@
             }
         }
 
+        @media (max-width: 600px) {
+            .app-header { padding: 10px 12px; gap: 10px; }
+            .provis-logo-title { display: none; }
+            .app-nav { overflow-x: auto; scrollbar-width: none; }
+            .app-nav::-webkit-scrollbar { display: none; }
+            .nav-tab { padding: 5px 8px; font-size: 0.74rem; }
+            .header-btn { padding: 6px 10px; font-size: 0.76rem; }
+            .sidebar { max-height: 35vh; }
+        }
+
         /* Animation */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.4s ease forwards; }
@@ -1302,6 +1312,11 @@ function resetAll() {
     document.getElementById('navExportActions').style.display = 'none';
     showToast('リセットしました');
 }
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && parsedData.length > 0) generateChart();
+});
 
 // ============================================================
 // AUTO-DRAW on Y axis change
