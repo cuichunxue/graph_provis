@@ -549,7 +549,7 @@
         .animate-delay-2 { animation-delay: 0.10s; opacity: 0; }
         .animate-delay-3 { animation-delay: 0.15s; opacity: 0; }
 
-        /* Mobile */
+        /* Mobile (page layout) */
         @media (max-width: 600px) {
             .app { padding: 16px 12px 48px; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -594,6 +594,15 @@
             font-family: inherit; white-space: nowrap;
         }
         .header-btn:hover { background: rgba(255,255,255,0.25); }
+        /* Mobile (nav header) */
+        @media (max-width: 600px) {
+            .app-header { padding: 10px 12px; gap: 10px; }
+            .provis-logo-title { display: none; }
+            .app-nav { overflow-x: auto; scrollbar-width: none; }
+            .app-nav::-webkit-scrollbar { display: none; }
+            .nav-tab { padding: 5px 8px; font-size: 0.74rem; }
+            .header-btn { padding: 6px 10px; font-size: 0.76rem; }
+        }
     </style>
 </head>
 <body>

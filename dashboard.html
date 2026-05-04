@@ -167,7 +167,6 @@ body {
   width: 36px; height: 36px;
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
   flex-shrink: 0;
 }
 .card-name {
@@ -327,17 +326,22 @@ body {
 (function() {
   'use strict';
 
+  var SVG_BAR    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="4" width="4" height="17"/><line x1="1" y1="21" x2="23" y2="21"/></svg>';
+  var SVG_PARETO = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="4" height="14"/><rect x="8" y="11" width="4" height="10"/><rect x="14" y="15" width="4" height="6"/><polyline points="4 7 10 11 16 15" stroke-dasharray="3 2"/><line x1="0" y1="21" x2="24" y2="21"/></svg>';
+  var SVG_HIST   = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="3" height="9"/><rect x="8" y="8" width="3" height="13"/><rect x="13" y="5" width="3" height="16"/><rect x="18" y="9" width="3" height="12"/><line x1="1" y1="21" x2="23" y2="21"/></svg>';
+  var SVG_SCATTER= '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="1.5"/><circle cx="11" cy="10" r="1.5"/><circle cx="16" cy="13" r="1.5"/><circle cx="5" cy="7" r="1.5"/><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>';
+
   var TOOLS = {
-    provis:  { file: 'graph_provis.html', name: '統計解析', icon: '\u{1F4CA}', bg: 'var(--c-success-dim)',
+    provis:  { file: 'graph_provis.html', name: '統計解析', icon: SVG_BAR, bg: 'var(--c-success-dim)',
                desc: 'CSVを読み込んで折れ線・棒・箱ひげ図などを作成。統計量も自動算出。',
                hint: 'CSVファイルをドロップして開始' },
-    pareto:  { file: 'pareto.html', name: 'パレート図', icon: '\u{1F4C8}', bg: 'var(--c-accent-dim)',
+    pareto:  { file: 'pareto.html', name: 'パレート図', icon: SVG_PARETO, bg: 'var(--c-accent-dim)',
                desc: '項目名と値を入力するだけで、パレート図を自動生成。80%ライン付き。',
                hint: 'サンプルデータですぐ試せます' },
-    hist:    { file: 'histgram.html', name: 'ヒストグラム', icon: '\u{1F4C9}', bg: 'var(--c-accent-purple-dim)',
+    hist:    { file: 'histgram.html', name: 'ヒストグラム', icon: SVG_HIST, bg: 'var(--c-accent-purple-dim)',
                desc: '数値データの分布を可視化。正規分布曲線・規格線の表示にも対応。',
                hint: '数値を貼り付けて分析開始' },
-    scatter: { file: 'scatter_regression_app.html', name: '散布図・回帰', icon: '\u{1F4D0}', bg: 'var(--c-warning-dim)',
+    scatter: { file: 'scatter_regression_app.html', name: '散布図・回帰', icon: SVG_SCATTER, bg: 'var(--c-warning-dim)',
                desc: '2変数の散布図と回帰分析。相関係数・R\u00B2を自動算出。',
                hint: 'X,Yデータを入力して相関を確認' },
   };
