@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>散布図・回帰分析ツール</title>
+<title>Pro-Vis | 散布図・回帰</title>
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface2: #232733;
-  --border: #2e3344;
-  --text: #e4e6ef;
-  --text2: #9498ab;
-  --accent: #6c8cff;
-  --accent2: #4ecdc4;
-  --accent-glow: rgba(108,140,255,0.15);
-  --warn: #ff6b8a;
-  --success: #4ecdc4;
-  --orange: #ffb347;
+  --c-bg: #0f1117;
+  --c-surface: #1a1d27;
+  --c-surface-alt: #232733;
+  --c-border: #2e3344;
+  --c-text: #e4e6ef;
+  --c-text-secondary: #9498ab;
+  --c-primary: #5b8def;
+  --c-accent: #4ecdc4;
+  --c-primary-light: rgba(91,141,239,0.15);
+  --c-error: #ff6b8a;
+  --c-success: #4ecdc4;
+  --c-warning: #ffb347;
   --radius: 12px;
   --shadow: 0 4px 24px rgba(0,0,0,0.3);
 }
@@ -28,38 +28,46 @@
 
 body {
   font-family: 'Noto Sans JP', sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--c-bg);
+  color: var(--c-text);
   min-height: 100vh;
   line-height: 1.6;
 }
 
 .app-header {
-  background: linear-gradient(135deg, #1a1d27 0%, #232733 100%);
-  border-bottom: 1px solid var(--border);
-  padding: 20px 32px;
+  background: linear-gradient(135deg, #141825 0%, #1a1d27 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 14px 28px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
-
-.app-header .logo {
-  width: 42px; height: 42px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border-radius: 10px;
+.provis-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.provis-logo-icon {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 20px; font-weight: 700; color: #fff;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.03em; color: #fff;
 }
-
-.app-header h1 {
-  font-size: 20px; font-weight: 600;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+.provis-logo-title { font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+.app-nav { display: flex; gap: 2px; flex: 1; }
+.nav-tab {
+  padding: 5px 13px; border-radius: 6px; font-size: 0.8rem;
+  font-weight: 500; color: #9498ab; text-decoration: none;
+  transition: 0.2s; white-space: nowrap;
 }
-
-.app-header .subtitle {
-  font-size: 12px; color: var(--text2); font-weight: 300;
+.nav-tab:hover { background: #1e2230; color: #e4e6f0; }
+.nav-tab.active { background: var(--c-primary-light); color: var(--c-primary); }
+.header-actions { display: flex; gap: 8px; }
+.header-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff; padding: 7px 16px; border-radius: 6px;
+  font-size: 0.82rem; cursor: pointer; transition: 0.2s;
+  font-family: inherit; white-space: nowrap;
 }
+.header-btn:hover { background: rgba(255,255,255,0.25); }
 
 .container {
   max-width: 1440px;
@@ -74,16 +82,26 @@ body {
   .container { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 600px) {
+  .app-header { padding: 10px 12px; gap: 10px; }
+  .provis-logo-title { display: none; }
+  .app-nav { overflow-x: auto; scrollbar-width: none; }
+  .app-nav::-webkit-scrollbar { display: none; }
+  .nav-tab { padding: 5px 8px; font-size: 0.74rem; }
+  .header-btn { padding: 6px 10px; font-size: 0.76rem; }
+  .container { padding: 12px; gap: 12px; }
+}
+
 .panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: var(--radius);
   overflow: hidden;
 }
 
 .panel-header {
   padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--c-border);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -95,7 +113,6 @@ body {
   width: 28px; height: 28px;
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
 }
 
 .panel-body { padding: 20px; }
@@ -106,7 +123,7 @@ body {
   justify-content: center;
   width: 22px; height: 22px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--c-primary);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -121,7 +138,7 @@ body {
 .section-title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--c-text);
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -130,7 +147,7 @@ body {
 
 .section-desc {
   font-size: 11px;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   margin-bottom: 10px;
   line-height: 1.5;
 }
@@ -138,10 +155,10 @@ body {
 textarea {
   width: 100%;
   min-height: 140px;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   padding: 12px;
@@ -151,8 +168,8 @@ textarea {
 
 textarea:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px var(--c-primary-light);
 }
 
 textarea::placeholder { color: #555; }
@@ -160,10 +177,10 @@ textarea::placeholder { color: #555; }
 select, input[type="number"] {
   width: 100%;
   padding: 8px 12px;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 13px;
   transition: border-color 0.2s;
@@ -171,13 +188,13 @@ select, input[type="number"] {
 
 select:focus, input[type="number"]:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--c-primary);
 }
 
 label {
   display: block;
   font-size: 12px;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   margin-bottom: 5px;
   font-weight: 500;
 }
@@ -206,23 +223,23 @@ label {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #5a7aee);
+  background: linear-gradient(135deg, var(--c-primary), #4a78d4);
   color: #fff;
-  box-shadow: 0 2px 12px rgba(108,140,255,0.3);
+  box-shadow: 0 2px 12px rgba(91,141,239,0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(108,140,255,0.4);
+  box-shadow: 0 4px 20px rgba(91,141,239,0.4);
 }
 
 .btn-secondary {
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
+  background: var(--c-surface-alt);
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
 }
 
-.btn-secondary:hover { background: var(--border); }
+.btn-secondary:hover { background: var(--c-border); }
 
 .btn-sm {
   padding: 6px 14px;
@@ -245,21 +262,21 @@ label {
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text2);
+  border: 1px solid var(--c-border);
+  background: var(--c-bg);
+  color: var(--c-text-secondary);
   transition: all 0.2s;
 }
 
 .chip.active {
-  background: var(--accent);
+  background: var(--c-primary);
   color: #fff;
-  border-color: var(--accent);
+  border-color: var(--c-primary);
 }
 
 .chip:hover:not(.active) {
-  border-color: var(--accent);
-  color: var(--text);
+  border-color: var(--c-primary);
+  color: var(--c-text);
 }
 
 .toggle-row {
@@ -272,7 +289,7 @@ label {
 .toggle-row label {
   margin: 0;
   font-size: 13px;
-  color: var(--text);
+  color: var(--c-text);
 }
 
 .switch {
@@ -286,7 +303,7 @@ label {
 .switch .slider {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--border);
+  background: var(--c-border);
   border-radius: 11px;
   transition: 0.3s;
 }
@@ -302,7 +319,7 @@ label {
 }
 
 .switch input:checked + .slider {
-  background: var(--accent);
+  background: var(--c-primary);
 }
 
 .switch input:checked + .slider::before {
@@ -316,15 +333,15 @@ label {
 }
 
 .stat-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
   padding: 12px;
 }
 
 .stat-card .stat-label {
   font-size: 10px;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
@@ -334,12 +351,12 @@ label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 16px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--c-primary);
 }
 
-.stat-card .stat-value.good { color: var(--success); }
-.stat-card .stat-value.warn { color: var(--orange); }
-.stat-card .stat-value.bad { color: var(--warn); }
+.stat-card .stat-value.good { color: var(--c-success); }
+.stat-card .stat-value.warn { color: var(--c-warning); }
+.stat-card .stat-value.bad { color: var(--c-error); }
 
 .stat-card-wide {
   grid-column: 1 / -1;
@@ -355,11 +372,11 @@ label {
 .results-table th, .results-table td {
   padding: 8px 10px;
   text-align: left;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--c-border);
 }
 
 .results-table th {
-  color: var(--text2);
+  color: var(--c-text-secondary);
   font-weight: 500;
   font-size: 11px;
 }
@@ -380,20 +397,20 @@ label {
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   text-align: center;
   padding: 40px;
 }
 
 .empty-state .big-icon {
-  font-size: 64px;
   margin-bottom: 20px;
   opacity: 0.3;
+  display:flex; align-items:center; justify-content:center;
 }
 
 .empty-state h3 {
   font-size: 16px;
-  color: var(--text);
+  color: var(--c-text);
   margin-bottom: 8px;
 }
 
@@ -405,7 +422,7 @@ label {
 
 .divider {
   height: 1px;
-  background: var(--border);
+  background: var(--c-border);
   margin: 16px 0;
 }
 
@@ -417,9 +434,9 @@ label {
   font-weight: 600;
 }
 
-.badge-blue { background: rgba(108,140,255,0.15); color: var(--accent); }
-.badge-green { background: rgba(78,205,196,0.15); color: var(--accent2); }
-.badge-red { background: rgba(255,107,138,0.15); color: var(--warn); }
+.badge-blue { background: rgba(91,141,239,0.15); color: var(--c-primary); }
+.badge-green { background: rgba(78,205,196,0.15); color: var(--c-accent); }
+.badge-red { background: rgba(255,107,138,0.15); color: var(--c-error); }
 
 .fade-in {
   animation: fadeIn 0.3s ease;
@@ -445,14 +462,14 @@ label {
 
 .notification.success {
   background: rgba(78,205,196,0.15);
-  border: 1px solid var(--accent2);
-  color: var(--accent2);
+  border: 1px solid var(--c-accent);
+  color: var(--c-accent);
 }
 
 .notification.error {
   background: rgba(255,107,138,0.15);
-  border: 1px solid var(--warn);
-  color: var(--warn);
+  border: 1px solid var(--c-error);
+  color: var(--c-error);
 }
 
 @keyframes slideIn {
@@ -476,8 +493,8 @@ label {
   justify-content: center;
   width: 16px; height: 16px;
   border-radius: 50%;
-  background: var(--border);
-  color: var(--text2);
+  background: var(--c-border);
+  color: var(--c-text-secondary);
   font-size: 10px;
   font-weight: 700;
   cursor: help;
@@ -490,15 +507,15 @@ label {
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  background: var(--surface2);
-  border: 1px solid var(--border);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 400;
   white-space: nowrap;
   z-index: 100;
-  color: var(--text);
+  color: var(--c-text);
   max-width: 280px;
   white-space: normal;
 }
@@ -513,30 +530,43 @@ label {
 .correlation-interpretation {
   padding: 10px 14px;
   border-radius: 8px;
-  background: var(--bg);
-  border-left: 3px solid var(--accent);
+  background: var(--c-bg);
+  border-left: 3px solid var(--c-primary);
   font-size: 12px;
   line-height: 1.6;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   margin-top: 10px;
 }
 
 .polynomial-info {
   font-size: 11px;
-  color: var(--text2);
+  color: var(--c-text-secondary);
   margin-top: 6px;
 }
 </style>
 </head>
 <body>
 
-<div class="app-header">
-  <div class="logo">📊</div>
-  <div>
-    <h1>散布図・回帰分析ツール</h1>
-    <div class="subtitle">Scatter Plot & Regression Analysis</div>
+<header class="app-header">
+  <a href="dashboard.html" class="provis-logo">
+    <div class="provis-logo-icon">PV</div>
+    <span class="provis-logo-title">Pro-Vis</span>
+  </a>
+  <nav class="app-nav">
+    <a href="dashboard.html" class="nav-tab">ホーム</a>
+    <a href="graph_provis.html" class="nav-tab">グラフ</a>
+    <a href="histgram.html" class="nav-tab">ヒストグラム</a>
+    <a href="pareto.html" class="nav-tab">パレート</a>
+    <a href="scatter_regression_app.html" class="nav-tab active">散布図</a>
+  </nav>
+  <div class="header-actions">
+    <div id="navExportBtns" style="display:none; gap:8px;">
+      <button class="header-btn" onclick="exportChartPNG()">PNG保存</button>
+      <button class="header-btn" onclick="exportChartSVG()">SVG保存</button>
+    </div>
+    <button class="header-btn" onclick="resetAll()">リセット</button>
   </div>
-</div>
+</header>
 
 <div class="container">
   <!-- LEFT PANEL -->
@@ -544,7 +574,7 @@ label {
     <!-- DATA INPUT -->
     <div class="panel">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(108,140,255,0.15);color:var(--accent);">📋</div>
+        <div class="icon" style="background:rgba(91,141,239,0.15);color:var(--c-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></div>
         データ入力
       </div>
       <div class="panel-body">
@@ -574,7 +604,7 @@ label {
     <!-- SETTINGS -->
     <div class="panel" id="settingsPanel" style="display:none;">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(78,205,196,0.15);color:var(--accent2);">⚙️</div>
+        <div class="icon" style="background:rgba(78,205,196,0.15);color:var(--c-accent);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
         解析設定
       </div>
       <div class="panel-body">
@@ -706,14 +736,18 @@ label {
     <!-- CHART -->
     <div class="panel">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(108,140,255,0.15);color:var(--accent);">📈</div>
+        <div class="icon" style="background:rgba(91,141,239,0.15);color:var(--c-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
         散布図 & 回帰分析
         <span id="dataCountBadge" class="badge badge-blue" style="margin-left:auto;display:none;">N=0</span>
+        <div id="exportBtns" style="margin-left:8px;display:none;gap:6px;flex-shrink:0;">
+          <button class="btn btn-secondary btn-sm" onclick="exportChartPNG()">PNG保存</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportChartSVG()">SVG保存</button>
+        </div>
       </div>
       <div class="panel-body">
         <div id="chartArea">
           <div class="empty-state">
-            <div class="big-icon">📊</div>
+            <div class="big-icon"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="16" r="1.5"/><circle cx="12" cy="10" r="1.5"/><circle cx="17" cy="13" r="1.5"/><circle cx="5" cy="7" r="1.5"/><circle cx="15" cy="5" r="1.5"/><line x1="2" y1="21" x2="22" y2="21"/><line x1="2" y1="4" x2="2" y2="21"/></svg></div>
             <h3>データを入力して解析を開始</h3>
             <p>左のパネルにデータを貼り付け（またはサンプルを選択）し、「解析を実行」ボタンを押してください。</p>
           </div>
@@ -725,7 +759,7 @@ label {
     <!-- RESULTS -->
     <div class="panel" id="resultsPanel" style="display:none;">
       <div class="panel-header">
-        <div class="icon" style="background:rgba(255,179,71,0.15);color:var(--orange);">📊</div>
+        <div class="icon" style="background:rgba(255,179,71,0.15);color:var(--c-warning);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
         統計結果
       </div>
       <div class="panel-body fade-in">
@@ -740,7 +774,7 @@ label {
         </div>
         <div style="margin-top:16px;" id="equationBox">
           <div class="section-title">回帰式</div>
-          <div style="background:var(--bg);padding:12px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;word-break:break-all;" id="equationText"></div>
+          <div style="background:var(--c-bg);padding:12px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;word-break:break-all;" id="equationText"></div>
         </div>
       </div>
     </div>
@@ -1394,6 +1428,11 @@ function updateChart() {
   Plotly.newPlot('chartArea', traces, layout, { responsive: true, displayModeBar: true,
     modeBarButtonsToRemove: ['lasso2d','select2d','toImage'],
     displaylogo: false });
+
+  // Show export buttons
+  const eb = document.getElementById('exportBtns');
+  eb.style.display = 'flex';
+  document.getElementById('navExportBtns').style.display = 'flex';
   
   // Residual plot
   const residualArea = document.getElementById('residualArea');
@@ -1459,7 +1498,7 @@ function updateChart() {
     </div>
     ${(useLogX || useLogY) ? `<div class="stat-card stat-card-wide">
       <div class="stat-label">対数変換</div>
-      <div class="stat-value" style="font-size:13px;color:var(--accent2);">${useLogX ? 'X: '+logLabel(logXType) : ''}${useLogX && useLogY ? ' / ' : ''}${useLogY ? 'Y: '+logLabel(logYType) : ''}</div>
+      <div class="stat-value" style="font-size:13px;color:var(--c-accent);">${useLogX ? 'X: '+logLabel(logXType) : ''}${useLogX && useLogY ? ' / ' : ''}${useLogY ? 'Y: '+logLabel(logYType) : ''}</div>
     </div>` : ''}
   `;
   
@@ -1475,20 +1514,20 @@ function updateChart() {
   else strength = 'ほぼ無い';
   const direction = r >= 0 ? '正' : '負';
   
-  let interpText = `💡 <b>${direction}の${strength}相関</b>（r = ${r.toFixed(3)}）が見られます。`;
+  let interpText = `<b>${direction}の${strength}相関</b>（r = ${r.toFixed(3)}）が見られます。`;
   if (useLogX || useLogY) {
-    interpText += `<br>📐 <b>対数変換適用中</b>: `;
+    interpText += `<br><b>対数変換適用中</b>: `;
     if (useLogX && useLogY) interpText += `両軸 — 回帰式はべき乗モデル（${baseYName} ∝ ${baseXName}^b）に対応`;
     else if (useLogY) interpText += `Y軸 — 回帰式は指数モデル（${baseYName} ∝ e^(bx)）に対応`;
     else interpText += `X軸 — 回帰式は対数モデル（${baseYName} ∝ log(${baseXName})）に対応`;
   }
   if (r2 < 0.5 && degree === 1 && !useLogX && !useLogY) {
-    interpText += `<br>⚠️ R²が低いため、対数変換や多項式回帰を試すことをお勧めします。`;
+    interpText += `<br>注意: R²が低いため、対数変換や多項式回帰を試すことをお勧めします。`;
   } else if (r2 < 0.5 && degree === 1) {
-    interpText += `<br>⚠️ R²が低いため、多項式回帰や別の変換を試すことをお勧めします。`;
+    interpText += `<br>注意: R²が低いため、多項式回帰や別の変換を試すことをお勧めします。`;
   }
   if (degree > 1 && adjR2 < r2 - 0.05) {
-    interpText += `<br>📌 自由度調整済みR²がR²より大きく低下しています。過適合の可能性に注意してください。`;
+    interpText += `<br>注意: 自由度調整済みR²がR²より大きく低下しています。過適合の可能性があります。`;
   }
   interp.innerHTML = interpText;
   
@@ -1512,6 +1551,55 @@ function updateChart() {
   if (degree >= 3) eq += ` ${coeffs[3] >= 0 ? '+' : '−'} ${Math.abs(coeffs[3]).toFixed(8)}·${xv}³`;
   if (degree >= 4) eq += ` ${coeffs[4] >= 0 ? '+' : '−'} ${Math.abs(coeffs[4]).toFixed(10)}·${xv}⁴`;
   eqBox.textContent = eq;
+}
+
+// ===== EXPORT =====
+function exportChartPNG() {
+  if (!document.querySelector('#chartArea .js-plotly-plot')) {
+    notify('先にグラフを描画してください', 'error');
+    return;
+  }
+  Plotly.downloadImage('chartArea', {
+    format: 'png',
+    width: 1600,
+    height: 900,
+    filename: 'scatter_chart',
+    scale: 2
+  });
+  notify('PNG画像を保存しました', 'success');
+}
+
+function exportChartSVG() {
+  if (!document.querySelector('#chartArea .js-plotly-plot')) {
+    notify('先にグラフを描画してください', 'error');
+    return;
+  }
+  Plotly.downloadImage('chartArea', {
+    format: 'svg',
+    width: 1600,
+    height: 900,
+    filename: 'scatter_chart'
+  });
+  notify('SVG画像を保存しました', 'success');
+}
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') analyzeData();
+});
+
+function resetAll() {
+  document.getElementById('dataInput').value = '';
+  document.getElementById('chartArea').innerHTML =
+    '<div class="empty-state"><div class="big-icon"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="16" r="1.5"/><circle cx="12" cy="10" r="1.5"/><circle cx="17" cy="13" r="1.5"/><circle cx="5" cy="7" r="1.5"/><circle cx="15" cy="5" r="1.5"/><line x1="2" y1="21" x2="22" y2="21"/><line x1="2" y1="4" x2="2" y2="21"/></svg></div>' +
+    '<h3>データを入力して解析を開始</h3>' +
+    '<p>左のパネルにデータを貼り付け（またはサンプルを選択）し、「解析を実行」ボタンを押してください。</p></div>';
+  document.getElementById('residualArea').style.display = 'none';
+  document.getElementById('residualArea').innerHTML = '';
+  document.getElementById('resultsPanel').style.display = 'none';
+  document.getElementById('dataCountBadge').style.display = 'none';
+  document.getElementById('exportBtns').style.display = 'none';
+  document.getElementById('navExportBtns').style.display = 'none';
 }
 </script>
 

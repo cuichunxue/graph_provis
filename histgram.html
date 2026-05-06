@@ -3,35 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ヒストグラム作成ツール</title>
+    <title>Pro-Vis | ヒストグラム</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0f1117;
-            --bg-secondary: #1a1d27;
-            --bg-tertiary: #222635;
-            --bg-card: #1e2230;
-            --bg-input: #161923;
-            --border-subtle: rgba(255,255,255,0.06);
-            --border-active: rgba(99,140,255,0.4);
-            --text-primary: #e8eaf0;
-            --text-secondary: #8b90a0;
-            --text-muted: #5a5f72;
-            --accent-blue: #638cff;
-            --accent-blue-glow: rgba(99,140,255,0.15);
-            --accent-green: #4ade80;
-            --accent-green-dim: rgba(74,222,128,0.12);
-            --accent-red: #f87171;
-            --accent-red-dim: rgba(248,113,113,0.12);
-            --accent-amber: #fbbf24;
-            --accent-amber-dim: rgba(251,191,36,0.12);
-            --accent-purple: #a78bfa;
+            --c-bg: #0f1117;
+            --c-surface: #1a1d27;
+            --c-surface-2: #222635;
+            --c-surface-alt: #1e2230;
+            --c-bg-input: #161923;
+            --c-border: rgba(255,255,255,0.06);
+            --c-border-active: rgba(91,141,239,0.4);
+            --c-text: #e8eaf0;
+            --c-text-secondary: #8b90a0;
+            --c-text-hint: #5a5f72;
+            --c-primary: #5b8def;
+            --c-primary-light: rgba(91,141,239,0.15);
+            --c-success: #4ade80;
+            --c-success-dim: rgba(74,222,128,0.12);
+            --c-error: #f87171;
+            --c-error-dim: rgba(248,113,113,0.12);
+            --c-warning: #fbbf24;
+            --c-warning-dim: rgba(251,191,36,0.12);
+            --c-accent-purple: #a78bfa;
             --radius-sm: 6px;
             --radius-md: 10px;
             --radius-lg: 14px;
             --radius-xl: 18px;
-            --shadow-card: 0 2px 12px rgba(0,0,0,0.25), 0 0 0 1px var(--border-subtle);
-            --shadow-glow: 0 0 20px rgba(99,140,255,0.08);
+            --shadow-md: 0 2px 12px rgba(0,0,0,0.25), 0 0 0 1px var(--c-border);
+            --c-shadow-glow: 0 0 20px rgba(91,141,239,0.08);
             --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -39,8 +39,8 @@
 
         body {
             font-family: 'Noto Sans JP', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background: var(--c-bg);
+            color: var(--c-text);
             min-height: 100vh;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
@@ -67,41 +67,6 @@
             padding: 24px 20px 60px;
         }
 
-        /* ── Header ── */
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 28px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .header-icon {
-            width: 42px; height: 42px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-            border-radius: var(--radius-md);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 4px 16px rgba(99,140,255,0.2);
-        }
-        .header h1 {
-            font-size: 22px;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .header-badge {
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--accent-blue);
-            background: var(--accent-blue-glow);
-            padding: 3px 10px;
-            border-radius: 20px;
-            border: 1px solid rgba(99,140,255,0.15);
-        }
-
         /* ── Layout Grid ── */
         .main-grid {
             display: grid;
@@ -118,14 +83,14 @@
 
         /* ── Cards ── */
         .card {
-            background: var(--bg-card);
+            background: var(--c-surface-alt);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-card);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
         }
         .card-header {
             padding: 16px 20px 12px;
-            border-bottom: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--c-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -133,7 +98,7 @@
         .card-title {
             font-size: 13px;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: var(--c-text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.06em;
         }
@@ -153,10 +118,10 @@
         textarea {
             width: 100%;
             height: 140px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
+            background: var(--c-bg-input);
+            border: 1px solid var(--c-border);
             border-radius: var(--radius-md);
-            color: var(--text-primary);
+            color: var(--c-text);
             font-family: 'JetBrains Mono', monospace;
             font-size: 13px;
             padding: 14px;
@@ -166,17 +131,17 @@
         }
         textarea:focus {
             outline: none;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px var(--accent-blue-glow);
+            border-color: var(--c-primary);
+            box-shadow: 0 0 0 3px var(--c-primary-light);
         }
         textarea::placeholder {
-            color: var(--text-muted);
+            color: var(--c-text-hint);
             font-family: 'Noto Sans JP', sans-serif;
             font-size: 12px;
         }
         .data-hint {
             font-size: 11px;
-            color: var(--text-muted);
+            color: var(--c-text-hint);
             margin-top: 8px;
             display: flex;
             align-items: center;
@@ -185,8 +150,8 @@
         .data-count {
             font-family: 'JetBrains Mono', monospace;
             font-size: 11px;
-            color: var(--accent-blue);
-            background: var(--accent-blue-glow);
+            color: var(--c-primary);
+            background: var(--c-primary-light);
             padding: 2px 8px;
             border-radius: 10px;
             margin-left: auto;
@@ -202,24 +167,24 @@
         .quick-btn {
             font-size: 11px;
             font-weight: 500;
-            color: var(--text-secondary);
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-subtle);
+            color: var(--c-text-secondary);
+            background: var(--c-surface-2);
+            border: 1px solid var(--c-border);
             border-radius: var(--radius-sm);
             padding: 5px 10px;
             cursor: pointer;
             transition: all var(--transition);
         }
         .quick-btn:hover {
-            color: var(--text-primary);
-            background: rgba(99,140,255,0.08);
-            border-color: rgba(99,140,255,0.2);
+            color: var(--c-text);
+            background: rgba(91,141,239,0.08);
+            border-color: rgba(91,141,239,0.2);
         }
 
         /* ── Spec Section ── */
         .spec-type-tabs {
             display: flex;
-            background: var(--bg-input);
+            background: var(--c-bg-input);
             border-radius: var(--radius-sm);
             padding: 3px;
             gap: 2px;
@@ -231,7 +196,7 @@
             padding: 7px 6px;
             font-size: 12px;
             font-weight: 500;
-            color: var(--text-muted);
+            color: var(--c-text-hint);
             cursor: pointer;
             border-radius: 4px;
             transition: all var(--transition);
@@ -239,11 +204,11 @@
             background: transparent;
             white-space: nowrap;
         }
-        .spec-tab:hover { color: var(--text-secondary); }
+        .spec-tab:hover { color: var(--c-text-secondary); }
         .spec-tab.active {
-            background: var(--accent-blue);
+            background: var(--c-primary);
             color: #fff;
-            box-shadow: 0 2px 8px rgba(99,140,255,0.3);
+            box-shadow: 0 2px 8px rgba(91,141,239,0.3);
         }
 
         .spec-fields { display: flex; flex-direction: column; gap: 10px; }
@@ -256,16 +221,16 @@
         .field-group label {
             font-size: 12px;
             font-weight: 500;
-            color: var(--text-secondary);
+            color: var(--c-text-secondary);
             white-space: nowrap;
             min-width: 50px;
         }
         .field-group input[type="number"] {
             flex: 1;
-            background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
+            background: var(--c-bg-input);
+            border: 1px solid var(--c-border);
             border-radius: var(--radius-sm);
-            color: var(--text-primary);
+            color: var(--c-text);
             font-family: 'JetBrains Mono', monospace;
             font-size: 13px;
             padding: 8px 12px;
@@ -273,8 +238,8 @@
         }
         .field-group input[type="number"]:focus {
             outline: none;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px var(--accent-blue-glow);
+            border-color: var(--c-primary);
+            box-shadow: 0 0 0 3px var(--c-primary-light);
         }
         .field-group input:disabled {
             opacity: 0.3;
@@ -289,7 +254,7 @@
         }
         .bin-mode-toggle {
             display: flex;
-            background: var(--bg-input);
+            background: var(--c-bg-input);
             border-radius: 4px;
             padding: 2px;
             gap: 2px;
@@ -301,20 +266,20 @@
             border-radius: 3px;
             cursor: pointer;
             background: transparent;
-            color: var(--text-muted);
+            color: var(--c-text-hint);
             transition: all var(--transition);
             font-weight: 500;
         }
         .bin-mode-btn.active {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
+            background: var(--c-surface-2);
+            color: var(--c-text);
         }
 
         /* ── Primary Button ── */
         .btn-primary {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, var(--accent-blue), #5a7ae6);
+            background: linear-gradient(135deg, var(--c-primary), #4a78d4);
             color: #fff;
             border: none;
             border-radius: var(--radius-md);
@@ -323,7 +288,7 @@
             cursor: pointer;
             transition: all var(--transition);
             letter-spacing: 0.02em;
-            box-shadow: 0 4px 16px rgba(99,140,255,0.25);
+            box-shadow: 0 4px 16px rgba(91,141,239,0.25);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -331,7 +296,7 @@
         }
         .btn-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 24px rgba(99,140,255,0.35);
+            box-shadow: 0 6px 24px rgba(91,141,239,0.35);
         }
         .btn-primary:active { transform: translateY(0); }
 
@@ -350,7 +315,7 @@
         .chart-tab {
             font-size: 12px;
             font-weight: 500;
-            color: var(--text-muted);
+            color: var(--c-text-hint);
             background: transparent;
             border: none;
             padding: 6px 14px;
@@ -358,10 +323,10 @@
             border-radius: var(--radius-sm);
             transition: all var(--transition);
         }
-        .chart-tab:hover { color: var(--text-secondary); }
+        .chart-tab:hover { color: var(--c-text-secondary); }
         .chart-tab.active {
-            color: var(--accent-blue);
-            background: var(--accent-blue-glow);
+            color: var(--c-primary);
+            background: var(--c-primary-light);
         }
 
         /* ── Chart Container ── */
@@ -380,12 +345,12 @@
             align-items: center;
             justify-content: center;
             height: 400px;
-            color: var(--text-muted);
+            color: var(--c-text-hint);
             gap: 12px;
         }
         .chart-placeholder-icon {
-            font-size: 48px;
             opacity: 0.3;
+            display:flex; align-items:center; justify-content:center;
         }
         .chart-placeholder-text {
             font-size: 13px;
@@ -400,9 +365,9 @@
         .btn-export {
             font-size: 11px;
             font-weight: 500;
-            color: var(--text-secondary);
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-subtle);
+            color: var(--c-text-secondary);
+            background: var(--c-surface-2);
+            border: 1px solid var(--c-border);
             border-radius: var(--radius-sm);
             padding: 5px 12px;
             cursor: pointer;
@@ -412,8 +377,8 @@
             gap: 5px;
         }
         .btn-export:hover {
-            color: var(--text-primary);
-            border-color: rgba(99,140,255,0.2);
+            color: var(--c-text);
+            border-color: rgba(91,141,239,0.2);
         }
 
         /* ── Stats Grid ── */
@@ -423,19 +388,19 @@
             gap: 10px;
         }
         .stat-card {
-            background: var(--bg-tertiary);
+            background: var(--c-surface-2);
             border-radius: var(--radius-md);
             padding: 14px 16px;
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--c-border);
             transition: all var(--transition);
         }
         .stat-card:hover {
-            border-color: rgba(99,140,255,0.15);
-            box-shadow: var(--shadow-glow);
+            border-color: rgba(91,141,239,0.15);
+            box-shadow: var(--c-shadow-glow);
         }
         .stat-label {
             font-size: 11px;
-            color: var(--text-muted);
+            color: var(--c-text-hint);
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.04em;
@@ -443,14 +408,14 @@
         }
         .stat-value {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 18px;
+            font-size: 13px; font-weight: 700; letter-spacing: 0.03em; color: #fff;
             font-weight: 600;
-            color: var(--text-primary);
+            color: var(--c-text);
         }
-        .stat-value.accent-green { color: var(--accent-green); }
-        .stat-value.accent-red { color: var(--accent-red); }
-        .stat-value.accent-amber { color: var(--accent-amber); }
-        .stat-value.accent-blue { color: var(--accent-blue); }
+        .stat-value.accent-green { color: var(--c-success); }
+        .stat-value.accent-red { color: var(--c-error); }
+        .stat-value.accent-amber { color: var(--c-warning); }
+        .stat-value.accent-blue { color: var(--c-primary); }
 
         /* ── Cp/Cpk Badge ── */
         .cpk-badge {
@@ -462,20 +427,20 @@
             margin-left: 6px;
             vertical-align: middle;
         }
-        .cpk-good { background: var(--accent-green-dim); color: var(--accent-green); }
-        .cpk-warn { background: var(--accent-amber-dim); color: var(--accent-amber); }
-        .cpk-bad { background: var(--accent-red-dim); color: var(--accent-red); }
+        .cpk-good { background: var(--c-success-dim); color: var(--c-success); }
+        .cpk-warn { background: var(--c-warning-dim); color: var(--c-warning); }
+        .cpk-bad { background: var(--c-error-dim); color: var(--c-error); }
 
         /* ── Frequency Table ── */
         .freq-table-wrap {
             max-height: 280px;
             overflow-y: auto;
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--c-border);
         }
         .freq-table-wrap::-webkit-scrollbar { width: 6px; }
         .freq-table-wrap::-webkit-scrollbar-track { background: transparent; }
-        .freq-table-wrap::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 3px; }
+        .freq-table-wrap::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
 
         table {
             width: 100%;
@@ -488,20 +453,20 @@
             z-index: 1;
         }
         th {
-            background: var(--bg-tertiary);
-            color: var(--text-secondary);
+            background: var(--c-surface-2);
+            color: var(--c-text-secondary);
             font-weight: 600;
             padding: 10px 14px;
             text-align: left;
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            border-bottom: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--c-border);
         }
         td {
             padding: 8px 14px;
-            border-bottom: 1px solid var(--border-subtle);
-            color: var(--text-primary);
+            border-bottom: 1px solid var(--c-border);
+            color: var(--c-text);
             font-family: 'JetBrains Mono', monospace;
             font-size: 12px;
         }
@@ -512,7 +477,7 @@
         }
         .freq-bar-bg {
             height: 34px;
-            background: linear-gradient(90deg, rgba(99,140,255,0.15), rgba(99,140,255,0.04));
+            background: linear-gradient(90deg, rgba(91,141,239,0.15), rgba(99,140,255,0.04));
             border-radius: 0 4px 4px 0;
             display: flex;
             align-items: center;
@@ -527,11 +492,11 @@
             display: flex;
             gap: 16px;
             padding: 10px 16px;
-            background: var(--bg-tertiary);
+            background: var(--c-surface-2);
             border-radius: var(--radius-sm);
             margin-top: 12px;
             font-size: 11px;
-            color: var(--text-secondary);
+            color: var(--c-text-secondary);
         }
         .overlay-dot {
             display: inline-block;
@@ -547,9 +512,9 @@
             bottom: 24px;
             left: 50%;
             transform: translateX(-50%) translateY(80px);
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-subtle);
+            background: var(--c-surface-2);
+            color: var(--c-text);
+            border: 1px solid var(--c-border);
             border-radius: var(--radius-md);
             padding: 12px 20px;
             font-size: 13px;
@@ -569,7 +534,7 @@
             text-align: center;
             padding: 32px 0 0;
             font-size: 11px;
-            color: var(--text-muted);
+            color: var(--c-text-hint);
         }
 
         /* ── Animations ── */
@@ -584,22 +549,81 @@
         .animate-delay-2 { animation-delay: 0.10s; opacity: 0; }
         .animate-delay-3 { animation-delay: 0.15s; opacity: 0; }
 
-        /* Mobile */
+        /* Mobile (page layout) */
         @media (max-width: 600px) {
             .app { padding: 16px 12px 48px; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .chart-wrapper { height: 300px; }
         }
+
+        /* ── Unified Pro-Vis Nav Header ── */
+        .app-header {
+            background: linear-gradient(135deg, #141825 0%, #1a1d27 100%);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .provis-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .provis-logo-icon {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; letter-spacing: 0.03em; color: #fff;
+        }
+        .provis-logo-title {
+            font-size: 1.2rem; font-weight: 700; color: #fff;
+            letter-spacing: -0.02em;
+        }
+        .app-nav { display: flex; gap: 2px; flex: 1; }
+        .nav-tab {
+            padding: 5px 13px; border-radius: 6px; font-size: 0.8rem;
+            font-weight: 500; color: #9498ab; text-decoration: none;
+            transition: 0.2s; white-space: nowrap;
+        }
+        .nav-tab:hover { background: #1e2230; color: #e4e6f0; }
+        .nav-tab.active { background: var(--c-primary-light); color: var(--c-primary); }
+        .header-actions { display: flex; gap: 8px; }
+        .header-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff; padding: 7px 16px; border-radius: 6px;
+            font-size: 0.82rem; cursor: pointer; transition: 0.2s;
+            font-family: inherit; white-space: nowrap;
+        }
+        .header-btn:hover { background: rgba(255,255,255,0.25); }
+        /* Mobile (nav header) */
+        @media (max-width: 600px) {
+            .app-header { padding: 10px 12px; gap: 10px; }
+            .provis-logo-title { display: none; }
+            .app-nav { overflow-x: auto; scrollbar-width: none; }
+            .app-nav::-webkit-scrollbar { display: none; }
+            .nav-tab { padding: 5px 8px; font-size: 0.74rem; }
+            .header-btn { padding: 6px 10px; font-size: 0.76rem; }
+        }
     </style>
 </head>
 <body>
-    <div class="app">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-icon">📊</div>
-            <h1>ヒストグラム作成ツール</h1>
-            <span class="header-badge">v2.0</span>
+    <header class="app-header">
+        <a href="dashboard.html" class="provis-logo">
+            <div class="provis-logo-icon">PV</div>
+            <span class="provis-logo-title">Pro-Vis</span>
+        </a>
+        <nav class="app-nav">
+            <a href="dashboard.html" class="nav-tab">ホーム</a>
+            <a href="graph_provis.html" class="nav-tab">グラフ</a>
+            <a href="histgram.html" class="nav-tab active">ヒストグラム</a>
+            <a href="pareto.html" class="nav-tab">パレート</a>
+            <a href="scatter_regression_app.html" class="nav-tab">散布図</a>
+        </nav>
+        <div class="header-actions" id="navExportBar" style="display:none;">
+            <button class="header-btn" onclick="exportPNG()">PNG保存</button>
+            <button class="header-btn" onclick="exportCSV()">CSV出力</button>
         </div>
+    </header>
+    <div class="app">
 
         <div class="main-grid">
             <!-- ── Left Panel ── -->
@@ -611,10 +635,10 @@
                         <span class="data-count" id="dataCount">0 件</span>
                     </div>
                     <div class="card-body">
-                        <textarea id="dataInput" placeholder="数値データを入力&#10;スペース・カンマ・改行・タブで区切り&#10;&#10;例: 10.5 11.2 9.8 10.3 11.0"></textarea>
+                        <textarea id="dataInput" placeholder="列名（省略可）&#10;10.02&#10;10.05&#10;9.98&#10;...&#10;&#10;CSV/TSV形式（1列）またはスペース区切り"></textarea>
                         <div class="quick-actions">
                             <button class="quick-btn" onclick="loadSample()">サンプル</button>
-                            <button class="quick-btn" onclick="pasteClipboard()">📋 貼付</button>
+                            <button class="quick-btn" onclick="pasteClipboard()">貼付</button>
                             <button class="quick-btn" onclick="clearData()">✕ クリア</button>
                             <button class="quick-btn" onclick="sortData()">↕ 並替</button>
                         </div>
@@ -688,16 +712,16 @@
                     <div class="card-body">
                         <div class="chart-wrapper" id="chartWrapper">
                             <div class="chart-placeholder" id="chartPlaceholder">
-                                <div class="chart-placeholder-icon">📈</div>
+                                <div class="chart-placeholder-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="3" height="9"/><rect x="8" y="8" width="3" height="13"/><rect x="13" y="5" width="3" height="16"/><rect x="18" y="9" width="3" height="12"/><line x1="1" y1="21" x2="23" y2="21"/></svg></div>
                                 <div class="chart-placeholder-text">データを入力して「分析実行」を押してください</div>
                             </div>
                             <canvas id="chartCanvas" style="display:none;"></canvas>
                         </div>
                     </div>
                     <div class="export-bar" id="exportBar" style="display:none;">
-                        <button class="btn-export" onclick="exportPNG()">📷 PNG保存</button>
-                        <button class="btn-export" onclick="exportCSV()">📄 CSV出力</button>
-                        <button class="btn-export" onclick="copyStats()">📋 統計量コピー</button>
+                        <button class="btn-export" onclick="exportPNG()">PNG保存</button>
+                        <button class="btn-export" onclick="exportCSV()">CSV出力</button>
+                        <button class="btn-export" onclick="copyStats()">統計量コピー</button>
                     </div>
                 </div>
 
@@ -786,9 +810,32 @@
         updateSpecFields();
     });
 
+    function parseValues(raw) {
+        if (!raw) return [];
+        const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l);
+        if (lines.length === 0) return [];
+        // Detect delimiter
+        const firstLine = lines[0];
+        const delimiter = firstLine.includes('\t') ? '\t' : firstLine.includes(',') ? ',' : null;
+        // Detect header: first value is non-numeric
+        const firstVal = delimiter ? firstLine.split(delimiter)[0].trim() : firstLine.trim();
+        const startIdx = (firstVal === '' || isNaN(Number(firstVal))) ? 1 : 0;
+        const data = [];
+        for (let i = startIdx; i < lines.length; i++) {
+            const cell = delimiter ? lines[i].split(delimiter)[0].trim() : lines[i].trim();
+            const v = Number(cell);
+            if (!isNaN(v) && cell !== '') data.push(v);
+        }
+        // Fallback: space-separated on single or few lines
+        if (data.length === 0) {
+            return raw.split(/[\s,\t\n]+/).map(Number).filter(v => !isNaN(v));
+        }
+        return data;
+    }
+
     function updateDataCount() {
         const raw = document.getElementById('dataInput').value.trim();
-        const count = raw ? raw.split(/[\s,\t\n]+/).filter(v => v && !isNaN(Number(v))).length : 0;
+        const count = parseValues(raw).length;
         document.getElementById('dataCount').textContent = `${count} 件`;
     }
 
@@ -806,10 +853,8 @@
 
     // ── Quick Actions ──
     function loadSample() {
-        const samples = [
-            "10.02 10.05 9.98 10.01 10.03 9.99 10.04 10.00 9.97 10.06 10.01 9.98 10.03 10.02 9.99 10.05 10.00 9.96 10.04 10.01 9.98 10.03 10.07 10.00 9.99 10.02 10.01 9.97 10.04 10.03 10.00 9.98 10.05 10.02 9.99 10.01 10.06 10.00 9.97 10.03 10.02 10.04 9.98 10.01 10.00 9.99 10.05 10.03 9.96 10.02",
-        ];
-        document.getElementById('dataInput').value = samples[0];
+        const values = [10.02,10.05,9.98,10.01,10.03,9.99,10.04,10.00,9.97,10.06,10.01,9.98,10.03,10.02,9.99,10.05,10.00,9.96,10.04,10.01,9.98,10.03,10.07,10.00,9.99,10.02,10.01,9.97,10.04,10.03,10.00,9.98,10.05,10.02,9.99,10.01,10.06,10.00,9.97,10.03,10.02,10.04,9.98,10.01,10.00,9.99,10.05,10.03,9.96,10.02];
+        document.getElementById('dataInput').value = '寸法\n' + values.join('\n');
         document.getElementById('lowerSpec').value = '9.90';
         document.getElementById('upperSpec').value = '10.10';
         updateDataCount();
@@ -835,10 +880,33 @@
 
     function sortData() {
         const ta = document.getElementById('dataInput');
-        const arr = ta.value.trim().split(/[\s,\t\n]+/).map(Number).filter(v => !isNaN(v));
-        if (arr.length === 0) return;
-        arr.sort((a, b) => a - b);
-        ta.value = arr.join(' ');
+        const raw = ta.value.trim();
+        const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l);
+        if (lines.length === 0) return;
+        const firstLine = lines[0];
+        const delimiter = firstLine.includes('\t') ? '\t' : firstLine.includes(',') ? ',' : null;
+        const firstVal = delimiter ? firstLine.split(delimiter)[0].trim() : firstLine.trim();
+        const hasHeader = (firstVal === '' || isNaN(Number(firstVal)));
+        const headerLine = hasHeader ? lines[0] : null;
+        const startIdx = hasHeader ? 1 : 0;
+        const nums = [];
+        for (let i = startIdx; i < lines.length; i++) {
+            const cell = delimiter ? lines[i].split(delimiter)[0].trim() : lines[i].trim();
+            const v = Number(cell);
+            if (!isNaN(v) && cell !== '') nums.push(v);
+        }
+        if (nums.length === 0) {
+            const arr = raw.split(/[\s,\t\n]+/).map(Number).filter(v => !isNaN(v));
+            if (arr.length === 0) return;
+            arr.sort((a, b) => a - b);
+            ta.value = arr.join(' ');
+        } else {
+            nums.sort((a, b) => a - b);
+            const result = [];
+            if (headerLine) result.push(headerLine);
+            nums.forEach(v => result.push(String(v)));
+            ta.value = result.join('\n');
+        }
         showToast('データを昇順に並び替えました');
     }
 
@@ -879,7 +947,7 @@
         const raw = document.getElementById('dataInput').value.trim();
         if (!raw) { showToast('データを入力してください'); return; }
 
-        const data = raw.split(/[\s,\t\n]+/).map(Number).filter(v => !isNaN(v));
+        const data = parseValues(raw);
         if (data.length < 2) { showToast('有効なデータが2つ以上必要です'); return; }
 
         const specType = currentSpecType;
@@ -956,6 +1024,7 @@
         // Show UI
         document.getElementById('chartTabs').style.display = 'flex';
         document.getElementById('exportBar').style.display = 'flex';
+        document.getElementById('navExportBar').style.display = 'flex';
         document.getElementById('chartPlaceholder').style.display = 'none';
         document.getElementById('chartCanvas').style.display = 'block';
         document.getElementById('statsCard').style.display = 'block';

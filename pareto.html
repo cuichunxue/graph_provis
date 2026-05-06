@@ -3,59 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>パレート図メーカー</title>
+<title>Pro-Vis | パレート図</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface2: #232733;
-  --border: #2e3346;
-  --text: #e4e6f0;
-  --text-dim: #8b8fa4;
-  --accent: #00d4aa;
-  --accent-dim: rgba(0,212,170,0.15);
-  --accent2: #3b82f6;
+  --c-bg: #0f1117;
+  --c-surface: #1a1d27;
+  --c-surface-alt: #232733;
+  --c-border: #2e3346;
+  --c-text: #e4e6f0;
+  --c-text-secondary: #8b8fa4;
+  --c-primary: #5b8def;
+  --c-primary-light: rgba(91,141,239,0.15);
+  --c-accent: #3b82f6;
   --bar-fill: #00d4aa;
   --bar-stroke: #00b894;
   --line-color: #f59e0b;
-  --danger: #ef4444;
-  --warning: #f59e0b;
+  --c-error: #ef4444;
+  --c-warning: #f59e0b;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
   font-family: 'Noto Sans JP', sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--c-bg);
+  color: var(--c-text);
   min-height: 100vh;
   overflow-x: hidden;
 }
 
 .app-header {
-  text-align: center;
-  padding: 28px 20px 20px;
-  border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, #161922 0%, var(--bg) 100%);
+  background: linear-gradient(135deg, #141825 0%, #1a1d27 100%);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-
-.app-header h1 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--text);
+.provis-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.provis-logo-icon {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.03em; color: #fff;
 }
-
-.app-header h1 span {
-  color: var(--accent);
+.provis-logo-title { font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+.app-nav { display: flex; gap: 2px; flex: 1; }
+.nav-tab {
+  padding: 5px 13px; border-radius: 6px; font-size: 0.8rem;
+  font-weight: 500; color: #9498ab; text-decoration: none;
+  transition: 0.2s; white-space: nowrap;
 }
-
-.app-header p {
-  font-size: 0.82rem;
-  color: var(--text-dim);
-  margin-top: 6px;
+.nav-tab:hover { background: #1e2230; color: #e4e6f0; }
+.nav-tab.active { background: var(--c-primary-light); color: var(--c-primary); }
+.header-actions { display: flex; gap: 8px; }
+.header-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff; padding: 7px 16px; border-radius: 6px;
+  font-size: 0.82rem; cursor: pointer; transition: 0.2s;
+  font-family: inherit; white-space: nowrap;
 }
+.header-btn:hover { background: rgba(255,255,255,0.25); }
 
 .main-layout {
   display: flex;
@@ -68,7 +79,7 @@ body {
 .panel-left {
   width: 380px;
   min-width: 380px;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--c-border);
   padding: 20px;
   overflow-y: auto;
   max-height: calc(100vh - 100px);
@@ -89,7 +100,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--accent);
+  color: var(--c-primary);
   margin-bottom: 10px;
 }
 
@@ -102,10 +113,10 @@ body {
 .data-table th {
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   text-align: left;
   padding: 6px 8px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--c-border);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -127,18 +138,18 @@ body {
 .data-table .row-num {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.72rem;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   text-align: center;
 }
 
 .data-table input[type="text"],
 .data-table input[type="number"] {
   width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
   border-radius: 5px;
   padding: 7px 9px;
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 0.85rem;
   outline: none;
@@ -146,8 +157,8 @@ body {
 }
 
 .data-table input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-dim);
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 2px var(--c-primary-light);
 }
 
 .data-table input[type="number"] {
@@ -156,14 +167,14 @@ body {
 }
 
 .data-table input.error {
-  border-color: var(--danger);
+  border-color: var(--c-error);
   box-shadow: 0 0 0 2px rgba(239,68,68,0.15);
 }
 
 .btn-row-delete {
   background: none;
   border: none;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -176,7 +187,7 @@ body {
 }
 
 .btn-row-delete:hover {
-  color: var(--danger);
+  color: var(--c-error);
   background: rgba(239,68,68,0.1);
 }
 
@@ -189,9 +200,9 @@ body {
 .btn {
   padding: 8px 14px;
   border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  color: var(--text);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface-alt);
+  color: var(--c-text);
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
@@ -203,22 +214,22 @@ body {
 }
 
 .btn:hover {
-  background: var(--border);
+  background: var(--c-border);
 }
 
 .btn-primary {
-  background: var(--accent);
-  color: #0f1117;
-  border-color: var(--accent);
+  background: var(--c-primary);
+  color: #fff;
+  border-color: var(--c-primary);
   font-weight: 600;
 }
 
 .btn-primary:hover {
-  background: #00e6b8;
+  background: #4a78d4;
 }
 
 .btn-danger {
-  color: var(--danger);
+  color: var(--c-error);
 }
 
 .btn-danger:hover {
@@ -238,18 +249,18 @@ body {
 
 .setting-row label {
   font-size: 0.8rem;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
 }
 
 .setting-row input[type="text"],
 .setting-row input[type="number"],
 .setting-row select {
   width: 160px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
   border-radius: 5px;
   padding: 6px 9px;
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 0.82rem;
   outline: none;
@@ -257,7 +268,7 @@ body {
 
 .setting-row input:focus,
 .setting-row select:focus {
-  border-color: var(--accent);
+  border-color: var(--c-primary);
 }
 
 .setting-row select {
@@ -272,20 +283,20 @@ body {
 }
 
 .checkbox-row input[type="checkbox"] {
-  accent-color: var(--accent);
+  accent-color: var(--c-primary);
   width: 15px;
   height: 15px;
 }
 
 .checkbox-row label {
   font-size: 0.8rem;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   cursor: pointer;
 }
 
 .divider {
   border: none;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--c-border);
   margin: 16px 0;
 }
 
@@ -293,8 +304,8 @@ body {
 .chart-wrapper {
   width: 100%;
   max-width: 900px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 10px;
   padding: 24px;
   position: relative;
@@ -305,13 +316,26 @@ body {
   font-size: 1.15rem;
   font-weight: 600;
   margin-bottom: 16px;
-  color: var(--text);
+  color: var(--c-text);
 }
 
 .chart-area {
   position: relative;
   width: 100%;
 }
+
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: var(--c-text-secondary);
+  gap: 10px;
+}
+.chart-placeholder .ph-icon { opacity: 0.25; display:flex; align-items:center; justify-content:center; }
+.chart-placeholder .ph-text { font-size: 0.95rem; font-weight: 500; }
+.chart-placeholder .ph-sub { font-size: 0.78rem; color: var(--c-text-hint, #636882); }
 
 svg.pareto-svg {
   width: 100%;
@@ -323,7 +347,7 @@ svg.pareto-svg {
 .tooltip {
   position: fixed;
   background: #232733;
-  border: 1px solid var(--border);
+  border: 1px solid var(--c-border);
   border-radius: 7px;
   padding: 10px 14px;
   font-size: 0.82rem;
@@ -339,18 +363,18 @@ svg.pareto-svg {
 
 .tooltip .tt-label {
   font-weight: 600;
-  color: var(--accent);
+  color: var(--c-primary);
   margin-bottom: 4px;
 }
 
 .tooltip .tt-row {
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   font-size: 0.78rem;
   line-height: 1.5;
 }
 
 .tooltip .tt-row span {
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'JetBrains Mono', monospace;
   font-weight: 500;
 }
@@ -363,13 +387,13 @@ svg.pareto-svg {
   padding: 10px 14px;
   margin-bottom: 14px;
   font-size: 0.78rem;
-  color: var(--warning);
+  color: var(--c-warning);
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.sample-banner .icon { font-size: 1rem; }
+.sample-banner .icon { display:flex; align-items:center; flex-shrink:0; }
 
 /* Stats bar */
 .stats-bar {
@@ -384,8 +408,8 @@ svg.pareto-svg {
 .stat-card {
   flex: 1;
   min-width: 120px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
   padding: 12px 14px;
 }
@@ -394,7 +418,7 @@ svg.pareto-svg {
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   margin-bottom: 4px;
 }
 
@@ -402,17 +426,7 @@ svg.pareto-svg {
   font-family: 'JetBrains Mono', monospace;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--accent);
-}
-
-/* Export area */
-.export-bar {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
-  width: 100%;
-  max-width: 900px;
-  justify-content: flex-end;
+  color: var(--c-primary);
 }
 
 /* Responsive */
@@ -425,11 +439,21 @@ svg.pareto-svg {
     min-width: 0;
     max-height: none;
     border-right: none;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--c-border);
   }
   .panel-right {
     max-height: none;
   }
+}
+
+@media (max-width: 600px) {
+  .app-header { padding: 10px 12px; gap: 10px; }
+  .provis-logo-title { display: none; }
+  .app-nav { overflow-x: auto; scrollbar-width: none; }
+  .app-nav::-webkit-scrollbar { display: none; }
+  .nav-tab { padding: 5px 8px; font-size: 0.74rem; }
+  .header-btn { padding: 6px 10px; font-size: 0.76rem; }
+  .panel-left { padding: 12px; }
 }
 
 /* Color picker display */
@@ -437,7 +461,7 @@ svg.pareto-svg {
   width: 28px;
   height: 28px;
   border-radius: 5px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--c-border);
   cursor: pointer;
   padding: 0;
   overflow: hidden;
@@ -455,7 +479,7 @@ svg.pareto-svg {
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #3e4460; }
 
 /* Import Modal */
@@ -470,8 +494,8 @@ svg.pareto-svg {
 }
 
 .import-modal-content {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 12px;
   padding: 24px;
   width: 90%;
@@ -492,33 +516,33 @@ svg.pareto-svg {
 .import-modal-header h3 {
   font-size: 1.05rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--c-text);
 }
 
 .import-desc {
   font-size: 0.78rem;
-  color: var(--text-dim);
+  color: var(--c-text-secondary);
   line-height: 1.6;
   margin-bottom: 12px;
 }
 
 .import-desc code {
-  background: var(--surface2);
+  background: var(--c-surface-alt);
   padding: 1px 5px;
   border-radius: 3px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  color: var(--accent);
+  color: var(--c-primary);
 }
 
 #importTextarea {
   width: 100%;
   min-height: 200px;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
   border-radius: 7px;
   padding: 12px;
-  color: var(--text);
+  color: var(--c-text);
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.82rem;
   line-height: 1.5;
@@ -527,8 +551,8 @@ svg.pareto-svg {
 }
 
 #importTextarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-dim);
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 2px var(--c-primary-light);
 }
 
 #importTextarea::placeholder {
@@ -555,10 +579,24 @@ svg.pareto-svg {
 </head>
 <body>
 
-<div class="app-header">
-  <h1><span>■</span> パレート図メーカー</h1>
-  <p>データを入力するだけで、正確なパレート図を自動生成します</p>
-</div>
+<header class="app-header">
+  <a href="dashboard.html" class="provis-logo">
+    <div class="provis-logo-icon">PV</div>
+    <span class="provis-logo-title">Pro-Vis</span>
+  </a>
+  <nav class="app-nav">
+    <a href="dashboard.html" class="nav-tab">ホーム</a>
+    <a href="graph_provis.html" class="nav-tab">グラフ</a>
+    <a href="histgram.html" class="nav-tab">ヒストグラム</a>
+    <a href="pareto.html" class="nav-tab active">パレート</a>
+    <a href="scatter_regression_app.html" class="nav-tab">散布図</a>
+  </nav>
+  <div class="header-actions">
+    <button class="header-btn" onclick="exportSVG()">SVG保存</button>
+    <button class="header-btn" onclick="exportPNG()">PNG保存</button>
+    <button class="header-btn" onclick="exportCSV()">CSV保存</button>
+  </div>
+</header>
 
 <div class="main-layout">
   <div class="panel-left">
@@ -566,7 +604,7 @@ svg.pareto-svg {
     <div class="section-label">データ入力</div>
     
     <div class="sample-banner" id="sampleBanner">
-      <span class="icon">💡</span>
+      <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
       <span>サンプルデータが入っています。自由に編集してください。</span>
     </div>
 
@@ -653,25 +691,25 @@ svg.pareto-svg {
     <hr class="divider">
     <div class="section-label">インポート</div>
     <div class="btn-group">
-      <button class="btn" onclick="importCSV()">📋 データ貼り付け</button>
-      <button class="btn" onclick="loadSample()">🔄 サンプル復元</button>
+      <button class="btn" onclick="importCSV()">データ貼り付け</button>
+      <button class="btn" onclick="loadSample()">サンプル復元</button>
     </div>
   </div>
 
   <div class="panel-right">
     <div class="chart-wrapper">
       <div class="chart-area" id="chartArea">
+        <div class="chart-placeholder" id="chartPlaceholder" style="display:none;">
+          <div class="ph-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="4" height="14"/><rect x="8" y="11" width="4" height="10"/><rect x="14" y="15" width="4" height="6"/><polyline points="4 7 10 11 16 15" stroke-dasharray="3 2"/><line x1="0" y1="21" x2="24" y2="21"/></svg></div>
+          <div class="ph-text">データを入力してください</div>
+          <div class="ph-sub">左パネルで項目と値を入力するとパレート図が描画されます</div>
+        </div>
         <svg class="pareto-svg" id="paretoSvg"></svg>
       </div>
     </div>
     
     <div class="stats-bar" id="statsBar"></div>
 
-    <div class="export-bar">
-      <button class="btn" onclick="exportSVG()">📥 SVG保存</button>
-      <button class="btn" onclick="exportPNG()">📥 PNG保存</button>
-      <button class="btn" onclick="exportCSV()">📥 CSV保存</button>
-    </div>
   </div>
 </div>
 
@@ -941,11 +979,14 @@ function renderChart() {
   const result = computeParetoData();
   
   if (!result) {
-    svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#8b8fa4" font-size="14" font-family="Noto Sans JP">データを入力してください</text>';
-    svg.setAttribute('viewBox', '0 0 800 400');
+    svg.innerHTML = '';
+    svg.style.display = 'none';
+    document.getElementById('chartPlaceholder').style.display = 'flex';
     document.getElementById('statsBar').innerHTML = '';
     return;
   }
+  document.getElementById('chartPlaceholder').style.display = 'none';
+  svg.style.display = 'block';
 
   const { items, total } = result;
   const n = items.length;
@@ -1289,6 +1330,11 @@ function downloadBlob(blob, filename) {
   a.click();
   URL.revokeObjectURL(a.href);
 }
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') renderChart();
+});
 
 // ============================
 // Init
