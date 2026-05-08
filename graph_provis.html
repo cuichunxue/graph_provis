@@ -667,6 +667,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
+if (window.self !== window.top) {
+    document.querySelector('.app-header').style.display = 'none';
+}
 // ============================================================
 // STATE
 // ============================================================

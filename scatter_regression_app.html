@@ -739,10 +739,6 @@ label {
         <div class="icon" style="background:rgba(91,141,239,0.15);color:var(--c-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
         散布図 & 回帰分析
         <span id="dataCountBadge" class="badge badge-blue" style="margin-left:auto;display:none;">N=0</span>
-        <div id="exportBtns" style="margin-left:8px;display:none;gap:6px;flex-shrink:0;">
-          <button class="btn btn-secondary btn-sm" onclick="exportChartPNG()">PNG保存</button>
-          <button class="btn btn-secondary btn-sm" onclick="exportChartSVG()">SVG保存</button>
-        </div>
       </div>
       <div class="panel-body">
         <div id="chartArea">
@@ -782,6 +778,9 @@ label {
 </div>
 
 <script>
+if (window.self !== window.top) {
+    document.querySelector('.app-header').style.display = 'none';
+}
 // ===== GLOBALS =====
 let parsedData = null;       // { headers:[], rows:[][] }
 let numericCols = [];
@@ -1430,8 +1429,6 @@ function updateChart() {
     displaylogo: false });
 
   // Show export buttons
-  const eb = document.getElementById('exportBtns');
-  eb.style.display = 'flex';
   document.getElementById('navExportBtns').style.display = 'flex';
   
   // Residual plot
@@ -1598,7 +1595,6 @@ function resetAll() {
   document.getElementById('residualArea').innerHTML = '';
   document.getElementById('resultsPanel').style.display = 'none';
   document.getElementById('dataCountBadge').style.display = 'none';
-  document.getElementById('exportBtns').style.display = 'none';
   document.getElementById('navExportBtns').style.display = 'none';
 }
 </script>

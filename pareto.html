@@ -734,6 +734,9 @@ svg.pareto-svg {
 </div>
 
 <script>
+if (window.self !== window.top) {
+    document.querySelector('.app-header').style.display = 'none';
+}
 // ============================
 // State
 // ============================
